@@ -60,6 +60,13 @@ EEG = eeg_checkset( EEG );
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%% (5) Add advanced artifact removal functions %%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% (6) LaPlacian filter for C03. Electrodes channels are hard coded (ex C03=1), make
+% sure to update if there is any change
+EEG = laplacian_filter(EEG, 1, [4,6,8,10]);
+
+% (7) LaPlacian filter for C04. Electrodes channels are hard coded (ex C04=2), make
+% sure to update if there is any change
+EEG = laplacian_filter(EEG, 2, [5,7,9,12]); % NOTE: the last electrode is 12 since we've swapped channels
 
 % Save the data into .mat variables on the computer
 EEG_data = EEG.data;            % Pre-processed EEG data
