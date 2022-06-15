@@ -7,8 +7,10 @@ function [test_results] = MI5_modelTraining(recordingFolder)
 %% This code is part of the BCI-4-ALS Course written by Asaf Harel
 % (harelasa@post.bgu.ac.il) in 2021. You are free to use, change, adapt and
 % so on - but please cite properly if published.
-
 %% Read the features & labels 
+
+recordingFolder ='C:\Users\Latzres\Desktop\project\Recordings\15-06-22\TK\Sub318324886';
+
 
 FeaturesTrain = cell2mat(struct2cell(load(strcat(recordingFolder,'\FeaturesTrainSelected.mat'))));   % features for train set
 LabelTrain = cell2mat(struct2cell(load(strcat(recordingFolder,'\LabelTrain'))));                % label vector for train set
@@ -38,9 +40,19 @@ W = LDA(FeaturesTrain,LabelTrain);                                              
 %%%%%%%%%% Add your own classifier %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% SVMModel = fitcsvm(FeaturesTrain,LabelTrain, 'ClassNames', {'1','2'});
 
-% [svm_labels, svm_score] = predict(SVMModel,FeaturesTest);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SVM ECOC %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+SVMModel = fitcecoc(FeaturesTrain,LabelTrain);
+
+svm_labels = predict(SVMModel,FeaturesTest);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% KNN %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+KNNModel = fitcknn(FeaturesTrain,LabelTrain,'NumNeighbors',8);
+KNNPred = predict(KNNModel,FeaturesTest);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% NB %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+NBModel = fitcnb(FeaturesTrain, LabelTrain);
+NBPred = predict(NBModel, FeaturesTest);
 
 %% Test data
 % test prediction from linear classifier
@@ -48,9 +60,18 @@ test_results = (testPrediction'-LabelTest);                                     
 test_results = (sum(test_results == 0)/length(LabelTest))*100;
 disp(['test accuracy - ' num2str(test_results) '%'])
 
-% test_results = (str2double(svm_labels)'-LabelTest);                                         % prediction - true labels = accuracy
-% test_results = (sum(test_results == 0)/length(LabelTest))*100;
-% disp(['SVM test accuracy - ' num2str(test_results) '%'])
+test_results = (svm_labels'-LabelTest);                                         % prediction - true labels = accuracy
+test_results = (sum(test_results == 0)/length(LabelTest))*100;
+disp(['SVM test accuracy - ' num2str(test_results) '%'])
+
+
+test_results_knn = (KNNPred'-LabelTest);                                         % prediction - true labels = accuracy
+test_results_knn = (sum(test_results_knn == 0)/length(LabelTest))*100;
+disp(['KNN test accuracy - ' num2str(test_results_knn) '%'])
+
+test_results_nb = (NBPred'-LabelTest);                                         % prediction - true labels = accuracy
+test_results_nb = (sum(test_results_nb == 0)/length(LabelTest))*100;
+disp(['NB test accuracy - ' num2str(test_results_nb) '%'])
 
 save(strcat(recordingFolder,'\TestResults.mat'),'test_results');                    % save the accuracy results
 save(strcat(recordingFolder,'\WeightVector.mat'),'W');                              % save the model (W)

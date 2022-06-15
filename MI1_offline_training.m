@@ -16,21 +16,21 @@ addpath('C:\Users\Latzres\Desktop\project\toolbox\liblsl-Matlab\bin'); % lab str
 
 % Subject and recording parameters:
 subID = input('Please enter subject ID/Name: ');    % prompt to enter subject ID or name
-rootFolder = 'C:\Users\Latzres\Desktop\project\Recordings\08-06-22\RL';                      % define recording folder location
+rootFolder = 'C:\Users\Latzres\Desktop\project\Recordings\15-06-22\TK';                      % define recording folder location
 
 % Define recording folder location and create the folder:
 recordingFolder = strcat(rootFolder,'\Sub',num2str(subID),'\');
 mkdir(recordingFolder);
 
 % Define times
-InitWait = 5;                           % before trials prep time
+InitWait = 10;                           % before trials prep time
 trialLength = 5;                        % each trial length in seconds 
-cueLength = 1;                          % time for each cue
-readyLength = 1;                        % time "ready" on screen
-nextLength = 1;                         % time "next" on screen
+cueLength = 1.4;                          % time for each cue
+readyLength = 2;                        % time "ready" on screen
+nextLength = 1.2;                         % time "next" on screen
 
 % Define length and classes
-numTrials = 15;                         % set number of training trials per class (the more classes, the more trials per class)
+numTrials = 20;                         % set number of training trials per class (the more classes, the more trials per class)
 numClasses = 3;                         % set number of possible classes
 
 % Set markers / triggers names
