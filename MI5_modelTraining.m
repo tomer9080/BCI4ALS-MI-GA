@@ -9,7 +9,7 @@ function [test_results] = MI5_modelTraining(recordingFolder)
 % so on - but please cite properly if published.
 %% Read the features & labels 
 
-recordingFolder ='C:\Users\Latzres\Desktop\project\Recordings\15-06-22\TK\Sub318324886';
+% recordingFolder ='C:\Users\Latzres\Desktop\project\Recordings\15-06-22\TK\Sub318324886';
 
 
 FeaturesTrain = cell2mat(struct2cell(load(strcat(recordingFolder,'\FeaturesTrainSelected.mat'))));   % features for train set
