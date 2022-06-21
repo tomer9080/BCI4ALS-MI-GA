@@ -170,8 +170,7 @@ for trial = 1:trials                                % run over all the trials
             n = n+1;            
         end
         disp(strcat('Extracted Powerbands from electrode:',EEG_chans(channel,:)))
-        
-        
+       
         % NOVEL Features - an explanation for each can be found in the class presentation folder
         
         % Normalize the Pwelch matrix
@@ -252,6 +251,28 @@ for trial = 1:trials                                % run over all the trials
         MIFeaturesLabel(trial,channel,n) = powerbw(normlizedMatrix,Fs);
         n = n + 1;
         disp(strcat('Extracted Power bandwidth from electrode:',EEG_chans(channel,:)))
+
+        
+        % Wavelet entropy
+        MIFeaturesLabel(trial,channel,n) = wentropy(squeeze(MIData(trial,channel,:)), 'shannon');
+        n = n + 1;
+        disp(strcat('Extracted Wavelet entropy from electrode:',EEG_chans(channel,:)))
+        
+        
+        % Coherence wavelet
+%         sum_coh = zeros;
+%         for ch = 1:numChans
+%             if(ch == channel)
+%                 continue
+%             end
+%             wcoh = wcoherence(squeeze(MIData(trial,channel,:)),squeeze(MIData(trial,ch,:)));
+%             sum_coh = sum_coh + wcoh;
+%         end
+%         sum_coh = sum_coh / 10;
+%         MIFeaturesLabel(trial,channel,n) = abs(sum_coh); sum(welch{channel}(:,trial));
+%         n = n + 1;
+%         disp(strcat('Extracted Mean amplitude of mean coherence from electrode:',EEG_chans(channel,:)))
+%         
         
     end
 end

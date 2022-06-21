@@ -19,8 +19,8 @@ clc; clear; close all;
 %disp('Finished stimulation and EEG recording. Stop the LabRecorder and press any key to continue...');
 %pause;
 
-% recordingFolder ='C:\Users\Latzres\Desktop\project\Recordings\08-06-22\TK\Sub318324886';
-recordingFolder ='C:\Users\Latzres\Desktop\project\Recordings\12-06-22\RL\Sub316353903';
+recordingFolder ='C:\Users\Latzres\Desktop\project\Recordings\15-06-22\TK\Sub318324886';
+% recordingFolder ='C:\Users\Latzres\Desktop\project\Recordings\15-06-22\RL\Sub316353903';
 %% Run pre-processing pipeline on recorded data
 MI2_preprocess(recordingFolder);
 %disp('Finished pre-processing pipeline. Press any key to continue...');

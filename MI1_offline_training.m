@@ -16,7 +16,7 @@ addpath('C:\Users\Latzres\Desktop\project\toolbox\liblsl-Matlab\bin'); % lab str
 
 % Subject and recording parameters:
 subID = input('Please enter subject ID/Name: ');    % prompt to enter subject ID or name
-rootFolder = 'C:\Users\Latzres\Desktop\project\Recordings\15-06-22\TK';                      % define recording folder location
+rootFolder = 'C:\Users\Latzres\Desktop\project\Recordings\21-06-22\RL';                      % define recording folder location
 
 % Define recording folder location and create the folder:
 recordingFolder = strcat(rootFolder,'\Sub',num2str(subID),'\');
