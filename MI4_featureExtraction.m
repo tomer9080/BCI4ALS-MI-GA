@@ -305,7 +305,7 @@ class = fscnca(FeaturesTrain,LabelTrain);   % feature selection
 % sorting the weights in desending order and keeping the indexs
 [~,selected] = sort(class.FeatureWeights,'descend');
 % taking only the specified number of features with the largest weights
-SelectedIdx = selected(1:Features2Select);
+SelectedIdx = selected(1:Features2Select);                  % takes Featues2Select (int value) of features
 FeaturesTrainSelected = FeaturesTrain(:,SelectedIdx);       % updating the matrix feature
 FeaturesTest = FeaturesTest(:,SelectedIdx);                 % updating the matrix feature
 % saving
