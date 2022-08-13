@@ -5,6 +5,8 @@ from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis as QDA
 from sklearn.neighbors import KNeighborsClassifier as KNN
 from sklearn.svm import LinearSVC as SVM
 from sklearn.naive_bayes import BernoulliNB as NB
+from sklearn.ensemble import RandomForestClassifier as RF
+from sklearn.tree import DecisionTreeClassifier as DT
 from tabulate import tabulate
 import sys
 
@@ -13,9 +15,9 @@ import sys
 # TODO: How to do the feature mentioned above.
 
 
-recordingFolder = "C:\BCI_RECORDINGS\\10-08-22\TK\Sub318324886002"
+# recordingFolder = "C:\BCI_RECORDINGS\\09-08-22\TK\Sub318324886002"
 # recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\10-08-22\\TK\Sub318324886002'
-# recordingFolder = "C:\BCI_RECORDINGS\\09-08-22\RL\Sub316353903001"
+recordingFolder = "C:\BCI_RECORDINGS\\09-08-22\RL\Sub316353903001"
 
 features_train = sio.loadmat(recordingFolder + '\FeaturesTrainSelected.mat')['FeaturesTrainSelected']
 features_train_all = sio.loadmat(recordingFolder + '\FeaturesTrain.mat')['FeaturesTrain']
@@ -97,6 +99,26 @@ hit_rate = sum(test_results == 0)/len(label_test)
 
 nb_row = ['NB', hit_rate, nb_prediction, label_test] 
 
+#RF analysis
+print("Running RF analysis...")
+rf_predictor = RF(criterion='entropy')
+rf_predictor.fit(features_train, label_train)
+rf_prediction = rf_predictor.predict(features_test)
+test_results = rf_prediction - label_test
+hit_rate = sum(test_results == 0)/len(label_test)
+
+rf_row = ['RF', hit_rate, rf_prediction, label_test] 
+
+#DT analysis
+print("Running DT analysis...")
+dt_predictor = DT()
+dt_predictor.fit(features_train, label_train)
+dt_prediction = dt_predictor.predict(features_test)
+test_results = dt_prediction - label_test
+hit_rate = sum(test_results == 0)/len(label_test)
+
+dt_row = ['DT', hit_rate, dt_prediction, label_test] 
+
 #### ---------- Priniting table ---------- ####
 print('')
 headers = ["Classifier", "Success Rate", "Classifier Prediction", "Test Labels"]
@@ -106,6 +128,8 @@ all_rows = [
     knn_5_row,
     knn_7_row,
     svm_row,
-    nb_row
+    nb_row,
+    rf_row,
+    dt_row
 ]
 print(tabulate(all_rows, headers=headers))
