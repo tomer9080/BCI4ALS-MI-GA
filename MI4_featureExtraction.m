@@ -47,7 +47,7 @@ sgtitle(['Power Spectrum For The Choosen Electrode']);
 psd = nan(numChans,numClasses,2,1000); % init psd matrix
 
 
-MIData(:,11,:) = MIData(:,12,:);
+% MIData(:,11,:) = MIData(:,12,:);
 
 
 for chan = 1:numChans

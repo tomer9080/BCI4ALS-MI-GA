@@ -43,7 +43,7 @@ EEG_chans(8,:) = 'CP1';
 EEG_chans(9,:) = 'CP2';
 EEG_chans(10,:) = 'CP5';
 EEG_chans(11,:) = 'CP6';
-EEG_chans(12,:) = 'tmp';
+% EEG_chans(12,:) = 'tmp';
 
 
 
