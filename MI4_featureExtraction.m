@@ -24,7 +24,7 @@ Fs = 125;                                                       % openBCI Cyton+
 trials = size(MIData,1);                                        % get number of trials from main data variable
 [R, C] = size(EEG_chans);                                       % get EEG_chans (char matrix) size - rows and columns
 chanLocs = reshape(EEG_chans',[1, R*C]);                        % reshape into a vector in the correct order
-numChans = size(MIData,2) - 1;                                      % get number of channels from main data variable
+numChans = size(MIData,2);                                      % get number of channels from main data variable
 
 
 %% Visual Feature Selection: Power Spectrum
