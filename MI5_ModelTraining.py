@@ -16,8 +16,11 @@ import sys
 
 
 # recordingFolder = "C:\BCI_RECORDINGS\\09-08-22\TK\Sub318324886002"
-# recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\10-08-22\\TK\Sub318324886002'
-recordingFolder = "C:\BCI_RECORDINGS\\09-08-22\RL\Sub316353903001"
+recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\16-08-22\\TK\Sub318324886002'
+# recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\16-08-22\\RL\Sub316353903002'
+# recordingFolder = "C:\BCI_RECORDINGS\\09-08-22\RL\Sub316353903001"
+# recordingFolder = r'C:\\Users\\Latzres\\Desktop\\project\\Recordings\\14-08-22\\Sub20220814002'
+
 
 features_train = sio.loadmat(recordingFolder + '\FeaturesTrainSelected.mat')['FeaturesTrainSelected']
 features_train_all = sio.loadmat(recordingFolder + '\FeaturesTrain.mat')['FeaturesTrain']
@@ -41,7 +44,7 @@ lda_prediction = lda_predictor.predict(features_test)
 test_results = lda_prediction - label_test
 hit_rate = sum(test_results == 0)/len(label_test)
 
-lda_row = ['LDA', hit_rate, lda_prediction, label_test] 
+lda_row = ['LDA', hit_rate, lda_prediction, label_test, lda_prediction - label_test] 
 
 
 #QDA analysis
@@ -52,7 +55,7 @@ qda_prediction = qda_predictor.predict(features_test)
 test_results = qda_prediction - label_test
 hit_rate = sum(test_results == 0)/len(label_test)
 
-qda_row = ['QDA', hit_rate, qda_prediction, label_test] 
+qda_row = ['QDA', hit_rate, qda_prediction, label_test, qda_prediction - label_test] 
 
 
 #KNN analysis
@@ -65,7 +68,7 @@ knn_prediction = knn_predictor.predict(features_test)
 test_results = knn_prediction - label_test
 hit_rate = sum(test_results == 0)/len(label_test)
 
-knn_5_row = ['KNN-5', hit_rate, knn_prediction, label_test] 
+knn_5_row = ['KNN-5', hit_rate, knn_prediction, label_test, knn_prediction - label_test] 
 
 #KNN-7
 print("Running KNN-7 analysis...")
@@ -75,7 +78,7 @@ knn_prediction = knn_predictor.predict(features_test)
 test_results = knn_prediction - label_test
 hit_rate = sum(test_results == 0)/len(label_test)
 
-knn_7_row = ['KNN-7', hit_rate, knn_prediction, label_test] 
+knn_7_row = ['KNN-7', hit_rate, knn_prediction, label_test, knn_prediction - label_test] 
 
 #SVM analysis
 # Need to check convergence problem.
@@ -87,7 +90,7 @@ svm_prediction = svm_predictor.predict(features_test)
 test_results = svm_prediction - label_test
 hit_rate = sum(test_results == 0)/len(label_test)
 
-svm_row = ['SVM', hit_rate, svm_prediction, label_test] 
+svm_row = ['SVM', hit_rate, svm_prediction, label_test, svm_prediction - label_test] 
 
 #NB analysis
 print("Running NB analysis...")
@@ -97,7 +100,7 @@ nb_prediction = nb_predictor.predict(features_test)
 test_results = nb_prediction - label_test
 hit_rate = sum(test_results == 0)/len(label_test)
 
-nb_row = ['NB', hit_rate, nb_prediction, label_test] 
+nb_row = ['NB', hit_rate, nb_prediction, label_test, nb_prediction - label_test] 
 
 #RF analysis
 print("Running RF analysis...")
@@ -107,7 +110,7 @@ rf_prediction = rf_predictor.predict(features_test)
 test_results = rf_prediction - label_test
 hit_rate = sum(test_results == 0)/len(label_test)
 
-rf_row = ['RF', hit_rate, rf_prediction, label_test] 
+rf_row = ['RF', hit_rate, rf_prediction, label_test, rf_prediction - label_test] 
 
 #DT analysis
 print("Running DT analysis...")
@@ -117,11 +120,11 @@ dt_prediction = dt_predictor.predict(features_test)
 test_results = dt_prediction - label_test
 hit_rate = sum(test_results == 0)/len(label_test)
 
-dt_row = ['DT', hit_rate, dt_prediction, label_test] 
+dt_row = ['DT', hit_rate, dt_prediction, label_test, dt_prediction - label_test] 
 
 #### ---------- Priniting table ---------- ####
 print('')
-headers = ["Classifier", "Success Rate", "Classifier Prediction", "Test Labels"]
+headers = ["Classifier", "Success Rate", "Classifier Prediction", "Test Labels", "Sub Labels"]
 all_rows = [
     lda_row,
     qda_row,
