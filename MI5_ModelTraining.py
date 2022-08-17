@@ -1,5 +1,6 @@
 import scipy.io as sio
 import numpy as np
+from genetic_selection import GeneticSelectionCV 
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis as QDA
 from sklearn.neighbors import KNeighborsClassifier as KNN
