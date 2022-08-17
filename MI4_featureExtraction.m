@@ -258,7 +258,45 @@ for trial = 1:trials                                % run over all the trials
         n = n + 1;
         disp(strcat('Extracted Wavelet entropy from electrode:',EEG_chans(channel,:)))
         
+
+        % Kurtosis
+        MIFeaturesLabel(trial,channel,n) = jKurtosis(squeeze(MIData(trial,channel,:)));
+        n = n + 1;
+        disp(strcat('Extracted Kurtosis from electrode:',EEG_chans(channel,:)))
+
+
+        % Skewness
+        MIFeaturesLabel(trial,channel,n) = jSkewness(squeeze(MIData(trial,channel,:)));
+        n = n + 1;
+        disp(strcat('Extracted Skewness from electrode:',EEG_chans(channel,:)))
+
+
+        % Variance
+        MIFeaturesLabel(trial,channel,n) = jVariance(squeeze(MIData(trial,channel,:)));
+        n = n + 1;
+        disp(strcat('Extracted Variance from electrode:',EEG_chans(channel,:)))
+
         
+        % Standard Deviation
+        MIFeaturesLabel(trial,channel,n) = jStandardDeviation(squeeze(MIData(trial,channel,:)));
+        n = n + 1;
+        disp(strcat('Extracted Standard Deviation from electrode:',EEG_chans(channel,:)))
+
+
+        % Log Energy Entropy
+        MIFeaturesLabel(trial,channel,n) = jLogEnergyEntropy(squeeze(MIData(trial,channel,:)));
+        n = n + 1;
+        disp(strcat('Extracted Log Energy Entropy from electrode:',EEG_chans(channel,:)))
+
+
+        
+% 
+%         % Ratio Band Alpha Beta
+%         MIFeaturesLabel(trial,channel,n) = jRatioBandPowerAlphaBeta(squeeze(MIData(trial,channel,:)), 'fs');
+%         n = n + 1;
+%         disp(strcat('Extracted Ratio Band Alpha Beta from electrode:',EEG_chans(channel,:)))
+% 
+
         % Coherence wavelet
 %         sum_coh = zeros;
 %         for ch = 1:numChans
