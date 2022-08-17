@@ -41,24 +41,85 @@ def cross_validation_on_model(model, k, features, labels):
     max_index = np.argmax(all_scores)
     return all_models[max_index]
 
+# TK PC
 recordingFolder = "C:\BCI_RECORDINGS\\16-08-22\TK\Sub318324886001"
+# recordingFolder = "C:\BCI_RECORDINGS\\09-08-22\RL\Sub316353903001"
+
+# RL PC
 # recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\17-08-22\\TK\Sub318324886002'
 # recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\17-08-22\\RL\Sub316353903002'
-# recordingFolder = "C:\BCI_RECORDINGS\\09-08-22\RL\Sub316353903001"
-# recordingFolder = r'C:\\Users\\Latzres\\Desktop\\project\\Recordings\\14-08-22\\Sub20220814002'
 
+# All of the features before train-test partition
+all_features = sio.loadmat(recordingFolder + '\AllDataInFeatures.mat')['AllDataInFeatures']
+all_labels = sio.loadmat(recordingFolder + '\\trainingVec.mat')['trainingVec'].ravel()
+print(all_labels.shape)
+#split lables to train and tests
+n_samples = all_features.shape[0]  # The total number of samples in the dataset
+## Generate a random generator with a fixed seed
+rand_gen = np.random.RandomState(0)
+## Generating a shuffled vector of indices
+indices = np.arange(n_samples)
+rand_gen.shuffle(indices)
 
+## Split the indices into 75% train (full) / 25% test
+n_samples_train_full = int(n_samples * 0.75)
+features_train_ga = all_features[indices[:n_samples_train_full]]
+features_test_ga = all_features[indices[n_samples_train_full:]]
+
+labels_train_ga = all_labels[indices[:n_samples_train_full]]
+labels_test_ga = all_labels[indices[n_samples_train_full:]]
+
+estimator = SVM(penalty='l2', loss='hinge', multi_class='ovr', C=2, max_iter=30_000)
+selector = GeneticSelectionCV(
+    estimator,
+    cv = 3,
+    scoring = "accuracy",
+    max_features = 7,
+    n_population = 153,
+    crossover_proba = 0.5,
+    mutation_proba = 0.2,
+    n_generations = 60,
+    caching = True,
+    mutation_independent_proba = 0.025,
+    crossover_independent_proba = 0.8
+)
+
+selector = selector.fit(features_train_ga, labels_train_ga)
+
+svm_ga_prediction = selector.predict(features_test_ga)
+test_results = svm_ga_prediction - labels_test_ga
+hit_rate = sum(test_results == 0)/len(labels_test_ga)
+
+svm_ga_row = ['SVM GA', hit_rate, svm_ga_prediction, labels_test_ga, svm_ga_prediction - labels_test_ga]
+
+estimator = LDA()
+selector = GeneticSelectionCV(
+    estimator,
+    cv = 3,
+    scoring = "accuracy",
+    max_features = 7,
+    n_population = 153,
+    crossover_proba = 0.5,
+    mutation_proba = 0.2,
+    n_generations = 60,
+    caching = True,
+    mutation_independent_proba = 0.025,
+    crossover_independent_proba = 0.8
+)
+
+selector = selector.fit(features_train_ga, labels_train_ga)
+
+lda_ga_prediction = selector.predict(features_test_ga)
+test_results = lda_ga_prediction - labels_test_ga
+hit_rate = sum(test_results == 0)/len(labels_test_ga)
+
+lda_ga_row = ['LDA GA', hit_rate, lda_ga_prediction, labels_test_ga, lda_ga_prediction - labels_test_ga]
+
+# features from matlab neighborhood component analysis - takes 10 best features.
 features_train = sio.loadmat(recordingFolder + '\FeaturesTrainSelected.mat')['FeaturesTrainSelected']
-features_train_all = sio.loadmat(recordingFolder + '\FeaturesTrain.mat')['FeaturesTrain']
-print(features_train_all.shape)
 label_train = sio.loadmat(recordingFolder + '\LabelTrain.mat')['LabelTrain'].ravel()
 
-features = sys.argv[1:] # taking the features from the command line
-# Attaching number to each feature name that comes from cmdline.
-features_hash = {} 
-
-# Label Vector
-features_test = sio.loadmat(recordingFolder + '\FeaturesTest.mat')['FeaturesTest'] 
+features_test = sio.loadmat(recordingFolder + '\FeaturesTest.mat')['FeaturesTest']
 label_test = sio.loadmat(recordingFolder + '\LabelTest.mat')['LabelTest'].ravel()
 
 
@@ -189,12 +250,14 @@ headers = ["Classifier", "Success Rate", "Classifier Prediction", "Test Labels",
 all_rows = [
     lda_row,
     lda_cv_row,
+    lda_ga_row,
     qda_row,
     qda_cv_row,
     knn_5_row,
     knn_7_row,
     svm_row,
     svm_cv_row,
+    svm_ga_row,
     nb_row,
     rf_row,
     rf_cv_row,
