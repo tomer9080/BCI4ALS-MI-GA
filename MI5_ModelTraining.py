@@ -17,8 +17,8 @@ import sys
 
 
 # recordingFolder = "C:\BCI_RECORDINGS\\09-08-22\TK\Sub318324886002"
-recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\16-08-22\\TK\Sub318324886002'
-# recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\16-08-22\\RL\Sub316353903002'
+# recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\17-08-22\\TK\Sub318324886002'
+recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\17-08-22\\RL\Sub316353903002'
 # recordingFolder = "C:\BCI_RECORDINGS\\09-08-22\RL\Sub316353903001"
 # recordingFolder = r'C:\\Users\\Latzres\\Desktop\\project\\Recordings\\14-08-22\\Sub20220814002'
 
