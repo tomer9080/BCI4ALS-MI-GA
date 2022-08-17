@@ -19,8 +19,8 @@ clc; clear; close all;
 %disp('Finished stimulation and EEG recording. Stop the LabRecorder and press any key to continue...');
 %pause;
 
-recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\16-08-22\TK\Sub318324886002';
-% recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\15-08-22\RL\Sub316353903001';
+% recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\17-08-22\TK\Sub318324886002';
+recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\17-08-22\RL\Sub316353903002';
 % recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\11-08-22\Sub20220811003';
 % recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\16-08-22\RL\Sub316353903002';
 
