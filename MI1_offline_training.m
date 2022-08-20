@@ -16,8 +16,8 @@ addpath('C:\Users\Latzres\Desktop\project\toolbox\liblsl-Matlab\bin'); % lab str
 
 % Subject and recording parameters:
 subID = input('Please enter subject ID/Name: ');    % prompt to enter subject ID or name
-rootFolder = 'C:\Users\Latzres\Desktop\project\Recordings\17-08-22\RL';                      % define recording folder location
-
+% rootFolder = 'C:\Users\Latzres\Desktop\project\Recordings\17-08-22\RL';                      % define recording folder location
+rootFolder = 'C:\Users\Latzres\Desktop\project\testing';
 % Define recording folder location and create the folder:
 recordingFolder = strcat(rootFolder,'\Sub',num2str(subID),'\');
 mkdir(recordingFolder);
@@ -78,7 +78,10 @@ hold on
 trainingImage{1} = imread('square.jpeg','jpeg');
 trainingImage{2} = imread('arrow_left.jpeg','jpeg');
 trainingImage{3} = imread('arrow_right.jpeg','jpeg');
-    
+
+% trianingVid{1} = VideoReader(left_hand);
+% trianingVid{2} = VideoReader(right_hand); 
+
 %% Prepare Training Vector
 trainingVec = prepareTraining(numTrials,numClasses);    % vector with the conditions for each trial
 save(strcat(recordingFolder,'trainingVec.mat'),'trainingVec');
@@ -91,6 +94,9 @@ text(0.5,0.5 ,...                               % important for people to prepar
     'HorizontalAlignment', 'Center', 'Color', 'white', 'FontSize', 40);
 pause(InitWait)
 cla
+
+
+
 for trial = 1:totalTrials
     outletStream.push_sample(startTrial);       % trial trigger & counter
     currentClass = trainingVec(trial);          % What class is it?
@@ -110,13 +116,36 @@ for trial = 1:totalTrials
     cla                                         % Clear axis
     
     % Show image of the corresponding label of the trial
-    image(flip(trainingImage{currentClass}, 1), 'XData', [0.25, 0.75],...
-        'YData', [0.25, 0.75 * ...
-        size(trainingImage{currentClass},1)./ size(trainingImage{currentClass},2)])    
-    outletStream.push_sample(currentClass);     % class label
-    pause(trialLength)                          % Pause for trial length
-    cla                                         % Clear axis
+%     image(flip(trainingImage{currentClass}, 1), 'XData', [0.25, 0.75],...
+%         'YData', [0.25, 0.75 * ...
+%         size(trainingImage{currentClass},1)./ size(trainingImage{currentClass},2)])
+    if(currentClass ~= 1)
+        if (currentClass == 2)
+            video = 'C:\Users\Latzres\Desktop\project\BCI-Matlab-Code\left_hand.wmv';
+        else
+            video = 'C:\Users\Latzres\Desktop\project\BCI-Matlab-Code\right_hand.wmv';
+        end
+        videoHand= VideoReader(video);
+%         fps = get(videoReader, 'FrameRate');
+%         currAxes = axes;
+        while hasFrame(videoHand)
+            vidFrame = readFrame(videoHand);
+            image(flip(vidFrame), 'XData', [0.25, 0.75],...
+            'YData', [0.25, 0.75 * ...
+            size(vidFrame,1)./ size(vidFrame,2)])
 
+        %         image(vidFrame, 0.25,0.25)
+        %         image(vidFrame, 'XData', [0.1, 0.75],'YData', [0.1, 0.75 ])
+        %         currAxes.Visible = 'off';
+            pause(1/videoReader.FrameRate);
+            cla
+        end
+
+    else
+        outletStream.push_sample(currentClass);     % class label
+        pause(trialLength)                          % Pause for trial length
+    cla                                         % Clear axis
+    end
     % Display "Next" trial text
     text(0.5,0.5 , 'Next',...
         'HorizontalAlignment', 'Center', 'Color', 'white', 'FontSize', 40);
