@@ -13,17 +13,18 @@
 
 
 clc; clear; close all;
-
+addpath 'C:\BCIToolBox\eeglab2021.1'
+addpath '.\FeatureExtraction\'
 %% Run stimulation and record EEG data
 %[recordingFolder] = MI1_offline_training();
 %disp('Finished stimulation and EEG recording. Stop the LabRecorder and press any key to continue...');
 %pause;
 
-% recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\17-08-22\TK\Sub318324886002';
-recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\17-08-22\RL\Sub316353903002';
-% recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\11-08-22\Sub20220811003';
-% recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\16-08-22\RL\Sub316353903002';
 
+% recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\17-08-22\TK\Sub318324886002';
+% recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\17-08-22\RL\Sub316353903002';
+recordingFolder = 'C:\BCI_RECORDINGS\16-08-22\TK\Sub318324886002';
+% recordingFolder = 'C:\BCI_RECORDINGS\16-08-22\RL\Sub316353903002';
 
 %% Run pre-processing pipeline on recorded data
 MI2_preprocess(recordingFolder);
@@ -39,7 +40,7 @@ MI4_featureExtraction(recordingFolder);
 disp('Finished extracting features and labels. Press any key to continue...');
 % pause;
 
-%% Train a model using features and labels
-testresult = MI5_modelTraining(recordingFolder);
-disp('Finished training the model. The offline process is done!');
+% %% Train a model using features and labels
+% testresult = MI5_modelTraining(recordingFolder);
+% disp('Finished training the model. The offline process is done!');
 
