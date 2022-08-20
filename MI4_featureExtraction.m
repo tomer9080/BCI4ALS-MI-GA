@@ -87,16 +87,16 @@ mySpectrogram(t,spectFreq,totalSpect,numClasses,vizChans,EEG_chans)
 % serves to show an understandable demonstration of the process.
 
 % Begin by splitting into two classes:
-leftClass = MIData(targetLabels == 1,:,:);
-rightClass = MIData(targetLabels == 2,:,:);
+leftClass = MIData(targetLabels == 2,:,:);
+rightClass = MIData(targetLabels == 3,:,:);
 
 % Aggregate all trials into one matrix
 overallLeft = [];
 overallRight = [];
-idleIdx = find(targetLabels == 3);                  % find idle trials
-leftIdx = find(targetLabels == 1);                  % find left trials
-rightIdx = find(targetLabels == 2);                 % find right trials
-rightIndices = rightIdx(randperm(length(rightIdx)));% randomize right indexs
+idleIdx = find(targetLabels == 1);                   % find idle trials
+leftIdx = find(targetLabels == 2);                   % find left trials
+rightIdx = find(targetLabels == 3);                  % find right trials
+rightIndices = rightIdx(randperm(length(rightIdx))); % randomize right indexs
 leftIndices  = leftIdx(randperm(length(leftIdx)));   % randomize left indexs
 idleIndices  = idleIdx(randperm(length(idleIdx)));   % randomize idle indexs
 minTrials = min([length(leftIndices), length(rightIndices)]);

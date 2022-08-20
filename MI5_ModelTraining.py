@@ -41,8 +41,8 @@ def cross_validation_on_model(model, k, features, labels):
     return all_models[max_index]
 
 # TK PC
-recordingFolder = "C:\BCI_RECORDINGS\\17-08-22\TK\Sub318324886002"
-# recordingFolder = "C:\BCI_RECORDINGS\\09-08-22\RL\Sub316353903001"
+recordingFolder = "C:\BCI_RECORDINGS\\16-08-22\TK\Sub318324886002"
+# recordingFolder = "C:\BCI_RECORDINGS\\16-08-22\RL\Sub316353903002"
 
 # RL PC
 # recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\17-08-22\\TK\Sub318324886002'

@@ -34,7 +34,7 @@ for index = 1:length(chans)
     end
     %% This is used to create a subplot which shows the difference between two classes:
     subplot(numClasses-1,2,class+1);
-    surf(t,f,real(10*log10(squeeze(totalSpect(elect,2,:,:)) - squeeze(totalSpect(elect,1,:,:)))),'EdgeColor','none','FaceAlpha',0.5);
+    surf(t,f,real(10*log10(squeeze(totalSpect(elect,2,:,:)) - squeeze(totalSpect(elect,3,:,:)))),'EdgeColor','none','FaceAlpha',0.5);
     xlabel('Time'); ylabel('Frequency'); zlabel('PSD');
     title('Left Class - Right Class');
     colormap jet
