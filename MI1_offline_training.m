@@ -119,6 +119,8 @@ for trial = 1:totalTrials
 %     image(flip(trainingImage{currentClass}, 1), 'XData', [0.25, 0.75],...
 %         'YData', [0.25, 0.75 * ...
 %         size(trainingImage{currentClass},1)./ size(trainingImage{currentClass},2)])
+    
+    %Show video of the corresponding label of the trial
     if(currentClass ~= 1)
         if (currentClass == 2)
             video = 'C:\Users\Latzres\Desktop\project\BCI-Matlab-Code\left_hand.wmv';
@@ -138,17 +140,17 @@ for trial = 1:totalTrials
         %         image(vidFrame, 'XData', [0.1, 0.75],'YData', [0.1, 0.75 ])
         %         currAxes.Visible = 'off';
             pause(1/videoReader.FrameRate);
-            cla
         end
-
     else
         outletStream.push_sample(currentClass);     % class label
         pause(trialLength)                          % Pause for trial length
-    cla                                         % Clear axis
     end
+    cla                                         % Clear axis
+    
     % Display "Next" trial text
     text(0.5,0.5 , 'Next',...
         'HorizontalAlignment', 'Center', 'Color', 'white', 'FontSize', 40);
+    
     % Display trial count
     text(0.5,0.2 , strcat('Trial #',num2str(trial + 1),' Out Of : '...
         ,num2str(totalTrials)),...
