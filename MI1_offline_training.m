@@ -16,8 +16,17 @@ addpath('C:\Users\Latzres\Desktop\project\toolbox\liblsl-Matlab\bin'); % lab str
 
 % Subject and recording parameters:
 subID = input('Please enter subject ID/Name: ');    % prompt to enter subject ID or name
-% rootFolder = 'C:\Users\Latzres\Desktop\project\Recordings\17-08-22\RL';                      % define recording folder location
+% rootFolder = 'C:\Users\Latzres\Desktop\project\Recordings\23-08-22\TK';
+% animation = 1;
+% tk_flag = 1;
+% rootFolder = 'C:\Users\Latzres\Desktop\project\Recordings\23-08-22\RL';
+% animation = 1;
+% tk_flag = 0;
+
+% define recording folder location
 rootFolder = 'C:\Users\Latzres\Desktop\project\testing';
+animation = 1;
+tk_flag = 1;
 % Define recording folder location and create the folder:
 recordingFolder = strcat(rootFolder,'\Sub',num2str(subID),'\');
 mkdir(recordingFolder);
@@ -115,38 +124,62 @@ for trial = 1:totalTrials
     pause(readyLength);                         % Pause for ready length
     cla                                         % Clear axis
     
-    % Show image of the corresponding label of the trial
-%     image(flip(trainingImage{currentClass}, 1), 'XData', [0.25, 0.75],...
-%         'YData', [0.25, 0.75 * ...
-%         size(trainingImage{currentClass},1)./ size(trainingImage{currentClass},2)])
-    
-    %Show video of the corresponding label of the trial
-    if(currentClass ~= 1)
-        if (currentClass == 2)
-            video = 'C:\Users\Latzres\Desktop\project\BCI-Matlab-Code\left_hand.wmv';
+    if(animation == 1)
+        %Show video of the corresponding label of the trial
+        if(currentClass ~= 1)
+            if (currentClass == 2)
+                if(tk_flag == 1)
+                    video = 'C:\Users\Latzres\Desktop\project\BCI-Matlab-Code\tk_left_front.mp4';
+                else
+                    video = 'C:\Users\Latzres\Desktop\project\BCI-Matlab-Code\left_hand.wmv';
+                end
+            else
+                if(tk_flag == 1)
+                    video = 'C:\Users\Latzres\Desktop\project\BCI-Matlab-Code\tk_right_front.mp4';
+                else
+                    video = 'C:\Users\Latzres\Desktop\project\BCI-Matlab-Code\right_hand.wmv';
+                end                
+            end
+            videoHand= VideoReader(video);
+    %         fps = get(videoReader, 'FrameRate');
+    %         currAxes = axes;
+            outletStream.push_sample(currentClass);     % class label
+            while hasFrame(videoHand)
+                vidFrame = readFrame(videoHand);
+                if(tk_flag == 1)
+                    %fix X and Y location!!!!!!!
+                    image(flip(vidFrame), 'XData', [0.5, 0.75],...
+                    'YData', [0.5, 0.75 * ...
+                    size(vidFrame,1)./ size(vidFrame,2)])
+                else
+                    image(flip(vidFrame), 'XData', [0.25, 0.75],...
+                    'YData', [0.25, 0.75 * ...
+                    size(vidFrame,1)./ size(vidFrame,2)])
+                end
+             
+                pause(1/videoHand.FrameRate);
+            end
         else
-            video = 'C:\Users\Latzres\Desktop\project\BCI-Matlab-Code\right_hand.wmv';
-        end
-        videoHand= VideoReader(video);
-%         fps = get(videoReader, 'FrameRate');
-%         currAxes = axes;
-        while hasFrame(videoHand)
-            vidFrame = readFrame(videoHand);
-            image(flip(vidFrame), 'XData', [0.25, 0.75],...
+            % Show image of the corresponding label of the trial
+            image(flip(trainingImage{currentClass}, 1), 'XData', [0.25, 0.75],...
             'YData', [0.25, 0.75 * ...
-            size(vidFrame,1)./ size(vidFrame,2)])
+            size(trainingImage{currentClass},1)./ size(trainingImage{currentClass},2)])
 
-        %         image(vidFrame, 0.25,0.25)
-        %         image(vidFrame, 'XData', [0.1, 0.75],'YData', [0.1, 0.75 ])
-        %         currAxes.Visible = 'off';
-            pause(1/videoReader.FrameRate);
+            outletStream.push_sample(currentClass);     % class label
+            pause(trialLength)                          % Pause for trial length
         end
-    else
-        outletStream.push_sample(currentClass);     % class label
-        pause(trialLength)                          % Pause for trial length
+    else     
+    % Show image of the corresponding label of the trial
+    image(flip(trainingImage{currentClass}, 1), 'XData', [0.25, 0.75],...
+        'YData', [0.25, 0.75 * ...
+        size(trainingImage{currentClass},1)./ size(trainingImage{currentClass},2)])    
+    outletStream.push_sample(currentClass);     % class label
+    pause(trialLength)                          % Pause for trial length
+    cla                                         % Clear axis
+        
     end
     cla                                         % Clear axis
-    
+        
     % Display "Next" trial text
     text(0.5,0.5 , 'Next',...
         'HorizontalAlignment', 'Center', 'Color', 'white', 'FontSize', 40);
