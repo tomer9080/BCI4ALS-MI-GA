@@ -19,14 +19,14 @@ subID = input('Please enter subject ID/Name: ');    % prompt to enter subject ID
 % rootFolder = 'C:\Users\Latzres\Desktop\project\Recordings\23-08-22\TK';
 % animation = 1;
 % tk_flag = 1;
-% rootFolder = 'C:\Users\Latzres\Desktop\project\Recordings\23-08-22\RL';
-% animation = 1;
-% tk_flag = 0;
+rootFolder = 'C:\Users\Latzres\Desktop\project\Recordings\23-08-22\RL';
+animation = 1;
+tk_flag = 0;
 
 % define recording folder location
-rootFolder = 'C:\Users\Latzres\Desktop\project\testing';
-animation = 1;
-tk_flag = 1;
+% rootFolder = 'C:\Users\Latzres\Desktop\project\testing';
+% animation = 1;
+% tk_flag = 1;
 % Define recording folder location and create the folder:
 recordingFolder = strcat(rootFolder,'\Sub',num2str(subID),'\');
 mkdir(recordingFolder);

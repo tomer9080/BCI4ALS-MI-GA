@@ -45,14 +45,14 @@ def cross_validation_on_model(model, k, features, labels):
 # recordingFolder = "C:\BCI_RECORDINGS\\16-08-22\RL\Sub316353903002"
 
 # RL PC
-recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\23-08-22\\TK\Sub318324886002'
-# recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\22-08-22\\RL\Sub316353903001'
+# recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\23-08-22\\TK\Sub318324886002'
+recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\23-08-22\\RL\Sub316353903001'
 
 # All of the features before train-test partition
 all_features = sio.loadmat(recordingFolder + '\AllDataInFeatures.mat')['AllDataInFeatures']
 all_labels = sio.loadmat(recordingFolder + '\\trainingVec.mat')['trainingVec'].ravel()
 test_indices = sio.loadmat(recordingFolder + '\\testIdx.mat')['testIdx'].ravel()
-
+test_indices = test_indices - 1
 train_indices = [i for i in range(len(all_labels)) if i not in test_indices]
 features_train_ga = all_features[train_indices]
 features_test_ga = all_features[test_indices]
