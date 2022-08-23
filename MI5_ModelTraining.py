@@ -51,24 +51,16 @@ recordingFolder = "C:\BCI_RECORDINGS\\16-08-22\TK\Sub318324886002"
 # All of the features before train-test partition
 all_features = sio.loadmat(recordingFolder + '\AllDataInFeatures.mat')['AllDataInFeatures']
 all_labels = sio.loadmat(recordingFolder + '\\trainingVec.mat')['trainingVec'].ravel()
-print(all_labels.shape)
-#split lables to train and tests
-n_samples = all_features.shape[0]  # The total number of samples in the dataset
-## Generate a random generator with a fixed seed
-rand_gen = np.random.RandomState(0)
-## Generating a shuffled vector of indices
-indices = np.arange(n_samples)
-rand_gen.shuffle(indices)
+test_indices = sio.loadmat(recordingFolder + '\\testIdx.mat')['testIdx'].ravel()
 
-## Split the indices into 75% train (full) / 25% test
-n_samples_train_full = int(n_samples * 0.75)
-features_train_ga = all_features[indices[:n_samples_train_full]]
-features_test_ga = all_features[indices[n_samples_train_full:]]
+train_indices = [i for i in range(len(all_labels)) if i not in test_indices]
+features_train_ga = all_features[train_indices]
+features_test_ga = all_features[test_indices]
 
-labels_train_ga = all_labels[indices[:n_samples_train_full]]
-labels_test_ga = all_labels[indices[n_samples_train_full:]]
+labels_train_ga = all_labels[train_indices]
+labels_test_ga = all_labels[test_indices]
 
-estimator = SVM(penalty='l2', loss='hinge', multi_class='ovr', C=2, max_iter=30_000)
+estimator = SVM(penalty='l2', loss='hinge', multi_class='ovr', C=0.1, max_iter=30_000)
 selector = GeneticSelectionCV(
     estimator,
     cv = 3,
