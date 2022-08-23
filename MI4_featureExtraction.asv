@@ -327,8 +327,7 @@ save(strcat(recordingFolder,'/AllDataInFeatures.mat'),'AllDataInFeatures');
 testIdx = randperm(length(idleIdx),num4test);                       % picking test index randomly
 testIdx = [idleIdx(testIdx) leftIdx(testIdx) rightIdx(testIdx)];    % taking the test index from each class
 testIdx = sort(testIdx);                                            % sort the trials
-save(strcat(recordingFolder, '/testIdx.mat'), 'testIdx')
-
+save(strcat(recordingFolder, '/test'))
 % split test data
 FeaturesTest = MIFeatures(testIdx,:,:);     % taking the test trials features from each class
 LabelTest = targetLabels(testIdx);          % taking the test trials labels from each class
