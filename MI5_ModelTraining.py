@@ -55,7 +55,8 @@ def cross_validation_on_model(model, k, features, labels):
     return avg_score, all_scores, all_models
 
 ######### TK PC #########
-recordingFolder = "C:\BCI_RECORDINGS\\16-08-22\TK\Sub318324886002"
+recordingFolder = "C:\BCI_RECORDINGS\\16-08-22\TK\Sub318324886001"
+recordingFolder_2 = "C:\BCI_RECORDINGS\\16-08-22\TK\Sub318324886002"
 # recordingFolder = "C:\BCI_RECORDINGS\\16-08-22\RL\Sub316353903002"
 
 ######### RL PC #########
@@ -66,6 +67,19 @@ recordingFolder = "C:\BCI_RECORDINGS\\16-08-22\TK\Sub318324886002"
 all_features = sio.loadmat(recordingFolder + '\AllDataInFeatures.mat')['AllDataInFeatures']
 all_labels = sio.loadmat(recordingFolder + '\\trainingVec.mat')['trainingVec'].ravel()
 test_indices = sio.loadmat(recordingFolder + '\\testIdx.mat')['testIdx'].ravel()
+nca_selected_idx = sio.loadmat(recordingFolder + '\\SelectedIdx.mat')['SelectedIdx'].ravel() - 1 
+if sys.argv[1] == '2':
+    all_features_2 = sio.loadmat(recordingFolder_2 + '\AllDataInFeatures.mat')['AllDataInFeatures']
+    all_labels_2 = sio.loadmat(recordingFolder_2 + '\\trainingVec.mat')['trainingVec'].ravel()
+    test_indices_2 = sio.loadmat(recordingFolder_2 + '\\testIdx.mat')['testIdx'].ravel()
+    nca_selected_idx_2 = sio.loadmat(recordingFolder_2 + '\\SelectedIdx.mat')['SelectedIdx'].ravel() - 1
+    
+    all_features = np.concatenate((all_features, all_features_2), axis=0)
+    all_labels = np.concatenate((all_labels, all_labels_2), axis=0)
+    test_indices = np.concatenate((test_indices, test_indices_2), axis=0)
+    nca_selected_idx = np.concatenate((nca_selected_idx[:5], nca_selected_idx_2[:5]), axis=0)
+
+print(all_features.shape, all_labels.shape, test_indices.shape, nca_selected_idx.shape, all_features[:,nca_selected_idx].shape)
 test_indices = test_indices - 1
 train_indices = [i for i in range(len(all_labels)) if i not in test_indices]
 
@@ -131,6 +145,19 @@ label_train = sio.loadmat(recordingFolder + '\LabelTrain.mat')['LabelTrain'].rav
 features_test = sio.loadmat(recordingFolder + '\FeaturesTest.mat')['FeaturesTest']
 label_test = sio.loadmat(recordingFolder + '\LabelTest.mat')['LabelTest'].ravel()
 
+if sys.argv[1] == '2':
+    features_train_2 = sio.loadmat(recordingFolder_2 + '\FeaturesTrainSelected.mat')['FeaturesTrainSelected']
+    label_train_2 = sio.loadmat(recordingFolder_2 + '\LabelTrain.mat')['LabelTrain'].ravel()
+
+    features_test_2 = sio.loadmat(recordingFolder_2 + '\FeaturesTest.mat')['FeaturesTest']
+    label_test_2 = sio.loadmat(recordingFolder_2 + '\LabelTest.mat')['LabelTest'].ravel()
+    
+    features_train = np.concatenate((features_train, features_train_2), axis=0)
+    label_train = np.concatenate((label_train, label_train_2), axis=0)
+    features_test = np.concatenate((features_test, features_test_2), axis=0)
+    label_test = np.concatenate((label_test, label_test_2), axis=0)
+
+
 
 #LDA analysis
 print("Running LDA analysis...")
@@ -142,7 +169,8 @@ hit_rate = sum(test_results == 0)/len(label_test)
 
 lda_row = ['LDA', hit_rate, lda_prediction, label_test, lda_prediction - label_test] 
 
-lda_cv_predictor = cross_validation_on_model(LDA(), 5, all_features, all_labels) 
+
+lda_cv_predictor = cross_validation_on_model(LDA(), 5, all_features[:,nca_selected_idx], all_labels) 
 hit_rate = lda_cv_predictor[0]
 
 lda_cv_row = ['LDA CV', hit_rate, [], label_test, []]
@@ -158,7 +186,7 @@ hit_rate = sum(test_results == 0)/len(label_test)
 qda_row = ['QDA', hit_rate, qda_prediction, label_test, qda_prediction - label_test] 
 
 
-qda_cv_predictor = cross_validation_on_model(QDA(), 5, all_features, all_labels)
+qda_cv_predictor = cross_validation_on_model(QDA(), 5, all_features[:,nca_selected_idx], all_labels)
 hit_rate = qda_cv_predictor[0]
 
 qda_cv_row = ['QDA CV', hit_rate, [], label_test, []]
@@ -198,7 +226,7 @@ hit_rate = sum(test_results == 0)/len(label_test)
 
 svm_row = ['SVM', hit_rate, svm_prediction, label_test, svm_prediction - label_test] 
 
-svm_cv_predictor = cross_validation_on_model(SVM(penalty='l2', loss='hinge', multi_class='ovr', C=2, max_iter=30_000), 5, all_features, all_labels)
+svm_cv_predictor = cross_validation_on_model(SVM(penalty='l2', loss='hinge', multi_class='ovr', C=2, max_iter=30_000), 5, all_features[:,nca_selected_idx], all_labels)
 hit_rate = svm_cv_predictor[0]
 
 svm_cv_row = ['SVM CV', hit_rate, [], label_test, []]
@@ -223,7 +251,7 @@ hit_rate = sum(test_results == 0)/len(label_test)
 
 rf_row = ['RF', hit_rate, rf_prediction, label_test, rf_prediction - label_test] 
 
-rf_cv_predictor = cross_validation_on_model(RF(criterion='entropy'), 5, all_features, all_labels)
+rf_cv_predictor = cross_validation_on_model(RF(criterion='entropy'), 5, all_features[:,nca_selected_idx], all_labels)
 hit_rate = rf_cv_predictor[0]
 
 rf_cv_row = ['RF CV', hit_rate, [], label_test, []]
@@ -238,7 +266,7 @@ hit_rate = sum(test_results == 0)/len(label_test)
 
 dt_row = ['DT', hit_rate, dt_prediction, label_test, dt_prediction - label_test] 
 
-dt_cv_predictor = cross_validation_on_model(DT(), 5, all_features, all_labels)
+dt_cv_predictor = cross_validation_on_model(DT(), 5, all_features[:,nca_selected_idx], all_labels)
 hit_rate = dt_cv_predictor[0]
 
 dt_cv_row = ['DT CV', hit_rate, [], label_test, []]
