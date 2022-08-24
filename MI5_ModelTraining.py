@@ -17,7 +17,20 @@ import sys
 # TODO: How to do the feature mentioned above.
 # TODO: Add genetic algorithm feature selection
 
+# CROSS-VALIDATION
 def cross_validation_on_model(model, k, features, labels):
+    """
+    cross_validation_on_model - given a model, runs a k-fold CV on him, and return a 
+    tuple (avg_score, all_scores, all_models)
+    :param - model: the model we want to CV
+    :param - k: k fold paramater
+    :param - features: the features to train the model on
+    :param - labels: the label to train the model on
+    :return: tuple (avg_score, all_scores, all_models)
+    avg_score - the mean score from all folda predictions
+    all_scores - all of the scores for each fold
+    all_models - all the models that has been trained on the cv session.
+    """
     kf = KFold(n_splits=k, shuffle=False)
 
     i = 1
@@ -37,16 +50,17 @@ def cross_validation_on_model(model, k, features, labels):
         all_models.append(model)
         i += 1
     
-    max_index = np.argmax(all_scores)
-    return all_models[max_index]
+    avg_score = np.average(all_scores)
+    print(f"All scores: {all_scores}")
+    return avg_score, all_scores, all_models
 
-# TK PC
-# recordingFolder = "C:\BCI_RECORDINGS\\16-08-22\TK\Sub318324886002"
+######### TK PC #########
+recordingFolder = "C:\BCI_RECORDINGS\\16-08-22\TK\Sub318324886002"
 # recordingFolder = "C:\BCI_RECORDINGS\\16-08-22\RL\Sub316353903002"
 
-# RL PC
+######### RL PC #########
 # recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\16-08-22\\TK\Sub318324886002'
-recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\16-08-22\\RL\Sub316353903002'
+# recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\16-08-22\\RL\Sub316353903002'
 
 # All of the features before train-test partition
 all_features = sio.loadmat(recordingFolder + '\AllDataInFeatures.mat')['AllDataInFeatures']
@@ -54,6 +68,9 @@ all_labels = sio.loadmat(recordingFolder + '\\trainingVec.mat')['trainingVec'].r
 test_indices = sio.loadmat(recordingFolder + '\\testIdx.mat')['testIdx'].ravel()
 test_indices = test_indices - 1
 train_indices = [i for i in range(len(all_labels)) if i not in test_indices]
+
+
+# GENETIC ALGORITHEM analysis
 features_train_ga = all_features[train_indices]
 features_test_ga = all_features[test_indices]
 
@@ -106,6 +123,7 @@ hit_rate = sum(test_results == 0)/len(labels_test_ga)
 
 lda_ga_row = ['LDA GA', hit_rate, lda_ga_prediction, labels_test_ga, lda_ga_prediction - labels_test_ga]
 
+
 # features from matlab neighborhood component analysis - takes 10 best features.
 features_train = sio.loadmat(recordingFolder + '\FeaturesTrainSelected.mat')['FeaturesTrainSelected']
 label_train = sio.loadmat(recordingFolder + '\LabelTrain.mat')['LabelTrain'].ravel()
@@ -124,12 +142,10 @@ hit_rate = sum(test_results == 0)/len(label_test)
 
 lda_row = ['LDA', hit_rate, lda_prediction, label_test, lda_prediction - label_test] 
 
-lda_cv_predictor = cross_validation_on_model(LDA(), 9, features_train, label_train)
-lda_cv_prediction = lda_cv_predictor.predict(features_test)
-test_results = lda_cv_prediction - label_test
-hit_rate = sum(test_results == 0)/len(label_test)
+lda_cv_predictor = cross_validation_on_model(LDA(), 5, all_features, all_labels) 
+hit_rate = lda_cv_predictor[0]
 
-lda_cv_row = ['LDA CV', hit_rate, lda_cv_prediction, label_test, lda_cv_prediction - label_test]
+lda_cv_row = ['LDA CV', hit_rate, [], label_test, []]
 
 #QDA analysis
 print("Running QDA analysis...")
@@ -142,12 +158,10 @@ hit_rate = sum(test_results == 0)/len(label_test)
 qda_row = ['QDA', hit_rate, qda_prediction, label_test, qda_prediction - label_test] 
 
 
-qda_cv_predictor = cross_validation_on_model(QDA(), 9, features_train, label_train)
-qda_cv_prediction = qda_cv_predictor.predict(features_test)
-test_results = qda_cv_prediction - label_test
-hit_rate = sum(test_results == 0)/len(label_test)
+qda_cv_predictor = cross_validation_on_model(QDA(), 5, all_features, all_labels)
+hit_rate = qda_cv_predictor[0]
 
-qda_cv_row = ['QDA CV', hit_rate, qda_cv_prediction, label_test, qda_cv_prediction - label_test]
+qda_cv_row = ['QDA CV', hit_rate, [], label_test, []]
 
 
 #KNN analysis
@@ -184,12 +198,10 @@ hit_rate = sum(test_results == 0)/len(label_test)
 
 svm_row = ['SVM', hit_rate, svm_prediction, label_test, svm_prediction - label_test] 
 
-svm_cv_predictor = cross_validation_on_model(SVM(penalty='l2', loss='hinge', multi_class='ovr', C=2, max_iter=30_000), 9, features_train, label_train)
-svm_cv_prediction = svm_cv_predictor.predict(features_test)
-test_results = svm_cv_prediction - label_test
-hit_rate = sum(test_results == 0)/len(label_test)
+svm_cv_predictor = cross_validation_on_model(SVM(penalty='l2', loss='hinge', multi_class='ovr', C=2, max_iter=30_000), 5, all_features, all_labels)
+hit_rate = svm_cv_predictor[0]
 
-svm_cv_row = ['SVM CV', hit_rate, svm_cv_prediction, label_test, svm_cv_prediction - label_test]
+svm_cv_row = ['SVM CV', hit_rate, [], label_test, []]
 
 #NB analysis
 print("Running NB analysis...")
@@ -211,12 +223,10 @@ hit_rate = sum(test_results == 0)/len(label_test)
 
 rf_row = ['RF', hit_rate, rf_prediction, label_test, rf_prediction - label_test] 
 
-rf_cv_predictor = cross_validation_on_model(RF(criterion='entropy'), 9, features_train, label_train)
-rf_cv_prediction = rf_cv_predictor.predict(features_test)
-test_results = rf_cv_prediction - label_test
-hit_rate = sum(test_results == 0)/len(label_test)
+rf_cv_predictor = cross_validation_on_model(RF(criterion='entropy'), 5, all_features, all_labels)
+hit_rate = rf_cv_predictor[0]
 
-rf_cv_row = ['RF CV', hit_rate, rf_cv_prediction, label_test, rf_cv_prediction - label_test]
+rf_cv_row = ['RF CV', hit_rate, [], label_test, []]
 
 #DT analysis
 print("Running DT analysis...")
@@ -228,12 +238,10 @@ hit_rate = sum(test_results == 0)/len(label_test)
 
 dt_row = ['DT', hit_rate, dt_prediction, label_test, dt_prediction - label_test] 
 
-dt_cv_predictor = cross_validation_on_model(DT(), 9, features_train, label_train)
-dt_cv_prediction = dt_cv_predictor.predict(features_test)
-test_results = dt_cv_prediction - label_test
-hit_rate = sum(test_results == 0)/len(label_test)
+dt_cv_predictor = cross_validation_on_model(DT(), 5, all_features, all_labels)
+hit_rate = dt_cv_predictor[0]
 
-dt_cv_row = ['DT CV', hit_rate, dt_cv_prediction, label_test, dt_cv_prediction - label_test]
+dt_cv_row = ['DT CV', hit_rate, [], label_test, []]
 
 #### ---------- Priniting table ---------- ####
 print('')
