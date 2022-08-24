@@ -26,11 +26,11 @@ highLim = 40;                               % filter data under 40 Hz
 lowLim = 0.5;                               % filter data above 0.5 Hz
 recordingFile = strcat(recordingFolder,'/EEG.xdf');
 
-% (1) Load subject data (assume XDF)
+%% (1) Load subject data (assume XDF)
 EEG = pop_loadxdf(recordingFile, 'streamtype', 'EEG', 'exclude_markerstreams', {});
 EEG.setname = 'MI_sub';
 
-% (2) Update channel names - each group should update this according to
+%% (2) Update channel names - each group should update this according to
 % their own openBCI setup.
 EEG_chans(1,:) = 'C03';
 EEG_chans(2,:) = 'C04';
@@ -60,15 +60,25 @@ EEG = eeg_checkset( EEG );
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%% (5) Add advanced artifact removal functions %%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% (6) LaPlacian filter for C03. Electrodes channels are hard coded (ex C03=1), make
+%% (6) LaPlacian filter for C03. Electrodes channels are hard coded (ex C03=1), make
 % sure to update if there is any change
 EEG = laplacian_filter(EEG, 1, [4,6,8,10]);
 
-% (7) LaPlacian filter for C04. Electrodes channels are hard coded (ex C04=2), make
+%% (7) LaPlacian filter for C04. Electrodes channels are hard coded (ex C04=2), make
 % sure to update if there is any change
-EEG = laplacian_filter(EEG, 2, [5,7,9,12]); % NOTE: the last electrode is 12 since we've swapped channels
+EEG = laplacian_filter(EEG, 2, [5,7,9,11]); % NOTE: the last electrode is 12 since we've swapped channels
 
-% Save the data into .mat variables on the computer
+% (8) ICA filter
+
+% Load channels locations
+chan_loc_filename = 'locations_electrodes.ced';
+eloc = readlocs(chan_loc_filename);
+EEG.chanlocs = eloc;
+
+
+EEG = clean_ica_components(EEG,0.7);
+
+%% Save the data into .mat variables on the computer
 EEG_data = EEG.data;            % Pre-processed EEG data
 EEG_event = EEG.event;          % Saved markers for sorting the data
 save(strcat(recordingFolder,'/','cleaned_sub.mat'),'EEG_data');

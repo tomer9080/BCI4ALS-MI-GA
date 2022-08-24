@@ -16,12 +16,12 @@ addpath('C:\Users\Latzres\Desktop\project\toolbox\liblsl-Matlab\bin'); % lab str
 
 % Subject and recording parameters:
 subID = input('Please enter subject ID/Name: ');    % prompt to enter subject ID or name
-% rootFolder = 'C:\Users\Latzres\Desktop\project\Recordings\23-08-22\TK';
+rootFolder = 'C:\Users\Latzres\Desktop\project\Recordings\24-08-22\TK';
+animation = 0;
+tk_flag = 1;
+% rootFolder = 'C:\Users\Latzres\Desktop\project\Recordings\24-08-22\RL';
 % animation = 1;
-% tk_flag = 1;
-rootFolder = 'C:\Users\Latzres\Desktop\project\Recordings\23-08-22\RL';
-animation = 1;
-tk_flag = 0;
+% tk_flag = 0;
 
 % define recording folder location
 % rootFolder = 'C:\Users\Latzres\Desktop\project\testing';
@@ -129,13 +129,13 @@ for trial = 1:totalTrials
         if(currentClass ~= 1)
             if (currentClass == 2)
                 if(tk_flag == 1)
-                    video = 'C:\Users\Latzres\Desktop\project\BCI-Matlab-Code\tk_left_front.mp4';
+                    video = 'C:\Users\Latzres\Desktop\project\BCI-Matlab-Code\tk_left.wmv';
                 else
                     video = 'C:\Users\Latzres\Desktop\project\BCI-Matlab-Code\left_hand.wmv';
                 end
             else
                 if(tk_flag == 1)
-                    video = 'C:\Users\Latzres\Desktop\project\BCI-Matlab-Code\tk_right_front.mp4';
+                    video = 'C:\Users\Latzres\Desktop\project\BCI-Matlab-Code\tk_right.wmv';
                 else
                     video = 'C:\Users\Latzres\Desktop\project\BCI-Matlab-Code\right_hand.wmv';
                 end                
@@ -148,8 +148,8 @@ for trial = 1:totalTrials
                 vidFrame = readFrame(videoHand);
                 if(tk_flag == 1)
                     %fix X and Y location!!!!!!!
-                    image(flip(vidFrame), 'XData', [0.5, 0.75],...
-                    'YData', [0.5, 0.75 * ...
+                    image(flip(vidFrame), 'XData', [0.25, 0.75],...
+                    'YData', [0.25, 0.75 * ...
                     size(vidFrame,1)./ size(vidFrame,2)])
                 else
                     image(flip(vidFrame), 'XData', [0.25, 0.75],...

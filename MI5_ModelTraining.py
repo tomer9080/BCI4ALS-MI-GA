@@ -45,8 +45,8 @@ def cross_validation_on_model(model, k, features, labels):
 # recordingFolder = "C:\BCI_RECORDINGS\\16-08-22\RL\Sub316353903002"
 
 # RL PC
-# recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\23-08-22\\TK\Sub318324886002'
-recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\23-08-22\\RL\Sub316353903001'
+# recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\16-08-22\\TK\Sub318324886002'
+recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\16-08-22\\RL\Sub316353903002'
 
 # All of the features before train-test partition
 all_features = sio.loadmat(recordingFolder + '\AllDataInFeatures.mat')['AllDataInFeatures']
