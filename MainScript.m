@@ -23,10 +23,10 @@ addpath '.\FeatureExtraction\'
 
 % recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\30-08-22\TK\Sub318324886002';
 % recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\30-08-22\RL\Sub316353903003';
-recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\16-08-22\TT\Sub20220816004';
+% recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\16-08-22\TT\Sub20220816004';
 
 
-% recordingFolder = 'C:\BCI_RECORDINGS\16-08-22\TK\Sub318324886001';
+recordingFolder = 'C:\BCI_RECORDINGS\15-08-22\TK\Sub318324886002';
 % recordingFolder = 'C:\BCI_RECORDINGS\22-08-22\RL\Sub316353903001';
 
 %% Run pre-processing pipeline on recorded data
