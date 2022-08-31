@@ -39,7 +39,7 @@ sns.regplot(x=x_axis, y=sample_left.F1, color='magenta', marker='+')
 
 # Legend, title and labels.
 plt.legend(labels=['Right', 'Left'])
-plt.title('Relationship between z_score and and num_trail', size=24)
+plt.title('Relationship between z_score and and num_trial', size=24)
 plt.xlabel('num_trial', size=18)
 plt.ylabel('z_score', size=18)
 plt.show()

@@ -18,6 +18,9 @@ import sys
 # TODO: How to do the feature mentioned above.
 # TODO: Add genetic algorithm feature selection
 
+features_names_list = ['BP_ALPHA', 'BP_BETA', 'BP_GAMMA', 'BP_DELTA', 'BP_THETA', 'RTP', 'SPEC_MOM', 'SPEC_EDGE', 'SPEC_ENT', 'SLOPE', 'INTERCEPT', 'MEAN_FREQ', 'OCC_BAND', 'POWER_BAND', 'WLT_ENT', 'KURT', 'SKEW', 'VAR', 'STD', 'LOG_ENE_ENT']
+headers = np.array(['CSP1', 'CSP2', 'CSP3'] + [f'E{i}_{feature}' for i in range(1,12) for feature in features_names_list])
+
 # CROSS-VALIDATION
 def cross_validation_on_model(model, k, features, labels):
     """
@@ -56,8 +59,8 @@ def cross_validation_on_model(model, k, features, labels):
     return avg_score, all_scores, all_models
 
 ######### TK PC #########
-recordingFolder = "C:\BCI_RECORDINGS\\29-08-22\TK\Sub318324886001"
-recordingFolder_2 = "C:\BCI_RECORDINGS\\29-08-22\TK\Sub318324886002"
+recordingFolder = "C:\BCI_RECORDINGS\\16-08-22\TK\Sub318324886001"
+recordingFolder_2 = "C:\BCI_RECORDINGS\\16-08-22\TK\Sub318324886002"
 # recordingFolder = "C:\BCI_RECORDINGS\\16-08-22\RL\Sub316353903002"
 
 ######### RL PC #########
@@ -72,6 +75,8 @@ all_features = sio.loadmat(recordingFolder + '\AllDataInFeatures.mat')['AllDataI
 all_labels = sio.loadmat(recordingFolder + '\\trainingVec.mat')['trainingVec'].ravel()
 test_indices = sio.loadmat(recordingFolder + '\\testIdx.mat')['testIdx'].ravel()
 nca_selected_idx = sio.loadmat(recordingFolder + '\\SelectedIdx.mat')['SelectedIdx'].ravel() - 1 
+print(nca_selected_idx)
+print(headers[nca_selected_idx])
 if sys.argv[1] == '2':
     all_features_2 = sio.loadmat(recordingFolder_2 + '\AllDataInFeatures.mat')['AllDataInFeatures']
     all_labels_2 = sio.loadmat(recordingFolder_2 + '\\trainingVec.mat')['trainingVec'].ravel()
@@ -83,12 +88,12 @@ if sys.argv[1] == '2':
     test_indices = np.concatenate((test_indices, test_indices_2 + len(test_indices)), axis=0)
     
     nca_selected_idx = np.concatenate((nca_selected_idx[:5], nca_selected_idx_2[:5]), axis=0)
+    print(f"concatenated headers: {headers[nca_selected_idx]}")
 
 nca = NCA(n_components=10)
 nca_all_features = nca.fit_transform(all_features, all_labels)
 
-
-
+print("shapes: ")
 print(all_features.shape, all_labels.shape, test_indices.shape, nca_selected_idx.shape, all_features[:,nca_selected_idx].shape)
 test_indices = test_indices - 1
 train_indices = [i for i in range(len(all_labels)) if i not in test_indices]
@@ -113,7 +118,7 @@ selector = GeneticSelectionCV(
     estimator,
     cv = 3,
     scoring = "accuracy",
-    max_features = 7,
+    max_features = 10,
     n_population = 153,
     crossover_proba = 0.5,
     mutation_proba = 0.2,
@@ -124,7 +129,7 @@ selector = GeneticSelectionCV(
 )
 
 selector = selector.fit(features_train_ga, labels_train_ga)
-
+print(f"SVM GA FEATURES: {headers[selector.support_]}")
 svm_ga_prediction = selector.predict(features_test_ga)
 test_results = svm_ga_prediction - labels_test_ga
 hit_rate = sum(test_results == 0)/len(labels_test_ga)
@@ -136,7 +141,7 @@ selector = GeneticSelectionCV(
     estimator,
     cv = 3,
     scoring = "accuracy",
-    max_features = 7,
+    max_features = 10,
     n_population = 153,
     crossover_proba = 0.5,
     mutation_proba = 0.2,
@@ -147,7 +152,7 @@ selector = GeneticSelectionCV(
 )
 
 selector = selector.fit(features_train_ga, labels_train_ga)
-
+print(f"LDA GA FEATURES: {headers[selector.support_]}")
 lda_ga_prediction = selector.predict(features_test_ga)
 test_results = lda_ga_prediction - labels_test_ga
 hit_rate = sum(test_results == 0)/len(labels_test_ga)
@@ -370,7 +375,7 @@ dt_nca_row = ['DT NCA', hit_rate, dt_prediction, labels_test_nca, dt_prediction 
 
 #### ---------- Priniting table ---------- ####
 print('')
-headers = ["Classifier", "Success Rate", "Classifier Prediction", "Test Labels", "Sub Labels"]
+table_headers = ["Classifier", "Success Rate", "Classifier Prediction", "Test Labels", "Sub Labels"]
 all_rows = [
     lda_row,
     lda_cv_row,
@@ -396,4 +401,4 @@ all_rows = [
     dt_cv_row,
     dt_nca_row
 ]
-print(tabulate(all_rows, headers=headers))
+print(tabulate(all_rows, headers=table_headers))
