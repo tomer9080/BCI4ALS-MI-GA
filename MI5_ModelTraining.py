@@ -55,8 +55,8 @@ def cross_validation_on_model(model, k, features, labels):
     return avg_score, all_scores, all_models
 
 ######### TK PC #########
-# recordingFolder = "C:\BCI_RECORDINGS\\29-08-22\TK\Sub318324886001"
-# recordingFolder_2 = "C:\BCI_RECORDINGS\\16-08-22\TK\Sub318324886002"
+recordingFolder = "C:\BCI_RECORDINGS\\29-08-22\TK\Sub318324886001"
+recordingFolder_2 = "C:\BCI_RECORDINGS\\16-08-22\TK\Sub318324886002"
 # recordingFolder = "C:\BCI_RECORDINGS\\16-08-22\RL\Sub316353903002"
 
 ######### RL PC #########
