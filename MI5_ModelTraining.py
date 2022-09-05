@@ -58,6 +58,25 @@ def cross_validation_on_model(model, k, features, labels):
     print(f"All scores: {all_scores}")
     return avg_score, all_scores, all_models
 
+
+def classify_results(model, model_name, features_train, label_train, features_test, label_test, cv=False, Kfold=5):
+    print(f"Running {model_name} analysis...")
+    model.fit(features_train, label_train)
+    prediction = model.predict(features_test)
+    test_results = prediction - label_test
+    hit_rate = sum(test_results == 0)/len(label_test)
+
+    table_row = [model_name, hit_rate, prediction, label_test, prediction - label_test] 
+
+    table_cv_row = []
+    if cv: # run cv if flag is up
+        cv_predictor = cross_validation_on_model(model, Kfold, all_features[:,nca_selected_idx], all_labels) 
+        hit_rate = cv_predictor[0]
+        table_cv_row = [f'{model_name} CV', hit_rate, [], label_test, []]        
+
+    return table_row, table_cv_row
+
+
 ######### TK PC #########
 recordingFolder = "C:\BCI_RECORDINGS\\16-08-22\TK\Sub318324886001"
 recordingFolder_2 = "C:\BCI_RECORDINGS\\16-08-22\TK\Sub318324886002"
@@ -180,225 +199,44 @@ if sys.argv[1] == '2':
     label_test = np.concatenate((label_test, label_test_2), axis=0)
 
 
+##### Running Models Classifications #####
+models = [
+    {'name': 'LDA', 'model': LDA(), 'cv': True},
+    {'name': 'LDA NCA', 'model': LDA(), 'cv': True},
+    {'name': 'QDA', 'model': QDA(), 'cv': True},
+    {'name': 'QDA NCA', 'model': QDA(), 'cv': True},
+    {'name': 'KNN-5', 'model': KNN(5), 'cv': False},
+    {'name': 'KNN-5 NCA', 'model': KNN(5), 'cv': False},
+    {'name': 'KNN-7', 'model': KNN(7), 'cv': False},
+    {'name': 'KNN-7 NCA', 'model': KNN(7), 'cv': False},
+    {'name': 'SVM', 'model': SVM(penalty='l2', loss='hinge', multi_class='ovr', C=2, max_iter=30_000), 'cv': True},
+    {'name': 'SVM NCA', 'model': SVM(penalty='l2', loss='hinge', multi_class='ovr', C=2, max_iter=30_000), 'cv': True},
+    {'name': 'NB', 'model': NB(), 'cv': False},
+    {'name': 'NB NCA', 'model': NB(), 'cv': False},
+    {'name': 'RF', 'model': RF(criterion='entropy'), 'cv': True},
+    {'name': 'RF NCA', 'model': RF(criterion='entropy'), 'cv': True},
+    {'name': 'DT', 'model': DT(), 'cv': True},
+    {'name': 'DT NCA', 'model': DT(), 'cv': True},
+]
 
-#LDA analysis
-print("Running LDA analysis...")
-lda_predictor = LDA()
-lda_predictor.fit(features_train, label_train)
-lda_prediction = lda_predictor.predict(features_test)
-test_results = lda_prediction - label_test
-hit_rate = sum(test_results == 0)/len(label_test)
+all_rows = []
 
-lda_row = ['LDA', hit_rate, lda_prediction, label_test, lda_prediction - label_test] 
+for model in models:
+    is_nca = 'NCA' in model['name']
+    is_ga = 'GA' in model['name']  # preparing ground
+    f_train = features_train if not is_nca else train_features_nca
+    f_test = features_test if not is_nca else test_features_nca
+    l_train = label_train if not is_nca else labels_train_nca
+    l_test = label_test if not is_nca else labels_test_nca
+    row, cv_row = classify_results(model['model'], model['name'], features_train=f_train, features_test=f_test, label_train=l_train, label_test=l_test, cv=model['cv'])
+    all_rows.append(row)
+    if cv_row != []:
+        all_rows.append(cv_row)
 
-# LDA CV
-lda_cv_predictor = cross_validation_on_model(LDA(), 5, all_features[:,nca_selected_idx], all_labels) 
-hit_rate = lda_cv_predictor[0]
-
-lda_cv_row = ['LDA CV', hit_rate, [], label_test, []]
-
-#LDA NCA
-print("Running LDA NCA analysis...")
-lda_nca_predictor = LDA()
-lda_nca_predictor.fit(train_features_nca, labels_train_nca)
-lda_nca_prediction = lda_nca_predictor.predict(test_features_nca)
-test_results_nca = lda_nca_prediction - labels_test_nca
-hit_rate_nca = sum(test_results_nca == 0)/len(labels_test_nca)
-
-lda_nca_row = ['LDA_NCA', hit_rate_nca, lda_nca_prediction, label_test, lda_nca_prediction - labels_test_nca] 
-
-
-#QDA analysis
-print("Running QDA analysis...")
-qda_predictor = QDA()
-qda_predictor.fit(features_train, label_train)
-qda_prediction = qda_predictor.predict(features_test)
-test_results = qda_prediction - label_test
-hit_rate = sum(test_results == 0)/len(label_test)
-
-qda_row = ['QDA', hit_rate, qda_prediction, label_test, qda_prediction - label_test] 
-
-#QDA CV analysis
-qda_cv_predictor = cross_validation_on_model(QDA(), 5, all_features[:,nca_selected_idx], all_labels)
-hit_rate = qda_cv_predictor[0]
-
-qda_cv_row = ['QDA CV', hit_rate, [], label_test, []]
-
-#QDA NCA
-print("Running QDA NCA analysis...")
-qda_nca_predictor = QDA()
-qda_nca_predictor.fit(train_features_nca, labels_train_nca)
-qda_nca_prediction = qda_nca_predictor.predict(test_features_nca)
-test_results_nca = qda_nca_prediction - labels_test_nca
-hit_rate_nca = sum(test_results_nca == 0)/len(labels_test_nca)
-
-qda_nca_row = ['QDA_NCA', hit_rate_nca, qda_nca_prediction, label_test, qda_nca_prediction - labels_test_nca] 
-
-#KNN analysis
-
-#KNN-5
-print("Running KNN-5 analysis...")
-knn_predictor = KNN(5)
-knn_predictor.fit(features_train, label_train)
-knn_prediction = knn_predictor.predict(features_test)
-test_results = knn_prediction - label_test
-hit_rate = sum(test_results == 0)/len(label_test)
-
-knn_5_row = ['KNN-5', hit_rate, knn_prediction, label_test, knn_prediction - label_test]
-
-#KNN-5 NCA
-print("Running LDA NCA analysis...")
-knn5_nca_predictor = KNN(5)
-knn5_nca_predictor.fit(train_features_nca, labels_train_nca)
-knn5_nca_prediction = knn5_nca_predictor.predict(test_features_nca)
-test_results_nca = knn5_nca_prediction - labels_test_nca
-hit_rate_nca = sum(test_results_nca == 0)/len(labels_test_nca)
-
-knn5_nca_row = ['KNN5_NCA', hit_rate_nca, knn5_nca_prediction, label_test, knn5_nca_prediction - labels_test_nca] 
-
-
-#KNN-7
-print("Running KNN-7 analysis...")
-knn_predictor = KNN(7)
-knn_predictor.fit(features_train, label_train)
-knn_prediction = knn_predictor.predict(features_test)
-test_results = knn_prediction - label_test
-hit_rate = sum(test_results == 0)/len(label_test)
-
-knn_7_row = ['KNN-7', hit_rate, knn_prediction, label_test, knn_prediction - label_test] 
-
-#KNN-7 NCA
-print("Running LDA NCA analysis...")
-knn7_nca_predictor = KNN(7)
-knn7_nca_predictor.fit(train_features_nca, labels_train_nca)
-knn7_nca_prediction = knn7_nca_predictor.predict(test_features_nca)
-test_results_nca = knn7_nca_prediction - labels_test_nca
-hit_rate_nca = sum(test_results_nca == 0)/len(labels_test_nca)
-
-knn7_nca_row = ['KNN7_NCA', hit_rate_nca, knn7_nca_prediction, label_test, knn7_nca_prediction - labels_test_nca] 
-
-#SVM analysis
-# Need to check convergence problem.
-# Need to play with params.
-print("Running SVM analysis...")
-svm_predictor = SVM(penalty='l2', loss='hinge', multi_class='ovr', C=2, max_iter=30_000)
-svm_predictor.fit(features_train, label_train)
-svm_prediction = svm_predictor.predict(features_test)
-test_results = svm_prediction - label_test
-hit_rate = sum(test_results == 0)/len(label_test)
-
-svm_row = ['SVM', hit_rate, svm_prediction, label_test, svm_prediction - label_test] 
-
-# SVM cv
-svm_cv_predictor = cross_validation_on_model(SVM(penalty='l2', loss='hinge', multi_class='ovr', C=2, max_iter=30_000), 5, all_features[:,nca_selected_idx], all_labels)
-hit_rate = svm_cv_predictor[0]
-
-svm_cv_row = ['SVM CV', hit_rate, [], label_test, []]
-
-# SVM nca python
-svm_predictor.fit(train_features_nca, labels_train_nca)
-svm_prediction = svm_predictor.predict(test_features_nca)
-test_results = svm_prediction - labels_test_nca
-hit_rate = sum(test_results == 0)/len(labels_test_nca)
-
-svm_nca_row = ['SVM NCA', hit_rate, svm_prediction, labels_test_nca, svm_prediction - labels_test_nca] 
-
-
-#NB analysis
-print("Running NB analysis...")
-nb_predictor = NB()
-nb_predictor.fit(features_train, label_train)
-nb_prediction = nb_predictor.predict(features_test)
-test_results = nb_prediction - label_test
-hit_rate = sum(test_results == 0)/len(label_test)
-
-nb_row = ['NB', hit_rate, nb_prediction, label_test, nb_prediction - label_test] 
-
-
-# NB nca python
-nb_predictor.fit(train_features_nca, labels_train_nca)
-nb_prediction = nb_predictor.predict(test_features_nca)
-test_results = nb_prediction - labels_test_nca
-hit_rate = sum(test_results == 0)/len(labels_test_nca)
-
-nb_nca_row = ['NB NCA', hit_rate, nb_prediction, labels_test_nca, nb_prediction - labels_test_nca] 
-
-
-#RF analysis
-print("Running RF analysis...")
-rf_predictor = RF(criterion='entropy')
-rf_predictor.fit(features_train, label_train)
-rf_prediction = rf_predictor.predict(features_test)
-test_results = rf_prediction - label_test
-hit_rate = sum(test_results == 0)/len(label_test)
-
-rf_row = ['RF', hit_rate, rf_prediction, label_test, rf_prediction - label_test] 
-
-#RF cv
-rf_cv_predictor = cross_validation_on_model(RF(criterion='entropy'), 5, all_features[:,nca_selected_idx], all_labels)
-hit_rate = rf_cv_predictor[0]
-
-rf_cv_row = ['RF CV', hit_rate, [], label_test, []]
-
-# RF nca python
-rf_predictor.fit(train_features_nca, labels_train_nca)
-rf_prediction = rf_predictor.predict(test_features_nca)
-test_results = rf_prediction - labels_test_nca
-hit_rate = sum(test_results == 0)/len(labels_test_nca)
-
-rf_nca_row = ['RF NCA', hit_rate, rf_prediction, labels_test_nca, rf_prediction - labels_test_nca] 
-
-
-#DT analysis
-print("Running DT analysis...")
-dt_predictor = DT()
-dt_predictor.fit(features_train, label_train)
-dt_prediction = dt_predictor.predict(features_test)
-test_results = dt_prediction - label_test
-hit_rate = sum(test_results == 0)/len(label_test)
-
-dt_row = ['DT', hit_rate, dt_prediction, label_test, dt_prediction - label_test] 
-
-# DT cv
-dt_cv_predictor = cross_validation_on_model(DT(), 5, all_features[:,nca_selected_idx], all_labels)
-hit_rate = dt_cv_predictor[0]
-
-dt_cv_row = ['DT CV', hit_rate, [], label_test, []]
-
-# DT nca python
-dt_predictor.fit(train_features_nca, labels_train_nca)
-dt_prediction = dt_predictor.predict(test_features_nca)
-test_results = dt_prediction - labels_test_nca
-hit_rate = sum(test_results == 0)/len(labels_test_nca)
-
-dt_nca_row = ['DT NCA', hit_rate, dt_prediction, labels_test_nca, dt_prediction - labels_test_nca] 
+all_rows.append(svm_ga_row)
+all_rows.append(lda_ga_row)
 
 #### ---------- Priniting table ---------- ####
 print('')
 table_headers = ["Classifier", "Success Rate", "Classifier Prediction", "Test Labels", "Sub Labels"]
-all_rows = [
-    lda_row,
-    lda_cv_row,
-    lda_ga_row,
-    lda_nca_row,
-    qda_row,
-    qda_cv_row,
-    qda_nca_row,
-    knn_5_row,
-    knn5_nca_row,
-    knn_7_row,
-    knn7_nca_row,
-    svm_row,
-    svm_cv_row,
-    svm_ga_row,
-    svm_nca_row,
-    nb_row,
-    nb_nca_row,
-    rf_row,
-    rf_cv_row,
-    rf_nca_row,
-    dt_row,
-    dt_cv_row,
-    dt_nca_row
-]
 print(tabulate(all_rows, headers=table_headers))
