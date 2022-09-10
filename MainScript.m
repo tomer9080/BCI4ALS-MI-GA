@@ -1,3 +1,5 @@
+function[] = MainScript() %need to change so that recording folder is an input
+
 %% MI Offline Main Script
 % This script runs all the steps in order. Training -- Pre-processing --
 % Data segmentation -- Feature extraction -- Model training.
@@ -21,12 +23,12 @@ addpath '.\FeatureExtraction\'
 %pause;
 
 
-% recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\30-08-22\TK\Sub318324886002';
-% recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\30-08-22\RL\Sub316353903003';
+% recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\07-09-22\TK\Sub318324886002';
+recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\07-09-22\RL\Sub316353903004';
 % recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\16-08-22\TT\Sub20220816004';
 
 
-recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\yonatan\Sub313552119'
+% recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\yonatan\Sub313552119'
 
 % recordingFolder = 'C:\BCI_RECORDINGS\15-08-22\TK\Sub318324886002';
 % recordingFolder = 'C:\BCI_RECORDINGS\22-08-22\RL\Sub316353903001';

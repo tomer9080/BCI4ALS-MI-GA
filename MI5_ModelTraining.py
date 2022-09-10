@@ -59,7 +59,7 @@ def cross_validation_on_model(model, k, features, labels):
     return avg_score, all_scores, all_models
 
 
-def classify_results(model, model_name, features_train, label_train, features_test, label_test, cv=False, Kfold=5):
+def classify_results(model, model_name, features_train, label_train, features_test, label_test, nca_idx, cv=False, Kfold=5):
     print(f"Running {model_name} analysis...")
     model.fit(features_train, label_train)
     prediction = model.predict(features_test)
@@ -70,7 +70,7 @@ def classify_results(model, model_name, features_train, label_train, features_te
 
     table_cv_row = []
     if cv: # run cv if flag is up
-        cv_predictor = cross_validation_on_model(model, Kfold, all_features[:,nca_selected_idx], all_labels) 
+        cv_predictor = cross_validation_on_model(model, Kfold, all_features[:,nca_idx], all_labels) 
         hit_rate = cv_predictor[0]
         table_cv_row = [f'{model_name} CV', hit_rate, [], label_test, []]        
 
@@ -78,12 +78,12 @@ def classify_results(model, model_name, features_train, label_train, features_te
 
 
 ######### TK PC #########
-recordingFolder = "C:\BCI_RECORDINGS\\16-08-22\TK\Sub318324886001"
-recordingFolder_2 = "C:\BCI_RECORDINGS\\16-08-22\TK\Sub318324886002"
+# recordingFolder = "C:\BCI_RECORDINGS\\16-08-22\TK\Sub318324886001"
+# recordingFolder_2 = "C:\BCI_RECORDINGS\\16-08-22\TK\Sub318324886002"
 # recordingFolder = "C:\BCI_RECORDINGS\\16-08-22\RL\Sub316353903002"
 
 ######### RL PC #########
-# recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\31-08-22\\TK\Sub318324886002'
+recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\31-08-22\\TK\Sub318324886002'
 # recordingFolder_2 = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\29-08-22\\TK\Sub318324886002'
 # recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\31-08-22\\RL\Sub316353903004'
 # recordingFolder_2 = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\30-08-22\\RL\Sub316353903003'
@@ -228,7 +228,7 @@ for model in models:
     f_test = features_test if not is_nca else test_features_nca
     l_train = label_train if not is_nca else labels_train_nca
     l_test = label_test if not is_nca else labels_test_nca
-    row, cv_row = classify_results(model['model'], model['name'], features_train=f_train, features_test=f_test, label_train=l_train, label_test=l_test, cv=model['cv'])
+    row, cv_row = classify_results(model['model'], model['name'], features_train=f_train, features_test=f_test, label_train=l_train, nca_idx=nca_selected_idx, label_test=l_test, cv=model['cv'])
     all_rows.append(row)
     if cv_row != []:
         all_rows.append(cv_row)
