@@ -65,7 +65,7 @@ def reg_plot_easy(x, y1, y2, xlabel='x axis', ylabel='y axis', title='easy plot'
     plt.show()
 
 def plot_actter_and_lin_reg(x, y ,model):
-    x_fit = np.linspace(1, 360, 360).reshape(-1, 1)
+    x_fit = np.linspace(1, 540, 540).reshape(-1, 1)
     y_fit = model.predict(x_fit)
     plt.scatter(x, y)
     plot_easy(x_fit, y_fit)
@@ -103,7 +103,7 @@ if __name__ == "__main__":
     features_values_dict_r = {key: [] for key in headers}
     features_values_dict_l = {key: [] for key in headers}
     
-    x_axis = [i + 1 for i in range(360)]
+    x_axis = [i + 1 for i in range(540)]
     x = np.array(x_axis).reshape(-1, 1)
 
     all_regs_r = []
@@ -156,8 +156,13 @@ if __name__ == "__main__":
         row = [headers[feature], reg_l.score(x, y_l), reg_r.score(x, y_r), avg_mean_left, var_mean_left, avg_mean_right, var_mean_right, avg_var_left, var_var_left, avg_var_right, var_var_right]
         feature_row.append(row)
 
-    # reg_plot_easy(x=x_axis, y1=features_values_dict_r['CSP1'], y2=features_values_dict_l['CSP1'], legend=['Right', 'Left'],  xlabel='Num of Trial', ylabel='CSP1 value', title='R vs L values of CSP1')
-    # plot_easy(x=x_axis, y1=features_values_dict_r['CSP1'], xlabel='Num of Trial', ylabel='CSP1 value', title='CSP1 value over total trials (right)')
+    reg_plot_easy(x=x_axis, y1=features_values_dict_r['CSP1'], y2=features_values_dict_l['CSP1'], legend=['Right', 'Left'],  xlabel='Num of Trial', ylabel='CSP1 value', title='R vs L values of CSP1')
+    plot_easy(x=x_axis, y1=features_values_dict_r['CSP1'], xlabel='Num of Trial', ylabel='CSP1 value', title='CSP1 value over total trials (right)')
+    plot_easy(x=x_axis, y1=features_values_dict_l['CSP1'], xlabel='Num of Trial', ylabel='CSP1 value', title='CSP1 value over total trials (left)')
+
+    reg_plot_easy(x=x_axis, y1=features_values_dict_r['CSP2'], y2=features_values_dict_l['CSP2'], legend=['Right', 'Left'],  xlabel='Num of Trial', ylabel='CSP1 value', title='R vs L values of CSP1')
+    plot_easy(x=x_axis, y1=features_values_dict_r['CSP2'], xlabel='Num of Trial', ylabel='CSP2 value', title='CSP2 value over total trials (right)')
+    plot_easy(x=x_axis, y1=features_values_dict_l['CSP2'], xlabel='Num of Trial', ylabel='CSP2 value', title='CSP2 value over total trials (left)')
 
     table_headers = ['Feature', 'Score (R^2) Left', 'Score (R^2) Right', 'Mean-Mean left', 'Var-Mean left', 'Mean-Mean right', 'Var-Mean right', 'Mean-Var left', 'Var-Var left', 'Mean-Var right', 'Var-Var right']
     print(tabulate(feature_row, headers=table_headers))
