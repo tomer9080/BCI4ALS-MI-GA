@@ -23,8 +23,8 @@ addpath '.\FeatureExtraction\'
 %pause;
 
 
-% recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\07-09-22\TK\Sub318324886002';
-recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\07-09-22\RL\Sub316353903004';
+% recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\13-09-22\TK\Sub318324886002';
+recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\13-09-22\RL\Sub316353903003';
 % recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\16-08-22\TT\Sub20220816004';
 
 

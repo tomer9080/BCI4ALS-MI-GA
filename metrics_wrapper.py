@@ -6,13 +6,16 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.linear_model import LinearRegression
 from tabulate import tabulate
+import sys
 
 classes_map = {'idle': 1, 'left': 2, 'right': 3}
 features_names_list = ['BP_ALPHA', 'BP_BETA', 'BP_GAMMA', 'BP_DELTA', 'BP_THETA', 'RTP', 'SPEC_MOM', 'SPEC_EDGE', 'SPEC_ENT', 'SLOPE', 'INTERCEPT', 'MEAN_FREQ', 'OCC_BAND', 'POWER_BAND', 'WLT_ENT', 'KURT', 'SKEW', 'VAR', 'STD', 'LOG_ENE_ENT']
 headers = ['CSP1', 'CSP2', 'CSP3'] + [f'E{i}_{feature}' for i in range(1,12) for feature in features_names_list]
 
+
+
 def get_paths():
-    paths = open('paths_TK.txt', 'r')
+    paths = open(sys.argv[1], 'r')
     list_of_paths = [line.strip() for line in paths.readlines()]
     return list_of_paths
 
