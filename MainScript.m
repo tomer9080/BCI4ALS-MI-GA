@@ -1,4 +1,4 @@
-function[] = MainScript() %need to change so that recording folder is an input
+function[] = MainScript(recordingFolder) %need to change so that recording folder is an input
 
 %% MI Offline Main Script
 % This script runs all the steps in order. Training -- Pre-processing --
@@ -14,7 +14,7 @@ function[] = MainScript() %need to change so that recording folder is an input
 % so on - but please cite properly if published.
 
 
-clc; clear; close all;
+clc; close all;
 addpath 'C:\BCIToolBox\eeglab2021.1'
 addpath '.\FeatureExtraction\'
 %% Run stimulation and record EEG data
@@ -24,13 +24,13 @@ addpath '.\FeatureExtraction\'
 
 
 % recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\13-09-22\TK\Sub318324886002';
-recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\13-09-22\RL\Sub316353903003';
+% recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\13-09-22\RL\Sub316353903003';
 % recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\16-08-22\TT\Sub20220816004';
 
 
 % recordingFolder = 'C:\Users\Latzres\Desktop\project\Recordings\yonatan\Sub313552119'
 
-% recordingFolder = 'C:\BCI_RECORDINGS\15-08-22\TK\Sub318324886002';
+% recordingFolder = 'C:\BCI_RECORDINGS\16-08-22\TK\Sub318324886001';
 % recordingFolder = 'C:\BCI_RECORDINGS\22-08-22\RL\Sub316353903001';
 
 %% Run pre-processing pipeline on recorded data

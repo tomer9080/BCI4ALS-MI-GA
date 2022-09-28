@@ -85,158 +85,167 @@ def classify_results(model, model_name, features_train, label_train, features_te
 ######### RL PC #########
 # recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\12-09-22\\TK\Sub318324886001'
 # recordingFolder_2 = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\29-08-22\\TK\Sub318324886002'
-recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\12-09-22\\RL\Sub316353903003'
+# recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\12-09-22\\RL\Sub316353903003'
 # recordingFolder_2 = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\13-09-22\\RL\Sub316353903002'
 # recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\16-08-22\\TT\Sub20220816003'
 
-# All of the features before train-test partition
-all_features = sio.loadmat(recordingFolder + '\AllDataInFeatures.mat')['AllDataInFeatures']
-all_labels = sio.loadmat(recordingFolder + '\\trainingVec.mat')['trainingVec'].ravel()
-test_indices = sio.loadmat(recordingFolder + '\\testIdx.mat')['testIdx'].ravel()
-nca_selected_idx = sio.loadmat(recordingFolder + '\\SelectedIdx.mat')['SelectedIdx'].ravel() - 1 
-print(nca_selected_idx)
-print(headers[nca_selected_idx])
-if sys.argv[1] == '2':
-    all_features_2 = sio.loadmat(recordingFolder_2 + '\AllDataInFeatures.mat')['AllDataInFeatures']
-    all_labels_2 = sio.loadmat(recordingFolder_2 + '\\trainingVec.mat')['trainingVec'].ravel()
-    test_indices_2 = sio.loadmat(recordingFolder_2 + '\\testIdx.mat')['testIdx'].ravel()
-    nca_selected_idx_2 = sio.loadmat(recordingFolder_2 + '\\SelectedIdx.mat')['SelectedIdx'].ravel() - 1
-    
-    all_features = np.concatenate((all_features, all_features_2), axis=0)
-    all_labels = np.concatenate((all_labels, all_labels_2), axis=0)
-    test_indices = np.concatenate((test_indices, test_indices_2 + len(test_indices)), axis=0)
-    
-    nca_selected_idx = np.concatenate((nca_selected_idx[:5], nca_selected_idx_2[:5]), axis=0)
-    print(f"concatenated headers: {headers[nca_selected_idx]}")
+def classify(recordingFolder=sys.argv[1], recordingFolder_2=''):
 
-nca = NCA(n_components=10)
-nca_all_features = nca.fit_transform(all_features, all_labels)
+    # All of the features before train-test partition
+    global all_features
+    all_features = sio.loadmat(recordingFolder + '\AllDataInFeatures.mat')['AllDataInFeatures']
+    global all_labels
+    all_labels = sio.loadmat(recordingFolder + '\\trainingVec.mat')['trainingVec'].ravel()
+    test_indices = sio.loadmat(recordingFolder + '\\testIdx.mat')['testIdx'].ravel()
+    nca_selected_idx = sio.loadmat(recordingFolder + '\\SelectedIdx.mat')['SelectedIdx'].ravel() - 1 
+    print(nca_selected_idx)
+    print(headers[nca_selected_idx])
+    if sys.argv[2] == '2':
+        all_features_2 = sio.loadmat(recordingFolder_2 + '\AllDataInFeatures.mat')['AllDataInFeatures']
+        all_labels_2 = sio.loadmat(recordingFolder_2 + '\\trainingVec.mat')['trainingVec'].ravel()
+        test_indices_2 = sio.loadmat(recordingFolder_2 + '\\testIdx.mat')['testIdx'].ravel()
+        nca_selected_idx_2 = sio.loadmat(recordingFolder_2 + '\\SelectedIdx.mat')['SelectedIdx'].ravel() - 1
+        
+        all_features = np.concatenate((all_features, all_features_2), axis=0)
+        all_labels = np.concatenate((all_labels, all_labels_2), axis=0)
+        test_indices = np.concatenate((test_indices, test_indices_2 + len(test_indices)), axis=0)
+        
+        nca_selected_idx = np.concatenate((nca_selected_idx[:5], nca_selected_idx_2[:5]), axis=0)
+        print(f"concatenated headers: {headers[nca_selected_idx]}")
 
-print("shapes: ")
-print(all_features.shape, all_labels.shape, test_indices.shape, nca_selected_idx.shape, all_features[:,nca_selected_idx].shape)
-test_indices = test_indices - 1
-train_indices = [i for i in range(len(all_labels)) if i not in test_indices]
+    nca = NCA(n_components=10)
+    nca_all_features = nca.fit_transform(all_features, all_labels)
 
-#NCA analysis
-train_features_nca = nca_all_features[train_indices]
-test_features_nca = nca_all_features[test_indices]
+    print("shapes: ")
+    print(all_features.shape, all_labels.shape, test_indices.shape, nca_selected_idx.shape, all_features[:,nca_selected_idx].shape)
+    test_indices = test_indices - 1
+    train_indices = [i for i in range(len(all_labels)) if i not in test_indices]
 
-labels_train_nca = all_labels[train_indices]
-labels_test_nca = all_labels[test_indices]
+    #NCA analysis
+    train_features_nca = nca_all_features[train_indices]
+    test_features_nca = nca_all_features[test_indices]
 
-
-# GENETIC ALGORITHM analysis
-features_train_ga = all_features[train_indices]
-features_test_ga = all_features[test_indices]
-
-labels_train_ga = all_labels[train_indices]
-labels_test_ga = all_labels[test_indices]
-
-estimator = SVM(penalty='l2', loss='hinge', multi_class='ovr', C=0.1, max_iter=30_000)
-selector = GeneticSelectionCV(
-    estimator,
-    cv = 3,
-    scoring = "accuracy",
-    max_features = 10,
-    n_population = 153,
-    crossover_proba = 0.5,
-    mutation_proba = 0.2,
-    n_generations = 60,
-    caching = True,
-    mutation_independent_proba = 0.025,
-    crossover_independent_proba = 0.8
-)
-
-selector = selector.fit(features_train_ga, labels_train_ga)
-print(f"SVM GA FEATURES: {headers[selector.support_]}")
-svm_ga_prediction = selector.predict(features_test_ga)
-test_results = svm_ga_prediction - labels_test_ga
-hit_rate = sum(test_results == 0)/len(labels_test_ga)
-
-svm_ga_row = ['SVM GA', hit_rate, svm_ga_prediction, labels_test_ga, svm_ga_prediction - labels_test_ga]
-
-estimator = LDA()
-selector = GeneticSelectionCV(
-    estimator,
-    cv = 3,
-    scoring = "accuracy",
-    max_features = 10,
-    n_population = 153,
-    crossover_proba = 0.5,
-    mutation_proba = 0.2,
-    n_generations = 60,
-    caching = True,
-    mutation_independent_proba = 0.025,
-    crossover_independent_proba = 0.8
-)
-
-selector = selector.fit(features_train_ga, labels_train_ga)
-print(f"LDA GA FEATURES: {headers[selector.support_]}")
-lda_ga_prediction = selector.predict(features_test_ga)
-test_results = lda_ga_prediction - labels_test_ga
-hit_rate = sum(test_results == 0)/len(labels_test_ga)
-
-lda_ga_row = ['LDA GA', hit_rate, lda_ga_prediction, labels_test_ga, lda_ga_prediction - labels_test_ga]
+    labels_train_nca = all_labels[train_indices]
+    labels_test_nca = all_labels[test_indices]
 
 
-# features from matlab neighborhood component analysis - takes 10 best features.
-features_train = sio.loadmat(recordingFolder + '\FeaturesTrainSelected.mat')['FeaturesTrainSelected']
-label_train = sio.loadmat(recordingFolder + '\LabelTrain.mat')['LabelTrain'].ravel()
+    # GENETIC ALGORITHM analysis
+    features_train_ga = all_features[train_indices]
+    features_test_ga = all_features[test_indices]
 
-features_test = sio.loadmat(recordingFolder + '\FeaturesTest.mat')['FeaturesTest']
-label_test = sio.loadmat(recordingFolder + '\LabelTest.mat')['LabelTest'].ravel()
+    labels_train_ga = all_labels[train_indices]
+    labels_test_ga = all_labels[test_indices]
 
-if sys.argv[1] == '2':
-    features_train_2 = sio.loadmat(recordingFolder_2 + '\FeaturesTrainSelected.mat')['FeaturesTrainSelected']
-    label_train_2 = sio.loadmat(recordingFolder_2 + '\LabelTrain.mat')['LabelTrain'].ravel()
+    estimator = SVM(penalty='l2', loss='hinge', multi_class='ovr', C=0.1, max_iter=30_000)
+    selector = GeneticSelectionCV(
+        estimator,
+        cv = 3,
+        scoring = "accuracy",
+        max_features = 10,
+        n_population = 153,
+        crossover_proba = 0.5,
+        mutation_proba = 0.2,
+        n_generations = 60,
+        caching = True,
+        mutation_independent_proba = 0.025,
+        crossover_independent_proba = 0.8
+    )
 
-    features_test_2 = sio.loadmat(recordingFolder_2 + '\FeaturesTest.mat')['FeaturesTest']
-    label_test_2 = sio.loadmat(recordingFolder_2 + '\LabelTest.mat')['LabelTest'].ravel()
-    
-    features_train = np.concatenate((features_train, features_train_2), axis=0)
-    label_train = np.concatenate((label_train, label_train_2), axis=0)
-    features_test = np.concatenate((features_test, features_test_2), axis=0)
-    label_test = np.concatenate((label_test, label_test_2), axis=0)
+    selector = selector.fit(features_train_ga, labels_train_ga)
+    print(f"SVM GA FEATURES: {headers[selector.support_]}")
+    np.savetxt(f'{recordingFolder}\svm_ga_features.txt', headers[selector.support_], fmt='%s')
+    svm_ga_prediction = selector.predict(features_test_ga)
+    test_results = svm_ga_prediction - labels_test_ga
+    hit_rate = sum(test_results == 0)/len(labels_test_ga)
+
+    svm_ga_row = ['SVM GA', hit_rate, svm_ga_prediction, labels_test_ga, svm_ga_prediction - labels_test_ga]
+
+    estimator = LDA()
+    selector = GeneticSelectionCV(
+        estimator,
+        cv = 3,
+        scoring = "accuracy",
+        max_features = 10,
+        n_population = 153,
+        crossover_proba = 0.5,
+        mutation_proba = 0.2,
+        n_generations = 60,
+        caching = True,
+        mutation_independent_proba = 0.025,
+        crossover_independent_proba = 0.8
+    )
+
+    selector = selector.fit(features_train_ga, labels_train_ga)
+    print(f"LDA GA FEATURES: {headers[selector.support_]}")
+    np.savetxt(f'{recordingFolder}\lda_ga_features.txt', headers[selector.support_], fmt='%s')
+    lda_ga_prediction = selector.predict(features_test_ga)
+    test_results = lda_ga_prediction - labels_test_ga
+    hit_rate = sum(test_results == 0)/len(labels_test_ga)
+
+    lda_ga_row = ['LDA GA', hit_rate, lda_ga_prediction, labels_test_ga, lda_ga_prediction - labels_test_ga]
 
 
-##### Running Models Classifications #####
-models = [
-    {'name': 'LDA', 'model': LDA(), 'cv': True},
-    {'name': 'LDA NCA', 'model': LDA(), 'cv': True},
-    {'name': 'QDA', 'model': QDA(), 'cv': True},
-    {'name': 'QDA NCA', 'model': QDA(), 'cv': True},
-    {'name': 'KNN-5', 'model': KNN(5), 'cv': False},
-    {'name': 'KNN-5 NCA', 'model': KNN(5), 'cv': False},
-    {'name': 'KNN-7', 'model': KNN(7), 'cv': False},
-    {'name': 'KNN-7 NCA', 'model': KNN(7), 'cv': False},
-    {'name': 'SVM', 'model': SVM(penalty='l2', loss='hinge', multi_class='ovr', C=2, max_iter=30_000), 'cv': True},
-    {'name': 'SVM NCA', 'model': SVM(penalty='l2', loss='hinge', multi_class='ovr', C=2, max_iter=30_000), 'cv': True},
-    {'name': 'NB', 'model': NB(), 'cv': False},
-    {'name': 'NB NCA', 'model': NB(), 'cv': False},
-    {'name': 'RF', 'model': RF(criterion='entropy'), 'cv': True},
-    {'name': 'RF NCA', 'model': RF(criterion='entropy'), 'cv': True},
-    {'name': 'DT', 'model': DT(), 'cv': True},
-    {'name': 'DT NCA', 'model': DT(), 'cv': True},
-]
+    # features from matlab neighborhood component analysis - takes 10 best features.
+    features_train = sio.loadmat(recordingFolder + '\FeaturesTrainSelected.mat')['FeaturesTrainSelected']
+    label_train = sio.loadmat(recordingFolder + '\LabelTrain.mat')['LabelTrain'].ravel()
 
-all_rows = []
+    features_test = sio.loadmat(recordingFolder + '\FeaturesTest.mat')['FeaturesTest']
+    label_test = sio.loadmat(recordingFolder + '\LabelTest.mat')['LabelTest'].ravel()
 
-for model in models:
-    is_nca = 'NCA' in model['name']
-    is_ga = 'GA' in model['name']  # preparing ground
-    f_train = features_train if not is_nca else train_features_nca
-    f_test = features_test if not is_nca else test_features_nca
-    l_train = label_train if not is_nca else labels_train_nca
-    l_test = label_test if not is_nca else labels_test_nca
-    row, cv_row = classify_results(model['model'], model['name'], features_train=f_train, features_test=f_test, label_train=l_train, nca_idx=nca_selected_idx, label_test=l_test, cv=model['cv'])
-    all_rows.append(row)
-    if cv_row != []:
-        all_rows.append(cv_row)
+    if sys.argv[2] == '2':
+        features_train_2 = sio.loadmat(recordingFolder_2 + '\FeaturesTrainSelected.mat')['FeaturesTrainSelected']
+        label_train_2 = sio.loadmat(recordingFolder_2 + '\LabelTrain.mat')['LabelTrain'].ravel()
 
-all_rows.append(svm_ga_row)
-all_rows.append(lda_ga_row)
+        features_test_2 = sio.loadmat(recordingFolder_2 + '\FeaturesTest.mat')['FeaturesTest']
+        label_test_2 = sio.loadmat(recordingFolder_2 + '\LabelTest.mat')['LabelTest'].ravel()
+        
+        features_train = np.concatenate((features_train, features_train_2), axis=0)
+        label_train = np.concatenate((label_train, label_train_2), axis=0)
+        features_test = np.concatenate((features_test, features_test_2), axis=0)
+        label_test = np.concatenate((label_test, label_test_2), axis=0)
 
-#### ---------- Priniting table ---------- ####
-print('')
-table_headers = ["Classifier", "Success Rate", "Classifier Prediction", "Test Labels", "Sub Labels"]
-print(tabulate(all_rows, headers=table_headers))
+
+    ##### Running Models Classifications #####
+    models = [
+        {'name': 'LDA', 'model': LDA(), 'cv': True},
+        {'name': 'LDA NCA', 'model': LDA(), 'cv': True},
+        {'name': 'QDA', 'model': QDA(), 'cv': True},
+        {'name': 'QDA NCA', 'model': QDA(), 'cv': True},
+        {'name': 'KNN-5', 'model': KNN(5), 'cv': False},
+        {'name': 'KNN-5 NCA', 'model': KNN(5), 'cv': False},
+        {'name': 'KNN-7', 'model': KNN(7), 'cv': False},
+        {'name': 'KNN-7 NCA', 'model': KNN(7), 'cv': False},
+        {'name': 'SVM', 'model': SVM(penalty='l2', loss='hinge', multi_class='ovr', C=2, max_iter=30_000), 'cv': True},
+        {'name': 'SVM NCA', 'model': SVM(penalty='l2', loss='hinge', multi_class='ovr', C=2, max_iter=30_000), 'cv': True},
+        {'name': 'NB', 'model': NB(), 'cv': False},
+        {'name': 'NB NCA', 'model': NB(), 'cv': False},
+        {'name': 'RF', 'model': RF(criterion='entropy'), 'cv': True},
+        {'name': 'RF NCA', 'model': RF(criterion='entropy'), 'cv': True},
+        {'name': 'DT', 'model': DT(), 'cv': True},
+        {'name': 'DT NCA', 'model': DT(), 'cv': True},
+    ]
+
+    all_rows = []
+
+    for model in models:
+        is_nca = 'NCA' in model['name']
+        is_ga = 'GA' in model['name']  # preparing ground
+        f_train = features_train if not is_nca else train_features_nca
+        f_test = features_test if not is_nca else test_features_nca
+        l_train = label_train if not is_nca else labels_train_nca
+        l_test = label_test if not is_nca else labels_test_nca
+        row, cv_row = classify_results(model['model'], model['name'], features_train=f_train, features_test=f_test, label_train=l_train, nca_idx=nca_selected_idx, label_test=l_test, cv=model['cv'])
+        all_rows.append(row)
+        if cv_row != []:
+            all_rows.append(cv_row)
+
+    all_rows.append(svm_ga_row)
+    all_rows.append(lda_ga_row)
+
+    #### ---------- Priniting table ---------- ####
+    print('')
+    table_headers = ["Classifier", "Success Rate", "Classifier Prediction", "Test Labels", "Sub Labels"]
+    print(tabulate(all_rows, headers=table_headers))
+
+if __name__ == '__main__':
+    classify()
