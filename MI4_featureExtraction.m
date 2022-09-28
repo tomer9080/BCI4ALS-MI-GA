@@ -164,7 +164,7 @@ for trial = 1:trials                                % run over all the trials
     
     for channel = 1:numChans                        % run over all the electrodes (channels)
         n = 1;                                      % start a new feature index
-        for feature = 1:numSpectralFeatures                 % run over all spectral band power features from the section above
+        for feature = 1:numSpectralFeatures         % run over all spectral band power features from the section above
             % Extract features: bandpower +-1 Hz around each target frequency
             MIFeaturesLabel(trial,channel,n) = bandpower(squeeze(MIData(trial,channel,times{feature})),Fs,bands{feature});
             n = n+1;            
@@ -289,7 +289,18 @@ for trial = 1:trials                                % run over all the trials
         disp(strcat('Extracted Log Energy Entropy from electrode:',EEG_chans(channel,:)))
 
 
+        % Ratio Band Beta / Alpha
+        MIFeaturesLabel(trial,channel,n) = MIFeaturesLabel(trial,channel,5) / MIFeaturesLabel(trial,channel,2); 
+        n = n + 1;
+        disp(strcat('Extracted Ratio Band Power Beta Alpha from electrode:',EEG_chans(channel,:)))
         
+
+        % Theta Power Bandwidth
+        MIFeaturesLabel(trial,channel,n) = jBandPowerTheta(squeeze(MIData(trial,channel,:)));
+        n = n + 1;
+        disp(strcat('Extracted Theta Power Bandwidth from electrode:',EEG_chans(channel,:)))
+
+
 % 
 %         % Ratio Band Alpha Beta
 %         MIFeaturesLabel(trial,channel,n) = jRatioBandPowerAlphaBeta(squeeze(MIData(trial,channel,:)), 'fs');
