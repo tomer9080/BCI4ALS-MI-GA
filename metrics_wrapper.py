@@ -13,10 +13,13 @@ import os
 classes_map = {'idle': 1, 'left': 2, 'right': 3}
 features_names_list = ['BP_15.5_18.5', 'BP_8_10.5', 'BP_10_15.5', 'BP_17.5_20.5', 'BP_12.5_30', 'RTP', 'SPEC_MOM', 'SPEC_EDGE', 'SPEC_ENT', 'SLOPE', 'INTERCEPT', 'MEAN_FREQ', 'OCC_BAND', 'POWER_BAND', 'WLT_ENT', 'KURT', 'SKEW', 'VAR', 'STD', 'LOG_ENE_ENT', 'BETA_ALPHA_RATIO', 'BP_THETA']
 headers = ['CSP1', 'CSP2', 'CSP3'] + [f'E{i}_{feature}' for i in range(1,12) for feature in features_names_list]
+table_headers = ['Feature', 'Score_(R^2)_Left', 'Score_(R^2)_Right', 'Mean_Mean_left', 'Var_Mean_left', 'Mean_Mean_right', 'Var_Mean_right', 'Mean_Var_left', 'Var_Var_left', 'Mean_Var_right', 'Var_Var_right']
 
 
-def get_paths():
-    paths = open(sys.argv[1], 'r')
+def get_paths(paths_file=sys.argv[1], is_list=False):
+    if is_list:
+        return [line.strip() for line in paths_file]
+    paths = open(paths_file, 'r')
     list_of_paths = [line.strip() for line in paths.readlines()]
     return list_of_paths
 
@@ -114,20 +117,7 @@ def print_features_hist_to_file(path, dicts_hist):
     file.close()
     return
 
-if __name__ == "__main__":
-    # feature = 1
-    paths = get_paths()
-    feature_row = []
-
-    features_values_dict_r = {key: [] for key in headers}
-    features_values_dict_l = {key: [] for key in headers}
-    
-    x_axis = [i + 1 for i in range(540)]
-    x = np.array(x_axis).reshape(-1, 1)
-
-    all_regs_r = []
-    all_regs_l = []
-    
+def get_features_hists(paths):
     features_hist = {header: 0 for header in headers} # start simple using the selected idx matrix
     features_hist_ga_svm = {header: 0 for header in headers} # svm ga features
     features_hist_ga_lda = {header: 0 for header in headers} # lda ga features
@@ -144,18 +134,38 @@ if __name__ == "__main__":
         for chosen in ga_lda_selected:
             features_hist_ga_lda[chosen] += 1
 
-    # plt.bar(features_hist.keys(), features_hist.values(), color='b')
-    # plt.bar(features_hist_ga_lda.keys(), features_hist_ga_lda.values(), color='b')
-    # plt.bar(features_hist_ga_svm.keys(), features_hist_ga_svm.values(), color='b')
-    
     print_features_hist_to_file(path='stats/matlab_nca_features_hist.txt', dicts_hist=features_hist)
     print_features_hist_to_file(path='stats/ga_lda_features_hist.txt', dicts_hist=features_hist_ga_lda)
     print_features_hist_to_file(path='stats/ga_svm_features_hist.txt', dicts_hist=features_hist_ga_svm)
     
+def plot_and_save_figs(paths, metrics_right, metrics_left, feature, features_values_dict_r, features_values_dict_l, x_axis):
+    plot_mean_and_variance(paths, metrics_right, metrics_left, feature)
+    reg_plot_easy(x=x_axis, y1=features_values_dict_r[headers[feature]], y2=features_values_dict_l[headers[feature]], legend=['Right', 'Left'],  xlabel='Num of Trial', ylabel=f'{headers[feature]} value', title=f'R vs L values of {headers[feature]}', feature=feature)
+    plot_easy(x=x_axis, y1=features_values_dict_r[headers[feature]], xlabel='Num of Trial', ylabel=f'{headers[feature]} value', title=f'{headers[feature]} value over total trials (right)', feature=feature)
+    plot_easy(x=x_axis, y1=features_values_dict_l[headers[feature]], xlabel='Num of Trial', ylabel=f'{headers[feature]} value', title=f'{headers[feature]} value over total trials (left)', feature=feature)
+
+def analyze(paths_file, is_list=False):
+    paths = get_paths(paths_file, is_list)
+
+    feature_row = np.array([table_headers])
+
+    to_plot = sys.argv[2]
+    to_plot = True if to_plot in ('PLOT', 'plot') else False
+
+    features_values_dict_r = {key: [] for key in headers}
+    features_values_dict_l = {key: [] for key in headers}
+    
+    x_axis = [i + 1 for i in range(len(paths) * 20)]
+    x = np.array(x_axis).reshape(-1, 1)
+
+    all_regs_r = []
+    all_regs_l = []
+    
+    get_features_hists(paths)
+
     for feature in range(len(headers)):
         metrics_right = []
         metrics_left = []
-        tmp_values = []
         for path in paths:
             df = get_all_labels_features_from_folder(path)
             
@@ -172,7 +182,6 @@ if __name__ == "__main__":
             tmp_values_left = get_feature_values('left', feature, df)
             features_values_dict_r[headers[feature]] += list(tmp_values_right)
             features_values_dict_l[headers[feature]] += list(tmp_values_left)
-
 
         avg_mean_right = np.mean([metric[0] for metric in metrics_right])
         avg_mean_left = np.mean([metric[0] for metric in metrics_left])
@@ -199,20 +208,17 @@ if __name__ == "__main__":
         all_regs_l.append(reg_l)
         
         row = [headers[feature], reg_l.score(x, y_l), reg_r.score(x, y_r), avg_mean_left, var_mean_left, avg_mean_right, var_mean_right, avg_var_left, var_var_left, avg_var_right, var_var_right]
-        feature_row.append(row)
+        feature_row = np.append(feature_row, np.array([row]), axis=0)
 
         # plot - save figs in the right folder
-        plot_mean_and_variance(paths, metrics_right, metrics_left, feature)
-        reg_plot_easy(x=x_axis, y1=features_values_dict_r[headers[feature]], y2=features_values_dict_l[headers[feature]], legend=['Right', 'Left'],  xlabel='Num of Trial', ylabel=f'{headers[feature]} value', title=f'R vs L values of {headers[feature]}', feature=feature)
-        plot_easy(x=x_axis, y1=features_values_dict_r[headers[feature]], xlabel='Num of Trial', ylabel=f'{headers[feature]} value', title=f'{headers[feature]} value over total trials (right)', feature=feature)
-        plot_easy(x=x_axis, y1=features_values_dict_l[headers[feature]], xlabel='Num of Trial', ylabel=f'{headers[feature]} value', title=f'{headers[feature]} value over total trials (left)', feature=feature)
-
-
-    table_headers = ['Feature', 'Score (R^2) Left', 'Score (R^2) Right', 'Mean-Mean left', 'Var-Mean left', 'Mean-Mean right', 'Var-Mean right', 'Mean-Var left', 'Var-Var left', 'Mean-Var right', 'Var-Var right']
+        if to_plot:
+            plot_and_save_figs(paths, metrics_right, metrics_left, feature, features_values_dict_r, features_values_dict_l, x_axis)
     
     metrics_file = open('stats/features_metrics.txt', 'wt')
-    metrics_file.write(tabulate(feature_row, headers=table_headers))
+    metrics_file.write(tabulate(feature_row[1:], headers=table_headers))
     metrics_file.close()
 
+    np.savetxt('stats/features_metrics.csv', feature_row, delimiter=',', fmt='%s')
 
-
+if __name__ == "__main__":
+    analyze()
