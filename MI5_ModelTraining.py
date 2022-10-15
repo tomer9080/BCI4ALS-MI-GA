@@ -13,6 +13,7 @@ from sklearn.model_selection import KFold
 from sklearn.metrics import accuracy_score
 from tabulate import tabulate
 import sys
+from OurFeatureSelection import Selector
 
 # TODO: Add interface for choosing features as we want.
 # TODO: How to do the feature mentioned above.
@@ -59,7 +60,7 @@ def cross_validation_on_model(model, k, features, labels):
     return avg_score, all_scores, all_models
 
 
-def classify_results(model, model_name, features_train, label_train, features_test, label_test, nca_idx, cv=False, Kfold=5):
+def classify_results(model, model_name, features_train, label_train, features_test, label_test, features_indices, cv=False, Kfold=5):
     print(f"Running {model_name} analysis...")
     model.fit(features_train, label_train)
     prediction = model.predict(features_test)
@@ -70,7 +71,7 @@ def classify_results(model, model_name, features_train, label_train, features_te
 
     table_cv_row = []
     if cv: # run cv if flag is up
-        cv_predictor = cross_validation_on_model(model, Kfold, all_features[:,nca_idx], all_labels) 
+        cv_predictor = cross_validation_on_model(model, Kfold, all_features[:,features_indices], all_labels) 
         hit_rate = cv_predictor[0]
         table_cv_row = [f'{model_name} CV', hit_rate, [], label_test, []]        
 
@@ -115,7 +116,7 @@ def classify(recordingFolder=sys.argv[1], recordingFolder_2=''):
 
     nca = NCA(n_components=10)
     nca_all_features = nca.fit_transform(all_features, all_labels)
-
+    print(nca.get_feature_names_out())
     print("shapes: ")
     print(all_features.shape, all_labels.shape, test_indices.shape, nca_selected_idx.shape, all_features[:,nca_selected_idx].shape)
     test_indices = test_indices - 1
@@ -204,37 +205,54 @@ def classify(recordingFolder=sys.argv[1], recordingFolder_2=''):
         features_test = np.concatenate((features_test, features_test_2), axis=0)
         label_test = np.concatenate((label_test, label_test_2), axis=0)
 
+    # features from statistical analysis
+    our_selector = Selector('paths/paths_TK.txt', record_path=recordingFolder, ascending=False)
+    our_features_indices = our_selector.select_features(['Var_Mean_left', 'Var_Mean_right'], use_prior=True)
+    # our_features_indices = our_selector.select_features(['Score_(R^2)_Left', 'Score_(R^2)_Right'], use_prior=True)
+    
+    train_features_stats = all_features[train_indices][:,our_features_indices]
+    test_features_stats = all_features[test_indices][:,our_features_indices]
+
+    labels_train_stats = all_labels[train_indices]
+    labels_test_stats = all_labels[test_indices]
 
     ##### Running Models Classifications #####
     models = [
         {'name': 'LDA', 'model': LDA(), 'cv': True},
-        {'name': 'LDA NCA', 'model': LDA(), 'cv': True},
+        {'name': 'LDA NCA', 'model': LDA(), 'cv': True, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},
+        {'name': 'LDA STA', 'model': LDA(), 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
         {'name': 'QDA', 'model': QDA(), 'cv': True},
-        {'name': 'QDA NCA', 'model': QDA(), 'cv': True},
+        {'name': 'QDA NCA', 'model': QDA(), 'cv': True, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},
+        {'name': 'QDA STA', 'model': QDA(), 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
         {'name': 'KNN-5', 'model': KNN(5), 'cv': False},
-        {'name': 'KNN-5 NCA', 'model': KNN(5), 'cv': False},
+        {'name': 'KNN-5 NCA', 'model': KNN(5), 'cv': False, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},
+        {'name': 'KNN-5 STA', 'model': KNN(5), 'cv': False, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
         {'name': 'KNN-7', 'model': KNN(7), 'cv': False},
-        {'name': 'KNN-7 NCA', 'model': KNN(7), 'cv': False},
+        {'name': 'KNN-7 NCA', 'model': KNN(7), 'cv': False, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},
+        {'name': 'KNN-7 STA', 'model': KNN(7), 'cv': False, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
         {'name': 'SVM', 'model': SVM(penalty='l2', loss='hinge', multi_class='ovr', C=2, max_iter=30_000), 'cv': True},
-        {'name': 'SVM NCA', 'model': SVM(penalty='l2', loss='hinge', multi_class='ovr', C=2, max_iter=30_000), 'cv': True},
+        {'name': 'SVM NCA', 'model': SVM(penalty='l2', loss='hinge', multi_class='ovr', C=2, max_iter=30_000), 'cv': True, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},
+        {'name': 'SVM STA', 'model': SVM(penalty='l2', loss='hinge', multi_class='ovr', C=2, max_iter=30_000), 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
         {'name': 'NB', 'model': NB(), 'cv': False},
-        {'name': 'NB NCA', 'model': NB(), 'cv': False},
+        {'name': 'NB NCA', 'model': NB(), 'cv': False, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},
+        {'name': 'NB STA', 'model': NB(), 'cv': False, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
         {'name': 'RF', 'model': RF(criterion='entropy'), 'cv': True},
-        {'name': 'RF NCA', 'model': RF(criterion='entropy'), 'cv': True},
+        {'name': 'RF NCA', 'model': RF(criterion='entropy'), 'cv': True, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},
+        {'name': 'RF STA', 'model': RF(criterion='entropy'), 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
         {'name': 'DT', 'model': DT(), 'cv': True},
-        {'name': 'DT NCA', 'model': DT(), 'cv': True},
+        {'name': 'DT NCA', 'model': DT(), 'cv': True, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},
+        {'name': 'DT STA', 'model': DT(), 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
     ]
 
     all_rows = []
 
     for model in models:
-        is_nca = 'NCA' in model['name']
-        is_ga = 'GA' in model['name']  # preparing ground
-        f_train = features_train if not is_nca else train_features_nca
-        f_test = features_test if not is_nca else test_features_nca
-        l_train = label_train if not is_nca else labels_train_nca
-        l_test = label_test if not is_nca else labels_test_nca
-        row, cv_row = classify_results(model['model'], model['name'], features_train=f_train, features_test=f_test, label_train=l_train, nca_idx=nca_selected_idx, label_test=l_test, cv=model['cv'])
+        f_train = features_train if model.get('ftr') is None else model.get('ftr')
+        f_test = features_test if model.get('fte') is None else model.get('fte')
+        l_train = label_train if model.get('ltr') is None else model.get('ltr')
+        l_test = label_test if model.get('lte') is None else model.get('lte')
+        indices = nca_selected_idx if model.get('indices') is None else model.get('indices')
+        row, cv_row = classify_results(model['model'], model['name'], features_train=f_train, features_test=f_test, label_train=l_train, features_indices=indices, label_test=l_test, cv=model['cv'])
         all_rows.append(row)
         if cv_row != []:
             all_rows.append(cv_row)

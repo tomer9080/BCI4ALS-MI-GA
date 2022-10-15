@@ -1,4 +1,3 @@
-from turtle import color
 import numpy as np
 import scipy.io as sio
 import scipy
@@ -144,6 +143,27 @@ def plot_and_save_figs(paths, metrics_right, metrics_left, feature, features_val
     plot_easy(x=x_axis, y1=features_values_dict_r[headers[feature]], xlabel='Num of Trial', ylabel=f'{headers[feature]} value', title=f'{headers[feature]} value over total trials (right)', feature=feature)
     plot_easy(x=x_axis, y1=features_values_dict_l[headers[feature]], xlabel='Num of Trial', ylabel=f'{headers[feature]} value', title=f'{headers[feature]} value over total trials (left)', feature=feature)
 
+def compute_vars(metrics_right, metrics_left, paths, feature):
+    if len(paths) == 1:
+        df = get_all_labels_features_from_folder(paths[0])
+        
+        #get mean and var for each class
+        var_var_right, var_mean_right = get_metrics('right', feature, df)
+        var_var_left, var_mean_left = get_metrics('left', feature, df)
+    else:
+        var_mean_right = np.var([metric[0] for metric in metrics_right])
+        var_mean_left = np.var([metric[0] for metric in metrics_left])
+        var_var_right = np.var([metric[1] for metric in metrics_right])
+        var_var_left = np.var([metric[1] for metric in metrics_left])
+    return var_mean_right, var_mean_left, var_var_right, var_var_left
+
+def compute_avgs(metrics_right, metrics_left):
+    avg_mean_right = np.mean([metric[0] for metric in metrics_right])
+    avg_mean_left = np.mean([metric[0] for metric in metrics_left])
+    avg_var_right = np.mean([metric[1] for metric in metrics_right])
+    avg_var_left = np.mean([metric[1] for metric in metrics_left])
+    return avg_mean_right, avg_mean_left, avg_var_right, avg_var_left
+
 def analyze(paths_file, is_list=False):
     paths = get_paths(paths_file, is_list)
 
@@ -183,17 +203,9 @@ def analyze(paths_file, is_list=False):
             features_values_dict_r[headers[feature]] += list(tmp_values_right)
             features_values_dict_l[headers[feature]] += list(tmp_values_left)
 
-        avg_mean_right = np.mean([metric[0] for metric in metrics_right])
-        avg_mean_left = np.mean([metric[0] for metric in metrics_left])
+        avg_mean_right, avg_mean_left, avg_var_right, avg_var_left = compute_avgs(metrics_right, metrics_left)
         
-        var_mean_right = np.var([metric[0] for metric in metrics_right])
-        var_mean_left = np.var([metric[0] for metric in metrics_left])
-        
-        avg_var_right = np.mean([metric[1] for metric in metrics_right])
-        avg_var_left = np.mean([metric[1] for metric in metrics_left])
-        
-        var_var_right = np.var([metric[1] for metric in metrics_right])
-        var_var_left = np.var([metric[1] for metric in metrics_left])
+        var_mean_right, var_mean_left, var_var_right, var_var_left = compute_vars(metrics_right, metrics_left, paths, feature)
 
         y_r = np.array(features_values_dict_r[headers[feature]])
         y_l = np.array(features_values_dict_l[headers[feature]])
