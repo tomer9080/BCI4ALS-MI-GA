@@ -1,5 +1,8 @@
+from cProfile import label
 import scipy.io as sio
 import numpy as np
+import argparse
+from metrics_wrapper import get_paths
 from genetic_selection import GeneticSelectionCV 
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis as QDA
@@ -78,114 +81,62 @@ def classify_results(model, model_name, features_train, label_train, features_te
     return table_row, table_cv_row
 
 
-######### TK PC #########
-# recordingFolder = "C:\BCI_RECORDINGS\\16-08-22\TK\Sub318324886001"
-# recordingFolder_2 = "C:\BCI_RECORDINGS\\16-08-22\TK\Sub318324886002"
-# recordingFolder = "C:\BCI_RECORDINGS\\16-08-22\RL\Sub316353903002"
-
-######### RL PC #########
-# recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\12-09-22\\TK\Sub318324886001'
-# recordingFolder_2 = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\29-08-22\\TK\Sub318324886002'
-# recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\12-09-22\\RL\Sub316353903003'
-# recordingFolder_2 = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\13-09-22\\RL\Sub316353903002'
-# recordingFolder = r'C:\\Users\\Latzres\Desktop\\project\\Recordings\\16-08-22\\TT\Sub20220816003'
-
-def classify(recordingFolder=sys.argv[1], recordingFolder_2=''):
-
-    # All of the features before train-test partition
-    global all_features
-    all_features = sio.loadmat(recordingFolder + '\AllDataInFeatures.mat')['AllDataInFeatures']
-    global all_labels
-    all_labels = sio.loadmat(recordingFolder + '\\trainingVec.mat')['trainingVec'].ravel()
-    test_indices = sio.loadmat(recordingFolder + '\\testIdx.mat')['testIdx'].ravel()
-    nca_selected_idx = sio.loadmat(recordingFolder + '\\SelectedIdx.mat')['SelectedIdx'].ravel() - 1 
-    print(nca_selected_idx)
-    print(headers[nca_selected_idx])
-    if sys.argv[2] == '2':
-        all_features_2 = sio.loadmat(recordingFolder_2 + '\AllDataInFeatures.mat')['AllDataInFeatures']
-        all_labels_2 = sio.loadmat(recordingFolder_2 + '\\trainingVec.mat')['trainingVec'].ravel()
-        test_indices_2 = sio.loadmat(recordingFolder_2 + '\\testIdx.mat')['testIdx'].ravel()
-        nca_selected_idx_2 = sio.loadmat(recordingFolder_2 + '\\SelectedIdx.mat')['SelectedIdx'].ravel() - 1
-        
-        all_features = np.concatenate((all_features, all_features_2), axis=0)
-        all_labels = np.concatenate((all_labels, all_labels_2), axis=0)
-        test_indices = np.concatenate((test_indices, test_indices_2 + len(test_indices)), axis=0)
-        
-        nca_selected_idx = np.concatenate((nca_selected_idx[:5], nca_selected_idx_2[:5]), axis=0)
-        print(f"concatenated headers: {headers[nca_selected_idx]}")
-
-    nca = NCA(n_components=10)
-    nca_all_features = nca.fit_transform(all_features, all_labels)
-    print(nca.get_feature_names_out())
-    print("shapes: ")
-    print(all_features.shape, all_labels.shape, test_indices.shape, nca_selected_idx.shape, all_features[:,nca_selected_idx].shape)
-    test_indices = test_indices - 1
-    train_indices = [i for i in range(len(all_labels)) if i not in test_indices]
-
-    #NCA analysis
-    train_features_nca = nca_all_features[train_indices]
-    test_features_nca = nca_all_features[test_indices]
-
-    labels_train_nca = all_labels[train_indices]
-    labels_test_nca = all_labels[test_indices]
-
-
-    # GENETIC ALGORITHM analysis
-    features_train_ga = all_features[train_indices]
-    features_test_ga = all_features[test_indices]
-
-    labels_train_ga = all_labels[train_indices]
-    labels_test_ga = all_labels[test_indices]
-
-    estimator = SVM(penalty='l2', loss='hinge', multi_class='ovr', C=0.1, max_iter=30_000)
+def classify_results_ga(selection_params, features_train, label_train, features_test, label_test, recordingFolder, cv=False, Kfold=5):
+    print(f"Running {selection_params['name']} with GA features selection & analysis...")
     selector = GeneticSelectionCV(
-        estimator,
-        cv = 3,
-        scoring = "accuracy",
-        max_features = 10,
-        n_population = 153,
-        crossover_proba = 0.5,
-        mutation_proba = 0.2,
-        n_generations = 60,
-        caching = True,
-        mutation_independent_proba = 0.025,
-        crossover_independent_proba = 0.8
+        selection_params['model'],
+        cv = selection_params['cv'],
+        scoring = selection_params['scoring'],
+        max_features = selection_params['max_features'],
+        n_population = selection_params['n_population'],
+        crossover_proba = selection_params['cross_prob'],
+        mutation_proba = selection_params['muta_prob'],
+        n_generations = selection_params['n_gens'],
+        caching = selection_params['caching'],
+        mutation_independent_proba = selection_params['muta_ind_prob'],
+        crossover_independent_proba = selection_params['cross_ind_prob']
     )
+    selector = selector.fit(features_train, label_train)
+    np.savetxt(f'{recordingFolder}\{selection_params["name"]}_ga_features.txt', headers[selector.support_], fmt='%s')
 
-    selector = selector.fit(features_train_ga, labels_train_ga)
-    print(f"SVM GA FEATURES: {headers[selector.support_]}")
-    np.savetxt(f'{recordingFolder}\svm_ga_features.txt', headers[selector.support_], fmt='%s')
-    svm_ga_prediction = selector.predict(features_test_ga)
-    test_results = svm_ga_prediction - labels_test_ga
-    hit_rate = sum(test_results == 0)/len(labels_test_ga)
+    prediction = selector.predict(features_test)
+    test_results = prediction - label_test
+    hit_rate = sum(test_results == 0)/len(label_test)
 
-    svm_ga_row = ['SVM GA', hit_rate, svm_ga_prediction, labels_test_ga, svm_ga_prediction - labels_test_ga]
+    row = [f'{selection_params["name"]} GA', hit_rate, prediction, label_test, prediction - label_test]
 
-    estimator = LDA()
-    selector = GeneticSelectionCV(
-        estimator,
-        cv = 3,
-        scoring = "accuracy",
-        max_features = 10,
-        n_population = 153,
-        crossover_proba = 0.5,
-        mutation_proba = 0.2,
-        n_generations = 60,
-        caching = True,
-        mutation_independent_proba = 0.025,
-        crossover_independent_proba = 0.8
-    )
+    cv_row = []
+    if cv:
+        cv_prediction = cross_validation_on_model(selection_params['model'], Kfold, all_features[:,selector.support_], all_labels)
+        hit_rate = cv_prediction[0]
+        cv_row = [f'{selection_params["name"]} GA CV', hit_rate, [], label_test, []]
 
-    selector = selector.fit(features_train_ga, labels_train_ga)
-    print(f"LDA GA FEATURES: {headers[selector.support_]}")
-    np.savetxt(f'{recordingFolder}\lda_ga_features.txt', headers[selector.support_], fmt='%s')
-    lda_ga_prediction = selector.predict(features_test_ga)
-    test_results = lda_ga_prediction - labels_test_ga
-    hit_rate = sum(test_results == 0)/len(labels_test_ga)
-
-    lda_ga_row = ['LDA GA', hit_rate, lda_ga_prediction, labels_test_ga, lda_ga_prediction - labels_test_ga]
+    return row, cv_row
 
 
+def get_dict_for_folder_from_path(path):
+    list_of_path = path.split('\\')
+    return {"name": list_of_path[-2], "date": list_of_path[-3], "num": int(list_of_path[-1][-2:])}
+
+
+def parse_cmdl():
+    parser = argparse.ArgumentParser(description='This script is running classifiers on the requested folder, and then produces a table and csv file to compare between \n various classifiers and feature selection methods.')
+    parser.add_argument('--folder', '-f', dest='folder', help='Folder path of the recording we want to classify', type=str)
+    parser.add_argument('--folder2', '-f2', dest='folder2', help='Folder path of the second recording we want to classify - taken into account only if unify is True', type=str, default=None)
+    parser.add_argument('--unify', '-u', dest='unify', help='Unify folder and folder2 to "one" recording and classify', type=bool)
+    parser.add_argument('--paths', '-p', dest='paths', help='Path to paths file to run classisfication for each folder in paths file', type=str, default=None)
+    parser.add_argument('--metric', '-m', dest='metric', help='Metric string - according to him we\'ll choose our features by our statistic methods', type=str, default="Score_(R^2)_Left,Score_(R^2)_Right")
+    parser.add_argument('--simple', '-s', dest='simple', help='Use simple metric (just sort dataframe by columns)', type=bool, default=True)
+    args = parser.parse_args()
+    return {'folder': args.folder,
+            'folder2': args.folder2,
+            'unify': args.unify,
+            'paths': args.paths,
+            'metric': args.metric,
+            'simple': args.simple}
+
+
+def get_matlab_features(recordingFolder, recordingFolder_2, unify):
     # features from matlab neighborhood component analysis - takes 10 best features.
     features_train = sio.loadmat(recordingFolder + '\FeaturesTrainSelected.mat')['FeaturesTrainSelected']
     label_train = sio.loadmat(recordingFolder + '\LabelTrain.mat')['LabelTrain'].ravel()
@@ -193,7 +144,7 @@ def classify(recordingFolder=sys.argv[1], recordingFolder_2=''):
     features_test = sio.loadmat(recordingFolder + '\FeaturesTest.mat')['FeaturesTest']
     label_test = sio.loadmat(recordingFolder + '\LabelTest.mat')['LabelTest'].ravel()
 
-    if sys.argv[2] == '2':
+    if recordingFolder_2 is not None and unify:
         features_train_2 = sio.loadmat(recordingFolder_2 + '\FeaturesTrainSelected.mat')['FeaturesTrainSelected']
         label_train_2 = sio.loadmat(recordingFolder_2 + '\LabelTrain.mat')['LabelTrain'].ravel()
 
@@ -205,10 +156,101 @@ def classify(recordingFolder=sys.argv[1], recordingFolder_2=''):
         features_test = np.concatenate((features_test, features_test_2), axis=0)
         label_test = np.concatenate((label_test, label_test_2), axis=0)
 
-    # features from statistical analysis
+    return features_train, label_train, features_test, label_test
+
+
+def get_all_features(recordingFolder, recordingFolder_2, unify):
+    all_features = sio.loadmat(recordingFolder + '\AllDataInFeatures.mat')['AllDataInFeatures']
+    all_labels = sio.loadmat(recordingFolder + '\\trainingVec.mat')['trainingVec'].ravel()
+    test_indices = sio.loadmat(recordingFolder + '\\testIdx.mat')['testIdx'].ravel()
+    nca_selected_idx = sio.loadmat(recordingFolder + '\\SelectedIdx.mat')['SelectedIdx'].ravel() - 1 
+    print(nca_selected_idx)
+    print(headers[nca_selected_idx])
+    if recordingFolder_2 is not None and unify:
+        all_features_2 = sio.loadmat(recordingFolder_2 + '\AllDataInFeatures.mat')['AllDataInFeatures']
+        all_labels_2 = sio.loadmat(recordingFolder_2 + '\\trainingVec.mat')['trainingVec'].ravel()
+        test_indices_2 = sio.loadmat(recordingFolder_2 + '\\testIdx.mat')['testIdx'].ravel()
+        nca_selected_idx_2 = sio.loadmat(recordingFolder_2 + '\\SelectedIdx.mat')['SelectedIdx'].ravel() - 1
+        
+        all_features = np.concatenate((all_features, all_features_2), axis=0)
+        all_labels = np.concatenate((all_labels, all_labels_2), axis=0)
+        test_indices = np.concatenate((test_indices, test_indices_2 + len(test_indices)), axis=0)
+        
+        nca_selected_idx = np.concatenate((nca_selected_idx[:5], nca_selected_idx_2[:5]), axis=0)
+        print(f"concatenated headers: {headers[nca_selected_idx]}")
+    return all_features, all_labels, test_indices, nca_selected_idx
+
+
+def classify(args_dict):
+
+    recordingFolder = args_dict['folder']
+    recordingFolder_2 = args_dict['folder2']
+
+    # All of the features before train-test partition
+    global all_features
+    global all_labels
+    all_features, all_labels, test_indices, nca_selected_idx = get_all_features(recordingFolder, recordingFolder_2, args_dict['unify'])
+    
+    nca = NCA(n_components=10)
+    nca_all_features = nca.fit_transform(all_features, all_labels)
+    print("shapes: ")
+    print(all_features.shape, all_labels.shape, test_indices.shape, nca_selected_idx.shape, all_features[:,nca_selected_idx].shape)
+    test_indices = test_indices - 1
+    train_indices = [i for i in range(len(all_labels)) if i not in test_indices]
+
+    #### ------------ NCA analysis ------------ ####
+    train_features_nca = nca_all_features[train_indices]
+    test_features_nca = nca_all_features[test_indices]
+
+    labels_train_nca = all_labels[train_indices]
+    labels_test_nca = all_labels[test_indices]
+
+
+    #### ------------ GENETIC ALGORITHM analysis ------------ ####
+    features_train_ga = all_features[train_indices]
+    features_test_ga = all_features[test_indices]
+
+    labels_train_ga = all_labels[train_indices]
+    labels_test_ga = all_labels[test_indices]
+
+    ga_models = [
+        {'name': 'SVM', 
+         'model': SVM(penalty='l2', loss='hinge', multi_class='ovr', C=0.1, max_iter=30_000),
+         'cv': 3,
+         "scoring": "accuracy",
+         "max_features": 10,
+         "n_population": 153,
+         "cross_prob": 0.5,
+         "muta_prob": 0.2,
+         "n_gens": 60,
+         "caching": True,
+         "muta_ind_prob": 0.025,
+         "cross_ind_prob": 0.8 }, 
+        
+        {'name': 'LDA', 
+         'model': LDA(),
+         'cv': 3,
+         "scoring": "accuracy",
+         "max_features": 10,
+         "n_population": 153,
+         "cross_prob": 0.5,
+         "muta_prob": 0.2,
+         "n_gens": 60,
+         "caching": True,
+         "muta_ind_prob": 0.025,
+         "cross_ind_prob": 0.8 },
+
+    ]
+
+    #### ------------ features from matlab neighborhood component analysis - takes 10 best features ------------ #
+    features_train, label_train, features_test, label_test = get_matlab_features(recordingFolder, recordingFolder_2, args_dict['unify']) 
+
+    #### ------------ features from statistical analysis ------------ ####
     our_selector = Selector('paths/paths_TK.txt', record_path=recordingFolder, ascending=False)
-    our_features_indices = our_selector.select_features(['Var_Mean_left', 'Var_Mean_right'], use_prior=True)
-    # our_features_indices = our_selector.select_features(['Score_(R^2)_Left', 'Score_(R^2)_Right'], use_prior=True)
+    if args_dict['simple']:
+        our_features_indices = our_selector.select_features(args_dict['metric'].split(','), use_prior=False)
+    else:
+        our_features_indices = our_selector.select_features(args_dict['metric'], use_prior=False, simple_rule=False)
     
     train_features_stats = all_features[train_indices][:,our_features_indices]
     test_features_stats = all_features[test_indices][:,our_features_indices]
@@ -216,7 +258,7 @@ def classify(recordingFolder=sys.argv[1], recordingFolder_2=''):
     labels_train_stats = all_labels[train_indices]
     labels_test_stats = all_labels[test_indices]
 
-    ##### Running Models Classifications #####
+    ##### ------------ Running Models Classifications ------------ #####
     models = [
         {'name': 'LDA', 'model': LDA(), 'cv': True},
         {'name': 'LDA NCA', 'model': LDA(), 'cv': True, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},
@@ -257,13 +299,28 @@ def classify(recordingFolder=sys.argv[1], recordingFolder_2=''):
         if cv_row != []:
             all_rows.append(cv_row)
 
-    all_rows.append(svm_ga_row)
-    all_rows.append(lda_ga_row)
+    for model in ga_models:
+        row, cv_row = classify_results_ga(model, features_train_ga, labels_train_ga, features_test_ga, labels_test_ga, recordingFolder, cv=True)
+        all_rows.append(row)
+        all_rows.append(cv_row)
 
     #### ---------- Priniting table ---------- ####
     print('')
     table_headers = ["Classifier", "Success Rate", "Classifier Prediction", "Test Labels", "Sub Labels"]
     print(tabulate(all_rows, headers=table_headers))
 
+    folder_dict = get_dict_for_folder_from_path(recordingFolder)
+    all_rows.insert(0, table_headers)
+    np.savetxt(f'class_results/{folder_dict["name"]}_{folder_dict["date"]}_{folder_dict["num"]}.csv', np.array(all_rows, dtype=object), delimiter=',', fmt='%s')
+
 if __name__ == '__main__':
-    classify()
+    args_dict = parse_cmdl()
+    if args_dict['paths'] is None:
+        classify(args_dict)
+    else:
+        paths = get_paths(paths_file=args_dict['paths'])
+        for path in paths:
+            args_dict['folder'] = path
+            print(f'running now classify on path: {path}')
+            classify(args_dict)
+            
