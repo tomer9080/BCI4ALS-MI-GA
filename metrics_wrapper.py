@@ -164,9 +164,26 @@ def compute_avgs(metrics_right, metrics_left):
     avg_var_left = np.mean([metric[1] for metric in metrics_left])
     return avg_mean_right, avg_mean_left, avg_var_right, avg_var_left
 
-def analyze(paths_file, is_list=False):
-    paths = get_paths(paths_file, is_list)
+def compute_corr(path):
+    all_features_mat = get_all_labels_features_from_folder(path)
+    corr_mat = all_features_mat.corr()
+    np.savetxt('stats/corr_mat.csv', corr_mat, delimiter=',')
+    np_corr = np.absolute(np.array(corr_mat))
+    
+    indices_mat = np.array(np.where((np_corr > 0.99) & (np_corr != 1)))    
+    indices_value_list = [[x, y, np_corr[x, y]] for x, y in zip(indices_mat[0,:], indices_mat[1,:])]
+    indices_value_list.sort(key=lambda x: x[2])
 
+    return indices_value_list
+
+def analyze(paths_file, is_list=False, corr=True):
+    paths = get_paths(paths_file, is_list)
+    
+    corr_indices = []
+    if corr:
+        corr_indices = compute_corr(paths[0])
+        np.savetxt('stats/corr_indices.csv', corr_indices, delimiter=',', fmt='%s')
+    
     feature_row = np.array([table_headers])
 
     to_plot = sys.argv[2]
@@ -233,4 +250,4 @@ def analyze(paths_file, is_list=False):
     np.savetxt('stats/features_metrics.csv', feature_row, delimiter=',', fmt='%s')
 
 if __name__ == "__main__":
-    analyze()
+    analyze(sys.argv[1])

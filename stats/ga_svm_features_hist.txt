@@ -1,13 +1,14 @@
 Feature                 Appearances
 --------------------  -------------
-E1_SPEC_EDGE                      1
+E1_SPEC_ENT                       1
+E1_SKEW                           1
 E2_BP_10_15.5                     1
-E2_SPEC_EDGE                      1
-E9_SKEW                           1
-E10_BP_10_15.5                    1
+E2_SLOPE                          1
+E3_BP_15.5_18.5                   1
+E8_RTP                            1
+E10_BP_17.5_20.5                  1
+E10_POWER_BAND                    1
 E11_RTP                           1
-E11_SLOPE                         1
-E11_VAR                           1
 CSP1                              0
 CSP2                              0
 CSP3                              0
@@ -18,7 +19,7 @@ E1_BP_17.5_20.5                   0
 E1_BP_12.5_30                     0
 E1_RTP                            0
 E1_SPEC_MOM                       0
-E1_SPEC_ENT                       0
+E1_SPEC_EDGE                      0
 E1_SLOPE                          0
 E1_INTERCEPT                      0
 E1_MEAN_FREQ                      0
@@ -26,7 +27,6 @@ E1_OCC_BAND                       0
 E1_POWER_BAND                     0
 E1_WLT_ENT                        0
 E1_KURT                           0
-E1_SKEW                           0
 E1_VAR                            0
 E1_STD                            0
 E1_LOG_ENE_ENT                    0
@@ -38,8 +38,8 @@ E2_BP_17.5_20.5                   0
 E2_BP_12.5_30                     0
 E2_RTP                            0
 E2_SPEC_MOM                       0
+E2_SPEC_EDGE                      0
 E2_SPEC_ENT                       0
-E2_SLOPE                          0
 E2_INTERCEPT                      0
 E2_MEAN_FREQ                      0
 E2_OCC_BAND                       0
@@ -52,7 +52,6 @@ E2_STD                            0
 E2_LOG_ENE_ENT                    0
 E2_BETA_ALPHA_RATIO               0
 E2_BP_THETA                       0
-E3_BP_15.5_18.5                   0
 E3_BP_8_10.5                      0
 E3_BP_10_15.5                     0
 E3_BP_17.5_20.5                   0
@@ -167,7 +166,6 @@ E8_BP_8_10.5                      0
 E8_BP_10_15.5                     0
 E8_BP_17.5_20.5                   0
 E8_BP_12.5_30                     0
-E8_RTP                            0
 E8_SPEC_MOM                       0
 E8_SPEC_EDGE                      0
 E8_SPEC_ENT                       0
@@ -200,6 +198,7 @@ E9_OCC_BAND                       0
 E9_POWER_BAND                     0
 E9_WLT_ENT                        0
 E9_KURT                           0
+E9_SKEW                           0
 E9_VAR                            0
 E9_STD                            0
 E9_LOG_ENE_ENT                    0
@@ -207,7 +206,7 @@ E9_BETA_ALPHA_RATIO               0
 E9_BP_THETA                       0
 E10_BP_15.5_18.5                  0
 E10_BP_8_10.5                     0
-E10_BP_17.5_20.5                  0
+E10_BP_10_15.5                    0
 E10_BP_12.5_30                    0
 E10_RTP                           0
 E10_SPEC_MOM                      0
@@ -217,7 +216,6 @@ E10_SLOPE                         0
 E10_INTERCEPT                     0
 E10_MEAN_FREQ                     0
 E10_OCC_BAND                      0
-E10_POWER_BAND                    0
 E10_WLT_ENT                       0
 E10_KURT                          0
 E10_SKEW                          0
@@ -234,6 +232,7 @@ E11_BP_12.5_30                    0
 E11_SPEC_MOM                      0
 E11_SPEC_EDGE                     0
 E11_SPEC_ENT                      0
+E11_SLOPE                         0
 E11_INTERCEPT                     0
 E11_MEAN_FREQ                     0
 E11_OCC_BAND                      0
@@ -241,6 +240,7 @@ E11_POWER_BAND                    0
 E11_WLT_ENT                       0
 E11_KURT                          0
 E11_SKEW                          0
+E11_VAR                           0
 E11_STD                           0
 E11_LOG_ENE_ENT                   0
 E11_BETA_ALPHA_RATIO              0

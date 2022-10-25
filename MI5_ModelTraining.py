@@ -1,4 +1,6 @@
 from cProfile import label
+from cmath import exp
+from warnings import catch_warnings
 import scipy.io as sio
 import numpy as np
 import argparse
@@ -16,6 +18,7 @@ from sklearn.model_selection import KFold
 from sklearn.metrics import accuracy_score
 from tabulate import tabulate
 import sys
+import os
 from OurFeatureSelection import Selector
 
 # TODO: Add interface for choosing features as we want.
@@ -124,16 +127,22 @@ def parse_cmdl():
     parser.add_argument('--folder', '-f', dest='folder', help='Folder path of the recording we want to classify', type=str)
     parser.add_argument('--folder2', '-f2', dest='folder2', help='Folder path of the second recording we want to classify - taken into account only if unify is True', type=str, default=None)
     parser.add_argument('--unify', '-u', dest='unify', help='Unify folder and folder2 to "one" recording and classify', type=bool)
-    parser.add_argument('--paths', '-p', dest='paths', help='Path to paths file to run classisfication for each folder in paths file', type=str, default=None)
+    parser.add_argument('--paths', '-pa', dest='paths', help='Path to paths file to run classisfication for each folder in paths file', type=str, default=None)
     parser.add_argument('--metric', '-m', dest='metric', help='Metric string - according to him we\'ll choose our features by our statistic methods', type=str, default="Score_(R^2)_Left,Score_(R^2)_Right")
     parser.add_argument('--simple', '-s', dest='simple', help='Use simple metric (just sort dataframe by columns)', type=bool, default=True)
+    parser.add_argument('--prior', '-pr', dest='prior', help='How many prior recordings to look back. if no prior to be used - please enter 0. default value is 3', type=int, default=3)
+    parser.add_argument('--new_folder', '-n', dest='new_folder', help='Where to save the stats in the class_results folder.', type=str)
+    parser.add_argument('--correlation', '-c', dest='corr', help='Wether use correlation or not in choosing the features', type=bool, default=False)
     args = parser.parse_args()
     return {'folder': args.folder,
             'folder2': args.folder2,
             'unify': args.unify,
             'paths': args.paths,
             'metric': args.metric,
-            'simple': args.simple}
+            'simple': args.simple,
+            'prior': args.prior,
+            'new_folder': args.new_folder,
+            'corr': args.corr}
 
 
 def get_matlab_features(recordingFolder, recordingFolder_2, unify):
@@ -180,6 +189,12 @@ def get_all_features(recordingFolder, recordingFolder_2, unify):
         print(f"concatenated headers: {headers[nca_selected_idx]}")
     return all_features, all_labels, test_indices, nca_selected_idx
 
+
+def create_sub_folder(folder_name):
+    try:
+        os.mkdir(f'class_results/{folder_name}')
+    except FileExistsError:
+        print(f"{folder_name} Already exists, moving on...")    
 
 def classify(args_dict):
 
@@ -246,11 +261,12 @@ def classify(args_dict):
     features_train, label_train, features_test, label_test = get_matlab_features(recordingFolder, recordingFolder_2, args_dict['unify']) 
 
     #### ------------ features from statistical analysis ------------ ####
-    our_selector = Selector('paths/paths_TK.txt', record_path=recordingFolder, ascending=False)
+    our_selector = Selector('paths/paths_TK.txt', record_path=recordingFolder, ascending=False, corr=args_dict["corr"])
+    should_use_prior = False if args_dict['prior'] == 0 else True
     if args_dict['simple']:
-        our_features_indices = our_selector.select_features(args_dict['metric'].split(','), use_prior=False)
+        our_features_indices = our_selector.select_features(args_dict['metric'].split(','), use_prior=should_use_prior, prior_recordings=args_dict['prior'])
     else:
-        our_features_indices = our_selector.select_features(args_dict['metric'], use_prior=False, simple_rule=False)
+        our_features_indices = our_selector.select_features(args_dict['metric'], use_prior=should_use_prior, prior_recordings=args_dict['prior'], simple_rule=False)
     
     train_features_stats = all_features[train_indices][:,our_features_indices]
     test_features_stats = all_features[test_indices][:,our_features_indices]
@@ -311,7 +327,8 @@ def classify(args_dict):
 
     folder_dict = get_dict_for_folder_from_path(recordingFolder)
     all_rows.insert(0, table_headers)
-    np.savetxt(f'class_results/{folder_dict["name"]}_{folder_dict["date"]}_{folder_dict["num"]}.csv', np.array(all_rows, dtype=object), delimiter=',', fmt='%s')
+    create_sub_folder(folder_name=args_dict['new_folder'])
+    np.savetxt(f'class_results/{args_dict["new_folder"]}/{folder_dict["name"]}_{folder_dict["date"]}_{folder_dict["num"]}.csv', np.array(all_rows, dtype=object), delimiter=',', fmt='%s')
 
 if __name__ == '__main__':
     args_dict = parse_cmdl()

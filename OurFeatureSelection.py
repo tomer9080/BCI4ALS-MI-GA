@@ -5,7 +5,7 @@ import os
 
 class Selector:
 
-    def __init__(self, paths, record_path=None, features_names=metrics_wrapper.headers, ascending=True):
+    def __init__(self, paths, record_path=None, features_names=metrics_wrapper.headers, ascending=True, corr=False):
         """
         __init__ - initialize a selector instance
         paths - a path to the paths file that includes al of the recordings data.
@@ -18,6 +18,7 @@ class Selector:
         self.record_path = record_path
         self.names = features_names
         self.ascending = ascending
+        self.use_corr = corr
         self.types_dict = {key: float if key != 'Feature' else str for key in metrics_wrapper.table_headers}
 
     def get_index_by_name(self, name):
@@ -35,11 +36,22 @@ class Selector:
         use_prior - use / not use prior.
         """
         if indices[0] < 0:
-            indices[0] == 0
+            indices[0] = 0
         if use_prior: # use prior recordings to analyze
-            metrics_wrapper.analyze(paths_list[indices[0]:indices[1]], is_list=True)
+            print(indices[0], indices[1], paths_list[indices[0]:indices[1]])
+            metrics_wrapper.analyze(paths_list[indices[0]:indices[1]], is_list=True, corr=self.use_corr)
         else:         # use only current recording
-            metrics_wrapper.analyze([paths_list[indices[1] - 1]], is_list=True)
+            metrics_wrapper.analyze([paths_list[indices[1] - 1]], is_list=True, corr=self.use_corr)
+    
+    def get_best_indices_of_corr(self, num_features=10):
+        print(self.corr)
+        set_of_features = set()
+        i = -1 
+        while len(set_of_features) < num_features:
+            set_of_features.add(self.corr[i][0])
+            set_of_features.add(self.corr[i][1])
+            i -= 1
+        return list(set_of_features)
 
     def select_features(self, metric_rule, threshold=1, num_of_features=10, use_prior=True, prior_recordings=3, simple_rule=True):
         """
@@ -66,7 +78,11 @@ class Selector:
         # now we have the file stats/features_metrics.csv
         self.metrics = pd.read_csv('stats/features_metrics.csv')
         # this is simple metrics - ust ascending order by pandas sort.
-        if simple_rule:
+        if self.use_corr:
+            self.corr = np.loadtxt('stats/corr_indices.csv', delimiter=',', dtype=np.float64)
+            chosen_features = self.get_best_indices_of_corr()
+            return [int(x) for x in chosen_features]
+        elif simple_rule:
             chosen_features = self.metrics.sort_values(metric_rule, ascending=self.ascending)['Feature'][:num_of_features]
         else:
             chosen_features = self.metrics.query(metric_rule)['Feature'][:num_of_features]
