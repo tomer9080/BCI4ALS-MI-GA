@@ -10,12 +10,13 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis as QDA
 from sklearn.neighbors import KNeighborsClassifier as KNN
 from sklearn.neighbors import NeighborhoodComponentsAnalysis as NCA
-from sklearn.svm import LinearSVC as SVM
+from sklearn.svm import SVC
 from sklearn.naive_bayes import BernoulliNB as NB
 from sklearn.ensemble import RandomForestClassifier as RF
 from sklearn.tree import DecisionTreeClassifier as DT
 from sklearn.model_selection import KFold
 from sklearn.metrics import accuracy_score
+from sklearn.model_selection import GridSearchCV
 from tabulate import tabulate
 import sys
 import os
@@ -66,7 +67,7 @@ def cross_validation_on_model(model, k, features, labels):
     return avg_score, all_scores, all_models
 
 
-def classify_results(model, model_name, features_train, label_train, features_test, label_test, features_indices, cv=False, Kfold=5):
+def classify_results(model, model_name, features_train, label_train, features_test, label_test, features_indices, cv=False, Kfold=5, params=None):
     print(f"Running {model_name} analysis...")
     model.fit(features_train, label_train)
     prediction = model.predict(features_test)
@@ -229,8 +230,8 @@ def classify(args_dict):
     labels_test_ga = all_labels[test_indices]
 
     ga_models = [
-        {'name': 'SVM', 
-         'model': SVM(penalty='l2', loss='hinge', multi_class='ovr', C=0.1, max_iter=30_000),
+        {'name': 'SVC', 
+         'model': SVC(),
          'cv': 3,
          "scoring": "accuracy",
          "max_features": 10,
@@ -288,9 +289,9 @@ def classify(args_dict):
         {'name': 'KNN-7', 'model': KNN(7), 'cv': False},
         {'name': 'KNN-7 NCA', 'model': KNN(7), 'cv': False, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},
         {'name': 'KNN-7 STA', 'model': KNN(7), 'cv': False, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
-        {'name': 'SVM', 'model': SVM(penalty='l2', loss='hinge', multi_class='ovr', C=2, max_iter=30_000), 'cv': True},
-        {'name': 'SVM NCA', 'model': SVM(penalty='l2', loss='hinge', multi_class='ovr', C=2, max_iter=30_000), 'cv': True, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},
-        {'name': 'SVM STA', 'model': SVM(penalty='l2', loss='hinge', multi_class='ovr', C=2, max_iter=30_000), 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
+        {'name': 'SVC', 'model': SVC(), 'cv': True, 'params': {'C': [0.1,1, 10, 100], 'gamma': [1,0.1,0.01,0.001],'kernel': ['rbf', 'poly', 'sigmoid']}},
+        {'name': 'SVC NCA', 'model': SVC(), 'cv': True, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},
+        {'name': 'SVC STA', 'model': SVC(), 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
         {'name': 'NB', 'model': NB(), 'cv': False},
         {'name': 'NB NCA', 'model': NB(), 'cv': False, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},
         {'name': 'NB STA', 'model': NB(), 'cv': False, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
@@ -310,7 +311,7 @@ def classify(args_dict):
         l_train = label_train if model.get('ltr') is None else model.get('ltr')
         l_test = label_test if model.get('lte') is None else model.get('lte')
         indices = nca_selected_idx if model.get('indices') is None else model.get('indices')
-        row, cv_row = classify_results(model['model'], model['name'], features_train=f_train, features_test=f_test, label_train=l_train, features_indices=indices, label_test=l_test, cv=model['cv'])
+        row, cv_row = classify_results(model['model'], model['name'], features_train=f_train, features_test=f_test, label_train=l_train, features_indices=indices, label_test=l_test, cv=model['cv'], params=model.get('params'))
         all_rows.append(row)
         if cv_row != []:
             all_rows.append(cv_row)
