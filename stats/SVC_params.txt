@@ -1,0 +1,1 @@
+SVC best params: {'C': 2, 'gamma': 0.1, 'kernel': 'rbf'}

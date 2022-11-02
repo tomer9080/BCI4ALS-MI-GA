@@ -66,9 +66,20 @@ def cross_validation_on_model(model, k, features, labels):
     print(f"All scores: {all_scores}")
     return avg_score, all_scores, all_models
 
+def print_model_best_params(model_name, best_params):
+    best_params_file = open(f"stats/{model_name}_params.txt", 'w')
+    best_params_file.write(f'{model_name} best params: {best_params}')
+    best_params_file.close()
+
 
 def classify_results(model, model_name, features_train, label_train, features_test, label_test, features_indices, cv=False, Kfold=5, params=None):
     print(f"Running {model_name} analysis...")
+    if params is not None:
+        search = GridSearchCV(model, param_grid=params, cv=9)
+        search.fit(features_train, label_train)
+        best_model = search.best_estimator_
+        print_model_best_params(model_name, search.best_params_)
+        model = best_model
     model.fit(features_train, label_train)
     prediction = model.predict(features_test)
     test_results = prediction - label_test
@@ -289,9 +300,9 @@ def classify(args_dict):
         {'name': 'KNN-7', 'model': KNN(7), 'cv': False},
         {'name': 'KNN-7 NCA', 'model': KNN(7), 'cv': False, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},
         {'name': 'KNN-7 STA', 'model': KNN(7), 'cv': False, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
-        {'name': 'SVC', 'model': SVC(), 'cv': True, 'params': {'C': [0.1,1, 10, 100], 'gamma': [1,0.1,0.01,0.001],'kernel': ['rbf', 'poly', 'sigmoid']}},
-        {'name': 'SVC NCA', 'model': SVC(), 'cv': True, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},
-        {'name': 'SVC STA', 'model': SVC(), 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
+        {'name': 'SVC', 'model': SVC(), 'cv': True, 'params': {'C': [0.1, 1, 2, 10, 100], 'gamma': [100,10,1,0.1,0.01,0.001],'kernel': ['rbf', 'poly', 'sigmoid']}},
+        {'name': 'SVC NCA', 'model': SVC(), 'cv': True, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca, 'params': {'C': [0.1, 1, 2, 10, 100], 'gamma': [100,10,1,0.1,0.01,0.001],'kernel': ['rbf', 'poly', 'sigmoid']}},
+        {'name': 'SVC STA', 'model': SVC(), 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats, 'params': {'C': [0.1, 1, 2, 10, 100], 'gamma': [100,10,1,0.1,0.01,0.001],'kernel': ['rbf', 'poly', 'sigmoid']}},
         {'name': 'NB', 'model': NB(), 'cv': False},
         {'name': 'NB NCA', 'model': NB(), 'cv': False, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},
         {'name': 'NB STA', 'model': NB(), 'cv': False, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},

@@ -1,209 +1,135 @@
-[ 88  17  14 228  12 185 181  19 235  15]
-['E4_LOG_ENE_ENT' 'E1_WLT_ENT' 'E1_MEAN_FREQ' 'E11_RTP' 'E1_SLOPE'
- 'E9_SPEC_MOM' 'E9_BP_10_15.5' 'E1_SKEW' 'E11_OCC_BAND' 'E1_OCC_BAND']
-['neighborhoodcomponentsanalysis0' 'neighborhoodcomponentsanalysis1'
- 'neighborhoodcomponentsanalysis2' 'neighborhoodcomponentsanalysis3'
- 'neighborhoodcomponentsanalysis4' 'neighborhoodcomponentsanalysis5'
- 'neighborhoodcomponentsanalysis6' 'neighborhoodcomponentsanalysis7'
- 'neighborhoodcomponentsanalysis8' 'neighborhoodcomponentsanalysis9'
- 'neighborhoodcomponentsanalysis10' 'neighborhoodcomponentsanalysis11'
- 'neighborhoodcomponentsanalysis12' 'neighborhoodcomponentsanalysis13'
- 'neighborhoodcomponentsanalysis14' 'neighborhoodcomponentsanalysis15'
- 'neighborhoodcomponentsanalysis16' 'neighborhoodcomponentsanalysis17'
- 'neighborhoodcomponentsanalysis18' 'neighborhoodcomponentsanalysis19'
- 'neighborhoodcomponentsanalysis20' 'neighborhoodcomponentsanalysis21'
- 'neighborhoodcomponentsanalysis22' 'neighborhoodcomponentsanalysis23'
- 'neighborhoodcomponentsanalysis24' 'neighborhoodcomponentsanalysis25'
- 'neighborhoodcomponentsanalysis26' 'neighborhoodcomponentsanalysis27'
- 'neighborhoodcomponentsanalysis28' 'neighborhoodcomponentsanalysis29'
- 'neighborhoodcomponentsanalysis30' 'neighborhoodcomponentsanalysis31'
- 'neighborhoodcomponentsanalysis32' 'neighborhoodcomponentsanalysis33'
- 'neighborhoodcomponentsanalysis34' 'neighborhoodcomponentsanalysis35'
- 'neighborhoodcomponentsanalysis36' 'neighborhoodcomponentsanalysis37'
- 'neighborhoodcomponentsanalysis38' 'neighborhoodcomponentsanalysis39'
- 'neighborhoodcomponentsanalysis40' 'neighborhoodcomponentsanalysis41'
- 'neighborhoodcomponentsanalysis42' 'neighborhoodcomponentsanalysis43'
- 'neighborhoodcomponentsanalysis44' 'neighborhoodcomponentsanalysis45'
- 'neighborhoodcomponentsanalysis46' 'neighborhoodcomponentsanalysis47'
- 'neighborhoodcomponentsanalysis48' 'neighborhoodcomponentsanalysis49'
- 'neighborhoodcomponentsanalysis50' 'neighborhoodcomponentsanalysis51'
- 'neighborhoodcomponentsanalysis52' 'neighborhoodcomponentsanalysis53'
- 'neighborhoodcomponentsanalysis54' 'neighborhoodcomponentsanalysis55'
- 'neighborhoodcomponentsanalysis56' 'neighborhoodcomponentsanalysis57'
- 'neighborhoodcomponentsanalysis58' 'neighborhoodcomponentsanalysis59'
- 'neighborhoodcomponentsanalysis60' 'neighborhoodcomponentsanalysis61'
- 'neighborhoodcomponentsanalysis62' 'neighborhoodcomponentsanalysis63'
- 'neighborhoodcomponentsanalysis64' 'neighborhoodcomponentsanalysis65'
- 'neighborhoodcomponentsanalysis66' 'neighborhoodcomponentsanalysis67'
- 'neighborhoodcomponentsanalysis68' 'neighborhoodcomponentsanalysis69'
- 'neighborhoodcomponentsanalysis70' 'neighborhoodcomponentsanalysis71'
- 'neighborhoodcomponentsanalysis72' 'neighborhoodcomponentsanalysis73'
- 'neighborhoodcomponentsanalysis74' 'neighborhoodcomponentsanalysis75'
- 'neighborhoodcomponentsanalysis76' 'neighborhoodcomponentsanalysis77'
- 'neighborhoodcomponentsanalysis78' 'neighborhoodcomponentsanalysis79'
- 'neighborhoodcomponentsanalysis80' 'neighborhoodcomponentsanalysis81'
- 'neighborhoodcomponentsanalysis82' 'neighborhoodcomponentsanalysis83'
- 'neighborhoodcomponentsanalysis84' 'neighborhoodcomponentsanalysis85'
- 'neighborhoodcomponentsanalysis86' 'neighborhoodcomponentsanalysis87'
- 'neighborhoodcomponentsanalysis88' 'neighborhoodcomponentsanalysis89'
- 'neighborhoodcomponentsanalysis90' 'neighborhoodcomponentsanalysis91'
- 'neighborhoodcomponentsanalysis92' 'neighborhoodcomponentsanalysis93'
- 'neighborhoodcomponentsanalysis94' 'neighborhoodcomponentsanalysis95'
- 'neighborhoodcomponentsanalysis96' 'neighborhoodcomponentsanalysis97'
- 'neighborhoodcomponentsanalysis98' 'neighborhoodcomponentsanalysis99'
- 'neighborhoodcomponentsanalysis100' 'neighborhoodcomponentsanalysis101'
- 'neighborhoodcomponentsanalysis102' 'neighborhoodcomponentsanalysis103'
- 'neighborhoodcomponentsanalysis104' 'neighborhoodcomponentsanalysis105'
- 'neighborhoodcomponentsanalysis106' 'neighborhoodcomponentsanalysis107'
- 'neighborhoodcomponentsanalysis108' 'neighborhoodcomponentsanalysis109'
- 'neighborhoodcomponentsanalysis110' 'neighborhoodcomponentsanalysis111'
- 'neighborhoodcomponentsanalysis112' 'neighborhoodcomponentsanalysis113'
- 'neighborhoodcomponentsanalysis114' 'neighborhoodcomponentsanalysis115'
- 'neighborhoodcomponentsanalysis116' 'neighborhoodcomponentsanalysis117'
- 'neighborhoodcomponentsanalysis118' 'neighborhoodcomponentsanalysis119'
- 'neighborhoodcomponentsanalysis120' 'neighborhoodcomponentsanalysis121'
- 'neighborhoodcomponentsanalysis122' 'neighborhoodcomponentsanalysis123'
- 'neighborhoodcomponentsanalysis124' 'neighborhoodcomponentsanalysis125'
- 'neighborhoodcomponentsanalysis126' 'neighborhoodcomponentsanalysis127'
- 'neighborhoodcomponentsanalysis128' 'neighborhoodcomponentsanalysis129'
- 'neighborhoodcomponentsanalysis130' 'neighborhoodcomponentsanalysis131'
- 'neighborhoodcomponentsanalysis132' 'neighborhoodcomponentsanalysis133'
- 'neighborhoodcomponentsanalysis134' 'neighborhoodcomponentsanalysis135'
- 'neighborhoodcomponentsanalysis136' 'neighborhoodcomponentsanalysis137'
- 'neighborhoodcomponentsanalysis138' 'neighborhoodcomponentsanalysis139'
- 'neighborhoodcomponentsanalysis140' 'neighborhoodcomponentsanalysis141'
- 'neighborhoodcomponentsanalysis142' 'neighborhoodcomponentsanalysis143'
- 'neighborhoodcomponentsanalysis144' 'neighborhoodcomponentsanalysis145'
- 'neighborhoodcomponentsanalysis146' 'neighborhoodcomponentsanalysis147'
- 'neighborhoodcomponentsanalysis148' 'neighborhoodcomponentsanalysis149'
- 'neighborhoodcomponentsanalysis150' 'neighborhoodcomponentsanalysis151'
- 'neighborhoodcomponentsanalysis152' 'neighborhoodcomponentsanalysis153'
- 'neighborhoodcomponentsanalysis154' 'neighborhoodcomponentsanalysis155'
- 'neighborhoodcomponentsanalysis156' 'neighborhoodcomponentsanalysis157'
- 'neighborhoodcomponentsanalysis158' 'neighborhoodcomponentsanalysis159'
- 'neighborhoodcomponentsanalysis160' 'neighborhoodcomponentsanalysis161'
- 'neighborhoodcomponentsanalysis162' 'neighborhoodcomponentsanalysis163'
- 'neighborhoodcomponentsanalysis164' 'neighborhoodcomponentsanalysis165'
- 'neighborhoodcomponentsanalysis166' 'neighborhoodcomponentsanalysis167'
- 'neighborhoodcomponentsanalysis168' 'neighborhoodcomponentsanalysis169'
- 'neighborhoodcomponentsanalysis170' 'neighborhoodcomponentsanalysis171'
- 'neighborhoodcomponentsanalysis172' 'neighborhoodcomponentsanalysis173'
- 'neighborhoodcomponentsanalysis174' 'neighborhoodcomponentsanalysis175'
- 'neighborhoodcomponentsanalysis176' 'neighborhoodcomponentsanalysis177'
- 'neighborhoodcomponentsanalysis178' 'neighborhoodcomponentsanalysis179'
- 'neighborhoodcomponentsanalysis180' 'neighborhoodcomponentsanalysis181'
- 'neighborhoodcomponentsanalysis182' 'neighborhoodcomponentsanalysis183'
- 'neighborhoodcomponentsanalysis184' 'neighborhoodcomponentsanalysis185'
- 'neighborhoodcomponentsanalysis186' 'neighborhoodcomponentsanalysis187'
- 'neighborhoodcomponentsanalysis188' 'neighborhoodcomponentsanalysis189'
- 'neighborhoodcomponentsanalysis190' 'neighborhoodcomponentsanalysis191'
- 'neighborhoodcomponentsanalysis192' 'neighborhoodcomponentsanalysis193'
- 'neighborhoodcomponentsanalysis194' 'neighborhoodcomponentsanalysis195'
- 'neighborhoodcomponentsanalysis196' 'neighborhoodcomponentsanalysis197'
- 'neighborhoodcomponentsanalysis198' 'neighborhoodcomponentsanalysis199'
- 'neighborhoodcomponentsanalysis200' 'neighborhoodcomponentsanalysis201'
- 'neighborhoodcomponentsanalysis202' 'neighborhoodcomponentsanalysis203'
- 'neighborhoodcomponentsanalysis204' 'neighborhoodcomponentsanalysis205'
- 'neighborhoodcomponentsanalysis206' 'neighborhoodcomponentsanalysis207'
- 'neighborhoodcomponentsanalysis208' 'neighborhoodcomponentsanalysis209'
- 'neighborhoodcomponentsanalysis210' 'neighborhoodcomponentsanalysis211'
- 'neighborhoodcomponentsanalysis212' 'neighborhoodcomponentsanalysis213'
- 'neighborhoodcomponentsanalysis214' 'neighborhoodcomponentsanalysis215'
- 'neighborhoodcomponentsanalysis216' 'neighborhoodcomponentsanalysis217'
- 'neighborhoodcomponentsanalysis218' 'neighborhoodcomponentsanalysis219'
- 'neighborhoodcomponentsanalysis220' 'neighborhoodcomponentsanalysis221'
- 'neighborhoodcomponentsanalysis222' 'neighborhoodcomponentsanalysis223'
- 'neighborhoodcomponentsanalysis224' 'neighborhoodcomponentsanalysis225'
- 'neighborhoodcomponentsanalysis226' 'neighborhoodcomponentsanalysis227'
- 'neighborhoodcomponentsanalysis228' 'neighborhoodcomponentsanalysis229'
- 'neighborhoodcomponentsanalysis230' 'neighborhoodcomponentsanalysis231'
- 'neighborhoodcomponentsanalysis232' 'neighborhoodcomponentsanalysis233'
- 'neighborhoodcomponentsanalysis234' 'neighborhoodcomponentsanalysis235'
- 'neighborhoodcomponentsanalysis236' 'neighborhoodcomponentsanalysis237'
- 'neighborhoodcomponentsanalysis238' 'neighborhoodcomponentsanalysis239'
- 'neighborhoodcomponentsanalysis240' 'neighborhoodcomponentsanalysis241'
- 'neighborhoodcomponentsanalysis242' 'neighborhoodcomponentsanalysis243'
- 'neighborhoodcomponentsanalysis244']
+[138 101 224  15  30 156  98   4 106 189]
+['E7_BP_17.5_20.5' 'E5_INTERCEPT' 'E11_BP_8_10.5' 'E1_OCC_BAND' 'E2_RTP'
+ 'E7_BP_THETA' 'E5_SPEC_EDGE' 'E1_BP_8_10.5' 'E5_KURT' 'E9_INTERCEPT']
+concatenated headers: ['E7_BP_17.5_20.5' 'E5_INTERCEPT' 'E11_BP_8_10.5' 'E1_OCC_BAND' 'E2_RTP'
+ 'E4_BP_THETA' 'E1_BP_17.5_20.5' 'E2_WLT_ENT' 'E1_BP_12.5_30'
+ 'E1_SPEC_ENT']
 shapes: 
-(60, 245) (60,) (15,) (10,) (60, 10)
-SVM GA FEATURES: ['E2_MEAN_FREQ' 'E4_POWER_BAND' 'E5_INTERCEPT' 'E6_MEAN_FREQ'
- 'E7_INTERCEPT' 'E8_LOG_ENE_ENT' 'E9_BP_THETA' 'E10_SKEW' 'E11_RTP'
- 'E11_SPEC_MOM']
-LDA GA FEATURES: ['E1_MEAN_FREQ' 'E4_VAR' 'E7_BP_15.5_18.5' 'E7_POWER_BAND'
- 'E8_LOG_ENE_ENT' 'E9_POWER_BAND' 'E9_WLT_ENT' 'E11_RTP' 'E11_STD']
-167      E8_INTERCEPT
-200       E9_BP_THETA
-227    E11_BP_12.5_30
-169       E8_OCC_BAND
-196            E9_VAR
-54       E3_SPEC_EDGE
-163       E8_SPEC_MOM
-152            E7_VAR
-64             E3_VAR
-228           E11_RTP
+(120, 245) (120,) (30,) (10,) (120, 10)
+156       E7_BP_THETA
+90        E4_BP_THETA
+79       E4_INTERCEPT
+134       E6_BP_THETA
+222      E10_BP_THETA
+44     E2_LOG_ENE_ENT
+13       E1_INTERCEPT
+101      E5_INTERCEPT
+131            E6_STD
+76       E4_SPEC_EDGE
 Name: Feature, dtype: object
 Running LDA analysis...
-All scores: [0.75, 0.6666666666666666, 0.75, 0.5, 0.5]
+All scores: [0.4166666666666667, 0.4583333333333333, 0.5833333333333334, 0.5, 0.2916666666666667]
 Running LDA NCA analysis...
-All scores: [0.75, 0.6666666666666666, 0.75, 0.5, 0.5]
+All scores: [0.4166666666666667, 0.4583333333333333, 0.5833333333333334, 0.5, 0.2916666666666667]
 Running LDA STA analysis...
-All scores: [0.25, 0.75, 0.6666666666666666, 0.4166666666666667, 0.5833333333333334]
+All scores: [0.5833333333333334, 0.5, 0.625, 0.5416666666666666, 0.5416666666666666]
 Running QDA analysis...
-All scores: [0.3333333333333333, 0.5833333333333334, 0.25, 0.5, 0.5]
+All scores: [0.3333333333333333, 0.4166666666666667, 0.7083333333333334, 0.4583333333333333, 0.4583333333333333]
 Running QDA NCA analysis...
-All scores: [0.3333333333333333, 0.5833333333333334, 0.25, 0.5, 0.5]
+All scores: [0.3333333333333333, 0.4166666666666667, 0.7083333333333334, 0.4583333333333333, 0.4583333333333333]
+Running QDA STA analysis...
+All scores: [0.5, 0.4583333333333333, 0.625, 0.5, 0.4166666666666667]
 Running KNN-5 analysis...
 Running KNN-5 NCA analysis...
+Running KNN-5 STA analysis...
 Running KNN-7 analysis...
 Running KNN-7 NCA analysis...
-Running SVM analysis...
-All scores: [0.6666666666666666, 0.6666666666666666, 0.6666666666666666, 0.5, 0.4166666666666667]
-Running SVM NCA analysis...
-All scores: [0.6666666666666666, 0.6666666666666666, 0.6666666666666666, 0.5, 0.4166666666666667]
-Running SVM STA analysis...
-All scores: [0.4166666666666667, 0.5833333333333334, 0.4166666666666667, 0.6666666666666666, 0.5833333333333334]
+Running KNN-7 STA analysis...
+Running SVC analysis...
+All scores: [0.6666666666666666, 0.5, 0.625, 0.4583333333333333, 0.625]
+Running SVC NCA analysis...
+All scores: [0.5416666666666666, 0.5, 0.5833333333333334, 0.5416666666666666, 0.5833333333333334]
+Running SVC STA analysis...
+All scores: [0.5, 0.5416666666666666, 0.7083333333333334, 0.6666666666666666, 0.5416666666666666]
 Running NB analysis...
 Running NB NCA analysis...
+Running NB STA analysis...
 Running RF analysis...
-All scores: [0.5833333333333334, 0.5833333333333334, 0.5833333333333334, 0.6666666666666666, 0.4166666666666667]
+All scores: [0.5416666666666666, 0.5, 0.5416666666666666, 0.5, 0.4583333333333333]
 Running RF NCA analysis...
-All scores: [0.5833333333333334, 0.6666666666666666, 0.6666666666666666, 0.5833333333333334, 0.5]
+All scores: [0.4583333333333333, 0.5, 0.5416666666666666, 0.4583333333333333, 0.5833333333333334]
+Running RF STA analysis...
+All scores: [0.4583333333333333, 0.5833333333333334, 0.6666666666666666, 0.5833333333333334, 0.4166666666666667]
 Running DT analysis...
-All scores: [0.25, 0.5, 0.4166666666666667, 0.5, 0.5]
+All scores: [0.5833333333333334, 0.4583333333333333, 0.5833333333333334, 0.4583333333333333, 0.4583333333333333]
 Running DT NCA analysis...
-All scores: [0.3333333333333333, 0.5833333333333334, 0.5, 0.5, 0.4166666666666667]
+All scores: [0.5416666666666666, 0.5, 0.5416666666666666, 0.5416666666666666, 0.5416666666666666]
+Running DT STA analysis...
+All scores: [0.3333333333333333, 0.4166666666666667, 0.5, 0.625, 0.375]
+Running SVC with GA features selection & analysis...
+All scores: [0.6666666666666666, 0.5, 0.625, 0.6666666666666666, 0.75]
+Running LDA with GA features selection & analysis...
+All scores: [0.625, 0.5416666666666666, 0.5416666666666666, 0.5833333333333334, 0.5833333333333334]
 
-Classifier      Success Rate  Classifier Prediction            Test Labels                      Sub Labels
-------------  --------------  -------------------------------  -------------------------------  -------------------------------------------------------------
-LDA                 0.6       [2 3 1 1 1 1 3 3 2 2 2 2 3 1 1]  [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  [  0   0   0   0 254 255   0   0   1   0 255   0   2   0 255]
-LDA CV              0.633333  []                               [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  []
-LDA NCA             0.466667  [2 3 1 3 3 3 2 2 2 2 3 2 2 2 1]  [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  [  0   0   0   2   0   1 255 255   1   0   0   0   1   1 255]
-LDA NCA CV          0.633333  []                               [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  []
-LDA STA             0.6       [1 3 1 2 3 3 3 1 1 2 3 2 1 2 1]  [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  [255   0   0   1   0   1   0 254   0   0   0   0   0   1 255]
-LDA STA CV          0.533333  []                               [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  []
-QDA                 0.333333  [2 2 3 1 1 1 3 2 2 1 2 2 2 3 2]  [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  [  0 255   2   0 254 255   0 255   1 255 255   0   1   2   0]
-QDA CV              0.433333  []                               [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  []
-QDA NCA             0.466667  [2 2 3 1 2 2 1 1 1 1 1 2 1 2 2]  [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  [  0 255   2   0 255   0 254 254   0 255 254   0   0   1   0]
-QDA NCA CV          0.433333  []                               [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  []
-KNN-5               0.533333  [2 3 1 1 2 1 2 1 2 2 1 2 1 2 2]  [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  [  0   0   0   0 255 255 255 254   1   0 254   0   0   1   0]
-KNN-5 NCA           0.533333  [3 3 1 3 3 2 3 3 1 3 1 3 1 2 1]  [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  [  1   0   0   2   0   0   0   0   0   1 254   1   0   1 255]
-KNN-7               0.466667  [2 3 1 1 2 1 2 1 2 1 1 2 1 2 2]  [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  [  0   0   0   0 255 255 255 254   1 255 254   0   0   1   0]
-KNN-7 NCA           0.4       [3 3 1 3 3 3 3 1 2 3 3 3 1 2 1]  [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  [  1   0   0   2   0   1   0 254   1   1   0   1   0   1 255]
-SVM                 0.533333  [2 3 1 1 1 1 3 3 2 3 2 2 3 1 1]  [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  [  0   0   0   0 254 255   0   0   1   1 255   0   2   0 255]
-SVM CV              0.583333  []                               [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  []
-SVM NCA             0.6       [2 3 1 2 3 2 3 3 2 1 1 2 1 2 1]  [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  [  0   0   0   1   0   0   0   0   1 255 254   0   0   1 255]
-SVM NCA CV          0.583333  []                               [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  []
-SVM STA             0.466667  [2 3 2 2 2 3 3 1 3 2 3 2 3 3 2]  [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  [  0   0   1   1 255   1   0 254   2   0   0   0   2   2   0]
-SVM STA CV          0.533333  []                               [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  []
-NB                  0.666667  [2 3 1 1 1 1 3 3 2 2 1 2 1 2 2]  [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  [  0   0   0   0 254 255   0   0   1   0 254   0   0   1   0]
-NB NCA              0.333333  [2 3 2 2 3 2 2 1 1 3 2 3 2 2 1]  [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  [  0   0   1   1   0   0 255 254   0   1 255   1   1   1 255]
-RF                  0.333333  [1 3 1 1 1 1 3 1 2 1 1 2 3 2 1]  [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  [255   0   0   0 254 255   0 254   1 255 254   0   2   1 255]
-RF CV               0.566667  []                               [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  []
-RF NCA              0.333333  [2 3 2 2 3 3 2 3 1 1 2 3 2 2 1]  [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  [  0   0   1   1   0   1 255   0   0 255 255   1   1   1 255]
-RF NCA CV           0.6       []                               [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  []
-DT                  0.466667  [2 3 1 3 2 2 3 3 3 3 1 2 3 2 1]  [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  [  0   0   0   2 255   0   0   0   2   1 254   0   2   1 255]
-DT CV               0.433333  []                               [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  []
-DT NCA              0.266667  [2 2 2 3 3 3 2 1 1 1 2 3 1 2 1]  [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  [  0 255   1   2   0   1 255 254   0 255 255   1   0   1 255]
-DT NCA CV           0.466667  []                               [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  []
-SVM GA              0.533333  [3 3 1 3 3 3 3 3 3 2 2 2 1 2 1]  [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  [  1   0   0   2   0   1   0   0   2   0 255   0   0   1 255]
-LDA GA              0.466667  [3 3 1 3 3 1 3 3 2 3 1 2 1 2 1]  [2 3 1 1 3 2 3 3 1 2 3 2 1 1 2]  [  1   0   0   2   0 255   0   0   1   1 254   0   0   1 255]
+Classifier      Success Rate  Classifier Prediction                                          Test Labels                                                    Sub Labels
+------------  --------------  -------------------------------------------------------------  -------------------------------------------------------------  ------------------------------------------------------------------------
+LDA                 0.366667  [3 2 1 3 1 1 2 2 1 1 3 2 2 2 2 2 2 1 1 2 1 3 1 1 1 3 1 2 3 2]  [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 3 1 2 1 2 3 2 3 2 1 3 1 3 1 2]  [  2 255 255   1   0 254   1   1   0 255   0 255   0   0 255 255   1 255
+                                                                                                                                                               0   0 254   1 254 255   0   0   0 255   2   0]
+LDA CV              0.45      []                                                             [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 3 1 2 1 2 3 2 3 2 1 3 1 3 1 2]  []
+LDA NCA             0.4       [1 3 1 3 1 2 2 2 1 1 2 2 1 2 3 1 2 1 1 1 1 2 2 1 1 2 3 3 2 2]  [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 1 3 1 1 2 2 3 3 2 1 3 2 3 2 3]  [  0   0 255   1   0 255   1   1   0 255 255 255 255   0   0   0 255   0
+                                                                                                                                                               0 255 255 255 255 255   0 255   1   0   0 255]
+LDA NCA CV          0.45      []                                                             [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 1 3 1 1 2 2 3 3 2 1 3 2 3 2 3]  []
+LDA STA             0.433333  [2 2 1 2 1 1 2 2 1 2 2 3 1 2 2 1 1 1 1 3 1 2 3 2 3 3 3 2 1 3]  [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 1 3 1 1 2 2 3 3 2 1 3 2 3 2 3]  [  1 255 255   0   0 254   1   1   0   0 255   0 255   0 255   0 254   0
+                                                                                                                                                               0   1 255 255   0   0   2   0   1 255 255   0]
+LDA STA CV          0.558333  []                                                             [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 1 3 1 1 2 2 3 3 2 1 3 2 3 2 3]  []
+QDA                 0.433333  [3 3 1 2 2 1 2 1 1 2 3 2 1 3 1 3 3 1 1 1 3 3 3 2 2 2 1 3 3 1]  [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 3 1 2 1 2 3 2 3 2 1 3 1 3 1 2]  [  2   0 255   0   1 254   1   0   0   0   0 255 255   1 254   0   2 255
+                                                                                                                                                               0 255   0   1   0   0   1 255   0   0   2 255]
+QDA CV              0.475     []                                                             [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 3 1 2 1 2 3 2 3 2 1 3 1 3 1 2]  []
+QDA NCA             0.5       [1 3 1 3 1 3 2 2 1 3 3 3 3 3 1 1 3 3 1 2 3 3 3 1 1 2 3 3 1 2]  [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 1 3 1 1 2 2 3 3 2 1 3 2 3 2 3]  [  0   0 255   1   0   0   1   1   0   1   0   0   1   1 254   0   0   2
+                                                                                                                                                               0   0   1   0   0 255   0 255   1   0 255 255]
+QDA NCA CV          0.475     []                                                             [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 1 3 1 1 2 2 3 3 2 1 3 2 3 2 3]  []
+QDA STA             0.433333  [2 2 2 1 1 1 3 2 1 2 2 3 1 2 3 1 1 1 1 3 2 2 3 1 1 2 3 2 1 2]  [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 1 3 1 1 2 2 3 3 2 1 3 2 3 2 3]  [  1 255   0 255   0 254   2   1   0   0 255   0 255   0   0   0 254   0
+                                                                                                                                                               0   1   0 255   0 255   0 255   1 255 255 255]
+QDA STA CV          0.5       []                                                             [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 1 3 1 1 2 2 3 3 2 1 3 2 3 2 3]  []
+KNN-5               0.466667  [3 2 1 2 1 1 1 3 1 2 3 2 2 3 1 3 2 1 1 2 1 3 3 1 1 3 1 1 3 1]  [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 3 1 2 1 2 3 2 3 2 1 3 1 3 1 2]  [  2 255 255   0   0 254   0   2   0   0   0 255   0   1 254   0   1 255
+                                                                                                                                                               0   0 254   1   0 255   0   0   0 254   2 255]
+KNN-5 NCA           0.5       [2 2 1 3 1 3 1 1 1 3 3 3 3 3 1 1 3 1 1 1 1 3 3 1 1 2 2 2 1 2]  [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 1 3 1 1 2 2 3 3 2 1 3 2 3 2 3]  [  1 255 255   1   0   0   0   0   0   1   0   0   1   1 254   0   0   0
+                                                                                                                                                               0 255 255   0   0 255   0 255   0 255 255 255]
+KNN-5 STA           0.5       [2 3 1 1 1 1 1 1 1 2 2 2 2 3 3 1 1 2 1 2 1 2 2 1 1 3 2 2 1 3]  [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 1 3 1 1 2 2 3 3 2 1 3 2 3 2 3]  [  1   0 255 255   0 254   0   0   0   0 255 255   0   1   0   0 254   1
+                                                                                                                                                               0   0 255 255 255 255   0   0   0 255 255   0]
+KNN-7               0.566667  [3 2 1 2 1 1 2 3 1 2 3 3 2 2 1 3 2 1 1 2 3 3 3 1 1 3 1 3 3 1]  [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 3 1 2 1 2 3 2 3 2 1 3 1 3 1 2]  [  2 255 255   0   0 254   1   2   0   0   0   0   0   0 254   0   1 255
+                                                                                                                                                               0   0   0   1   0 255   0   0   0   0   2 255]
+KNN-7 NCA           0.6       [2 2 1 3 1 3 3 1 1 3 3 3 3 2 1 1 3 1 1 2 1 3 3 1 1 2 2 3 2 2]  [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 1 3 1 1 2 2 3 3 2 1 3 2 3 2 3]  [  1 255 255   1   0   0   2   0   0   1   0   0   1   0 254   0   0   0
+                                                                                                                                                               0   0 255   0   0 255   0 255   0   0   0 255]
+KNN-7 STA           0.5       [2 1 1 2 1 1 1 3 1 2 2 2 1 3 3 1 1 1 1 2 1 2 2 3 1 3 2 3 1 3]  [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 1 3 1 1 2 2 3 3 2 1 3 2 3 2 3]  [  1 254 255   0   0 254   0   2   0   0 255 255 255   1   0   0 254   0
+                                                                                                                                                               0   0 255 255 255   1   0   0   0   0 255   0]
+SVC                 0.4       [3 2 1 2 2 1 2 3 1 2 3 2 2 3 2 3 2 1 1 2 1 3 1 2 1 2 1 3 3 1]  [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 3 1 2 1 2 3 2 3 2 1 3 1 3 1 2]  [  2 255 255   0   1 254   1   2   0   0   0 255   0   1 255   0   1 255
+                                                                                                                                                               0   0 254   1 254   0   0 255   0   0   2 255]
+SVC CV              0.575     []                                                             [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 3 1 2 1 2 3 2 3 2 1 3 1 3 1 2]  []
+SVC NCA             0.7       [2 3 1 3 1 3 1 1 1 3 3 3 1 2 1 1 3 1 1 2 1 3 3 1 1 2 2 3 2 3]  [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 1 3 1 1 2 2 3 3 2 1 3 2 3 2 3]  [  1   0 255   1   0   0   0   0   0   1   0   0 255   0 254   0   0   0
+                                                                                                                                                               0   0 255   0   0 255   0 255   0   0   0   0]
+SVC NCA CV          0.55      []                                                             [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 1 3 1 1 2 2 3 3 2 1 3 2 3 2 3]  []
+SVC STA             0.666667  [2 3 2 2 1 1 1 2 1 2 2 3 2 3 3 1 1 2 1 3 2 2 3 2 1 3 3 3 2 3]  [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 1 3 1 1 2 2 3 3 2 1 3 2 3 2 3]  [  1   0   0   0   0 254   0   1   0   0 255   0   0   1   0   0 254   1
+                                                                                                                                                               0   1   0 255   0   0   0   0   1   0   0   0]
+SVC STA CV          0.591667  []                                                             [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 1 3 1 1 2 2 3 3 2 1 3 2 3 2 3]  []
+NB                  0.4       [3 3 1 2 1 1 2 2 1 1 1 2 2 3 2 2 3 1 1 2 1 2 1 1 1 2 1 3 3 2]  [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 3 1 2 1 2 3 2 3 2 1 3 1 3 1 2]  [  2   0 255   0   0 254   1   1   0 255 254 255   0   1 255 255   2 255
+                                                                                                                                                               0   0 254   0 254 255   0 255   0   0   2   0]
+NB NCA              0.433333  [3 3 1 3 2 3 2 1 1 1 2 3 1 3 2 1 3 1 1 1 1 2 3 1 1 2 2 3 1 2]  [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 1 3 1 1 2 2 3 3 2 1 3 2 3 2 3]  [  2   0 255   1   1   0   1   0   0 255 255   0 255   1 255   0   0   0
+                                                                                                                                                               0 255 255 255   0 255   0 255   0   0 255 255]
+NB STA              0.5       [3 3 1 1 1 1 1 3 1 1 1 3 1 3 3 1 1 1 1 1 1 1 3 2 1 3 3 3 1 3]  [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 1 3 1 1 2 2 3 3 2 1 3 2 3 2 3]  [  2   0 255 255   0 254   0   2   0 255 254   0 255   1   0   0 254   0
+                                                                                                                                                               0 255 255 254   0   0   0   0   1   0 255   0]
+RF                  0.4       [3 2 1 2 1 1 1 3 1 1 2 2 2 3 2 2 2 1 1 2 1 2 1 1 1 2 1 3 3 2]  [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 3 1 2 1 2 3 2 3 2 1 3 1 3 1 2]  [  2 255 255   0   0 254   0   2   0 255 255 255   0   1 255 255   1 255
+                                                                                                                                                               0   0 254   0 254 255   0 255   0   0   2   0]
+RF CV               0.508333  []                                                             [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 3 1 2 1 2 3 2 3 2 1 3 1 3 1 2]  []
+RF NCA              0.6       [2 3 1 3 1 3 2 1 1 1 3 3 3 2 1 1 3 1 1 1 1 3 3 1 1 2 3 3 2 3]  [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 1 3 1 1 2 2 3 3 2 1 3 2 3 2 3]  [  1   0 255   1   0   0   1   0   0 255   0   0   1   0 254   0   0   0
+                                                                                                                                                               0 255 255   0   0 255   0 255   1   0   0   0]
+RF NCA CV           0.508333  []                                                             [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 1 3 1 1 2 2 3 3 2 1 3 2 3 2 3]  []
+RF STA              0.5       [2 1 1 2 1 1 1 2 1 2 2 3 1 2 3 1 1 2 1 1 1 2 3 2 3 3 2 2 1 3]  [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 1 3 1 1 2 2 3 3 2 1 3 2 3 2 3]  [  1 254 255   0   0 254   0   1   0   0 255   0 255   0   0   0 254   1
+                                                                                                                                                               0 255 255 255   0   0   2   0   0 255 255   0]
+RF STA CV           0.541667  []                                                             [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 1 3 1 1 2 2 3 3 2 1 3 2 3 2 3]  []
+DT                  0.4       [3 3 1 3 2 1 2 3 1 2 2 2 2 3 2 3 3 1 1 3 1 2 1 1 1 3 1 3 3 2]  [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 3 1 2 1 2 3 2 3 2 1 3 1 3 1 2]  [  2   0 255   1   1 254   1   2   0   0 255 255   0   1 255   0   2 255
+                                                                                                                                                               0   1 254   0 254 255   0   0   0   0   2   0]
+DT CV               0.508333  []                                                             [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 3 1 2 1 2 3 2 3 2 1 3 1 3 1 2]  []
+DT NCA              0.533333  [1 3 1 3 1 3 1 1 1 1 3 1 3 2 1 1 3 1 1 1 3 3 1 1 1 2 3 3 1 2]  [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 1 3 1 1 2 2 3 3 2 1 3 2 3 2 3]  [  0   0 255   1   0   0   0   0   0 255   0 254   1   0 254   0   0   0
+                                                                                                                                                               0 255   1   0 254 255   0 255   1   0 255 255]
+DT NCA CV           0.533333  []                                                             [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 1 3 1 1 2 2 3 3 2 1 3 2 3 2 3]  []
+DT STA              0.433333  [3 1 1 2 3 1 1 2 1 1 1 3 1 2 3 1 1 2 1 1 1 1 3 2 2 3 2 2 1 3]  [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 1 3 1 1 2 2 3 3 2 1 3 2 3 2 3]  [  2 254 255   0   2 254   0   1   0 255 254   0 255   0   0   0 254   1
+                                                                                                                                                               0 255 255 254   0   0   1   0   0 255 255   0]
+DT STA CV           0.45      []                                                             [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 1 3 1 1 2 2 3 3 2 1 3 2 3 2 3]  []
+SVC GA              0.466667  [3 3 1 3 1 3 2 2 1 1 2 3 1 2 2 1 3 2 1 1 3 2 3 3 1 2 2 2 2 3]  [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 1 3 1 1 2 2 3 3 2 1 3 2 3 2 3]  [  2   0 255   1   0   0   1   1   0 255 255   0 255   0 255   0   0   1
+                                                                                                                                                               0 255   1 255   0   1   0 255   0 255   0   0]
+SVC GA CV           0.641667  []                                                             [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 1 3 1 1 2 2 3 3 2 1 3 2 3 2 3]  []
+LDA GA              0.433333  [3 3 1 3 1 3 3 2 1 2 2 2 1 2 2 1 3 2 1 3 3 2 2 3 1 2 2 2 2 3]  [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 1 3 1 1 2 2 3 3 2 1 3 2 3 2 3]  [  2   0 255   1   0   0   2   1   0   0 255 255 255   0 255   0   0   1
+                                                                                                                                                               0   1   1 255 255   1   0 255   0 255   0   0]
+LDA GA CV           0.575     []                                                             [1 3 2 2 1 3 1 1 1 2 3 3 2 2 3 1 3 1 1 2 2 3 3 2 1 3 2 3 2 3]  []
+None Already exists, moving on...
