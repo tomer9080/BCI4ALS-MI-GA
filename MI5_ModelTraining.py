@@ -204,7 +204,7 @@ def get_all_features(recordingFolder, recordingFolder_2, unify):
 
 def create_sub_folder(folder_name):
     try:
-        os.mkdir(f'class_results/{folder_name}')
+        os.mkdir(f'class_results\{folder_name}')
     except FileExistsError:
         print(f"{folder_name} Already exists, moving on...")    
 
@@ -302,9 +302,9 @@ def classify(args_dict):
         {'name': 'KNN-7', 'model': KNN(7), 'cv': False},
         {'name': 'KNN-7 NCA', 'model': KNN(7), 'cv': False, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},
         {'name': 'KNN-7 STA', 'model': KNN(7), 'cv': False, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
-        {'name': 'SVC', 'model': SVC(), 'cv': True, 'params': {'C': [0.1, 1, 2, 10, 100], 'gamma': [100,10,1,0.1,0.01,0.001],'kernel': ['rbf', 'poly', 'sigmoid']}},
-        {'name': 'SVC NCA', 'model': SVC(), 'cv': True, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca, 'params': {'C': [0.1, 1, 2, 10, 100], 'gamma': [100,10,1,0.1,0.01,0.001],'kernel': ['rbf', 'poly', 'sigmoid']}},
-        {'name': 'SVC STA', 'model': SVC(), 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats, 'params': {'C': [0.1, 1, 2, 10, 100], 'gamma': [100,10,1,0.1,0.01,0.001],'kernel': ['rbf', 'poly', 'sigmoid']}},
+        {'name': 'SVC', 'model': SVC(), 'cv': True},# 'params': {'C': [0.1, 1, 2, 10, 100], 'gamma': [100,10,1,0.1,0.01,0.001],'kernel': ['rbf', 'poly', 'sigmoid']}},
+        {'name': 'SVC NCA', 'model': SVC(), 'cv': True, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},# 'params': {'C': [0.1, 1, 2, 10, 100], 'gamma': [100,10,1,0.1,0.01,0.001],'kernel': ['rbf', 'poly', 'sigmoid']}},
+        {'name': 'SVC STA', 'model': SVC(), 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},# 'params': {'C': [0.1, 1, 2, 10, 100], 'gamma': [100,10,1,0.1,0.01,0.001],'kernel': ['rbf', 'poly', 'sigmoid']}},
         {'name': 'NB', 'model': NB(), 'cv': False},
         {'name': 'NB NCA', 'model': NB(), 'cv': False, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},
         {'name': 'NB STA', 'model': NB(), 'cv': False, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
@@ -349,9 +349,18 @@ if __name__ == '__main__':
     if args_dict['paths'] is None:
         classify(args_dict)
     else:
-        paths = get_paths(paths_file=args_dict['paths'])
-        for path in paths:
-            args_dict['folder'] = path
-            print(f'running now classify on path: {path}')
-            classify(args_dict)
-            
+        if args_dict['unify'] is None:
+            paths = get_paths(paths_file=args_dict['paths'])
+            for path in paths:
+                args_dict['folder'] = path
+                print(f'running now classify on path: {path}')
+        else:
+            paths = get_paths(paths_file=args_dict['paths'],unify=args_dict['unify'])
+            for path in paths:
+                args_dict['folder'] = path[0]
+                print(f'first path: {path[0]}')
+                if len(path) == 2:
+                    args_dict['folder2'] = path[1]
+                    print(f'second path: {path[1]}')                    
+                classify(args_dict)
+

@@ -8,6 +8,7 @@ from sklearn.linear_model import LinearRegression
 from tabulate import tabulate
 import sys
 import os
+from pathlib import Path
 
 classes_map = {'idle': 1, 'left': 2, 'right': 3}
 features_names_list = ['BP_15.5_18.5', 'BP_8_10.5', 'BP_10_15.5', 'BP_17.5_20.5', 'BP_12.5_30', 'RTP', 'SPEC_MOM', 'SPEC_EDGE', 'SPEC_ENT', 'SLOPE', 'INTERCEPT', 'MEAN_FREQ', 'OCC_BAND', 'POWER_BAND', 'WLT_ENT', 'KURT', 'SKEW', 'VAR', 'STD', 'LOG_ENE_ENT', 'BETA_ALPHA_RATIO', 'BP_THETA']
@@ -15,12 +16,33 @@ headers = ['CSP1', 'CSP2', 'CSP3'] + [f'E{i}_{feature}' for i in range(1,12) for
 table_headers = ['Feature', 'Score_(R^2)_Left', 'Score_(R^2)_Right', 'Mean_Mean_left', 'Var_Mean_left', 'Mean_Mean_right', 'Var_Mean_right', 'Mean_Var_left', 'Var_Var_left', 'Mean_Var_right', 'Var_Var_right']
 
 
-def get_paths(paths_file=sys.argv[1], is_list=False):
+def get_paths(paths_file=sys.argv[1], is_list=False, unify=False):
     if is_list:
         return [line.strip() for line in paths_file]
     paths = open(paths_file, 'r')
     list_of_paths = [line.strip() for line in paths.readlines()]
+    
+    if unify:
+        unified_list = []
+        idx = 0
+        while idx <= (len(list_of_paths)-2):
+            couples = [list_of_paths[idx]]
+            same_date = True
+            while(same_date and (idx < (len(list_of_paths)-1))) :
+                str1 = Path(list_of_paths[idx]).parts
+                str2 = Path(list_of_paths[idx + 1]).parts
+
+                #RL - 7th element of path - 6th in list
+                #TK - 3rd element of path - 2nd in list
+                if(str1[6] == str2[6]):
+                    couples.append(list_of_paths[idx + 1])
+                else:
+                    same_date = False
+                idx += 1
+            unified_list.append(couples)
+        return unified_list
     return list_of_paths
+
 
 def plot_mean_and_variance(paths, metrics_right, metrics_left, feature):
     try:
