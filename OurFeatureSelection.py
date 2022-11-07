@@ -10,9 +10,7 @@ class Selector:
         __init__ - initialize a selector instance
         paths - a path to the paths file that includes al of the recordings data.
         record_path - the record we want to extract features now - so we can know which prior recordings and knowledge to use - None will use last recording
-        features_names - the names of all the features we have - usually an im
-        
-        port from metrics wrapper.
+        features_names - the names of all the features we have - usually an import from metrics wrapper.
         """
         self.paths = paths
         self.record_path = record_path
@@ -27,6 +25,7 @@ class Selector:
     def get_recording_index_in_paths(self, paths_list: list):
         if self.record_path is None:
             return (len(paths_list) - 1)
+       
         return paths_list.index(self.record_path.strip())
 
     def run_metrics(self, indices: list, paths_list: list, use_prior: bool):
@@ -38,7 +37,8 @@ class Selector:
         if indices[0] < 0:
             indices[0] = 0
         if use_prior: # use prior recordings to analyze
-            print(indices[0], indices[1], paths_list[indices[0]:indices[1]])
+            print(f"based on prior: {indices[0]} - {indices[1]}\n")
+            print(f"{paths_list[indices[0]:indices[1]]}\n")
             metrics_wrapper.analyze(paths_list[indices[0]:indices[1]], is_list=True, corr=self.use_corr)
         else:         # use only current recording
             metrics_wrapper.analyze([paths_list[indices[1] - 1]], is_list=True, corr=self.use_corr)
@@ -73,6 +73,7 @@ class Selector:
         paths_file = open(self.paths, 'r')
         paths_list = [line.strip() for line in paths_file.readlines()]
         current_index = self.get_recording_index_in_paths(paths_list)
+        print('passed indices\n\n')
         indices = [current_index - prior_recordings, current_index + 1]
         self.run_metrics(indices, paths_list, use_prior)
         # now we have the file stats/features_metrics.csv
@@ -86,7 +87,7 @@ class Selector:
             chosen_features = self.metrics.sort_values(metric_rule, ascending=self.ascending)['Feature'][:num_of_features]
         else:
             chosen_features = self.metrics.query(metric_rule)['Feature'][:num_of_features]
-        print(chosen_features)
+        print(f"chosen features: {chosen_features}")
         return [self.get_index_by_name(name) for name in chosen_features]
 
 if __name__ == "__main__":

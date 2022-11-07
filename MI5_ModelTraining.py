@@ -273,7 +273,9 @@ def classify(args_dict):
     features_train, label_train, features_test, label_test = get_matlab_features(recordingFolder, recordingFolder_2, args_dict['unify']) 
 
     #### ------------ features from statistical analysis ------------ ####
-    our_selector = Selector('paths/paths_TK.txt', record_path=recordingFolder, ascending=False, corr=args_dict["corr"])
+    # file_path = 'paths/paths_TK.txt'
+    file_path = 'paths/paths_RL.txt'
+    our_selector = Selector(file_path, record_path=recordingFolder, ascending=False, corr=args_dict["corr"])
     should_use_prior = False if args_dict['prior'] == 0 else True
     if args_dict['simple']:
         our_features_indices = our_selector.select_features(args_dict['metric'].split(','), use_prior=should_use_prior, prior_recordings=args_dict['prior'])

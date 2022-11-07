@@ -198,8 +198,7 @@ def analyze(paths_file, is_list=False, corr=True):
     all_regs_r = []
     all_regs_l = []
     
-    get_features_hists(paths)
-
+    # get_features_hists(paths)
     for feature in range(len(headers)):
         metrics_right = []
         metrics_left = []
