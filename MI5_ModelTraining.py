@@ -72,7 +72,7 @@ def print_model_best_params(model_name, best_params):
     best_params_file.close()
 
 
-def classify_results(model, model_name, features_train, label_train, features_test, label_test, features_indices, cv=False, Kfold=5, params=None):
+def classify_results(model, model_name, features_train, label_train, features_test, label_test, features_indices, cv=False, Kfold=5, params=None, unify=False):
     print(f"Running {model_name} analysis...")
     if params is not None:
         search = GridSearchCV(model, param_grid=params, cv=9)
@@ -85,7 +85,10 @@ def classify_results(model, model_name, features_train, label_train, features_te
     test_results = prediction - label_test
     hit_rate = sum(test_results == 0)/len(label_test)
 
-    table_row = [model_name, hit_rate, prediction, label_test, prediction - label_test] 
+    if unify:
+        table_row = [model_name, hit_rate, prediction, label_test]
+    else: 
+        table_row = [model_name, hit_rate, prediction, label_test, prediction - label_test] 
 
     table_cv_row = []
     if cv: # run cv if flag is up
@@ -96,7 +99,7 @@ def classify_results(model, model_name, features_train, label_train, features_te
     return table_row, table_cv_row
 
 
-def classify_results_ga(selection_params, features_train, label_train, features_test, label_test, recordingFolder, cv=False, Kfold=5):
+def classify_results_ga(selection_params, features_train, label_train, features_test, label_test, recordingFolder, cv=False, Kfold=5, unify=False):
     print(f"Running {selection_params['name']} with GA features selection & analysis...")
     selector = GeneticSelectionCV(
         selection_params['model'],
@@ -118,7 +121,10 @@ def classify_results_ga(selection_params, features_train, label_train, features_
     test_results = prediction - label_test
     hit_rate = sum(test_results == 0)/len(label_test)
 
-    row = [f'{selection_params["name"]} GA', hit_rate, prediction, label_test, prediction - label_test]
+    if unify:
+        row = [f'{selection_params["name"]} GA', hit_rate, prediction, label_test]
+    else:
+        row = [f'{selection_params["name"]} GA', hit_rate, prediction, label_test, prediction - label_test]
 
     cv_row = []
     if cv:
@@ -324,7 +330,7 @@ def classify(args_dict):
         l_train = label_train if model.get('ltr') is None else model.get('ltr')
         l_test = label_test if model.get('lte') is None else model.get('lte')
         indices = nca_selected_idx if model.get('indices') is None else model.get('indices')
-        row, cv_row = classify_results(model['model'], model['name'], features_train=f_train, features_test=f_test, label_train=l_train, features_indices=indices, label_test=l_test, cv=model['cv'], params=model.get('params'))
+        row, cv_row = classify_results(model['model'], model['name'], features_train=f_train, features_test=f_test, label_train=l_train, features_indices=indices, label_test=l_test, cv=model['cv'], params=model.get('params'), unify=args_dict['unify'])
         all_rows.append(row)
         if cv_row != []:
             all_rows.append(cv_row)
@@ -354,6 +360,8 @@ if __name__ == '__main__':
             for path in paths:
                 args_dict['folder'] = path
                 print(f'running now classify on path: {path}')
+                classify(args_dict)
+
         else:
             paths = get_paths(paths_file=args_dict['paths'],unify=args_dict['unify'])
             for path in paths:
