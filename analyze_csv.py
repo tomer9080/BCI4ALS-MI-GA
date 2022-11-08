@@ -7,11 +7,15 @@ import matplotlib.pyplot as plt
 
 
 # rootdir = "C:\\Users\\Latzres\\Desktop\\project\\BCI-Matlab-Code\\class_results"
-base_path = "C:\\Users\\Latzres\\Desktop\\project\\BCI-Matlab-Code"
-scores_path = "C:\\Users\\Latzres\\Desktop\\project\\BCI-Matlab-Code\\class_scores"
+# scores_path = "C:\\Users\\Latzres\\Desktop\\project\\BCI-Matlab-Code\\class_scores"
 
+def create_path(base_parts):
+    path = ""
+    for part in base_parts:
+        path += f"{part}\\"
+    return path[:-1]
 
-def analyze_csv():
+def analyze_csv(scores_path):
     for subdir, dirs, files_top in os.walk(scores_path):
         if(subdir != scores_path):
             subdir_name = Path(subdir).parts
@@ -40,17 +44,21 @@ def analyze_csv():
 
 
 
-def csv_scores(rootdir):
+def csv_scores(rootdir, base_path):
     for subdir, dirs, files_r in os.walk(rootdir):
         if(subdir != rootdir):
             class_flag = True
             all_rows = []
             for x, y, files_s in os.walk(subdir):
-                for file in files_s:   
+                for file in files_s: 
+                    print(f'{subdir}\\{file}')
                     df = pd.read_csv(f'{subdir}\\{file}')
+                    #get classifier stats
                     success_rate = df['Success Rate'].tolist()
                     success_rate.insert(0, file)
                     all_rows.append(success_rate)
+
+                    #get all classifiers in list(needed just once)
                     if(class_flag):
                         classifiers = df['Classifier'].tolist()
                         classifiers.insert(0, 'Recording')
@@ -70,5 +78,14 @@ def csv_scores(rootdir):
 
 
 if __name__ == '__main__':
-    csv_scores(sys.argv[1])
-    analyze_csv()
+    #create base path
+    rootdir = sys.argv[1]
+    rootdir_parts = Path(rootdir).parts
+    base_parts = rootdir_parts[:(len(rootdir_parts)-1)]
+    base_path = create_path(base_parts)
+    print(base_path)
+
+    csv_scores(rootdir, base_path)
+
+    scores_path = f"{base_path}\\class_scores"
+    analyze_csv(scores_path)

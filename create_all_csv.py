@@ -12,6 +12,6 @@ for i in range(0,7):
 
 # #need to add option to unify all recordings then run on all of them with different priors
 
-#TK_rootdir
+#TK_rootdir = "C:\\BCI-Matlab-Code\\class_results"
 RL_rootdir = "C:\\Users\\Latzres\\Desktop\\project\\BCI-Matlab-Code\\class_results"
 os.system(f'python analyze_csv.py {RL_rootdir}')
