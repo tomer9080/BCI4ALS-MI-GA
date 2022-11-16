@@ -279,8 +279,7 @@ def classify(args_dict):
     features_train, label_train, features_test, label_test = get_matlab_features(recordingFolder, recordingFolder_2, args_dict['unify']) 
 
     #### ------------ features from statistical analysis ------------ ####
-    # file_path = 'paths/paths_TK.txt'
-    file_path = 'paths/paths_RL.txt'
+    file_path = args_dict['paths']
     our_selector = Selector(file_path, record_path=recordingFolder, ascending=False, corr=args_dict["corr"])
     should_use_prior = False if args_dict['prior'] == 0 else True
     if args_dict['simple']:
@@ -371,4 +370,3 @@ if __name__ == '__main__':
                     args_dict['folder2'] = path[1]
                     print(f'second path: {path[1]}')                    
                 classify(args_dict)
-

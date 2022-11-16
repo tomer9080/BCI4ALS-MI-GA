@@ -34,7 +34,8 @@ def get_paths(paths_file=sys.argv[1], is_list=False, unify=False):
 
                 #RL - 7th element of path - 6th in list
                 #TK - 3rd element of path - 2nd in list
-                if(str1[6] == str2[6]):
+                print(str1, str2)
+                if(str1[2] == str2[2]):
                     couples.append(list_of_paths[idx + 1])
                 else:
                     same_date = False

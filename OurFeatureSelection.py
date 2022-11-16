@@ -25,7 +25,7 @@ class Selector:
     def get_recording_index_in_paths(self, paths_list: list):
         if self.record_path is None:
             return (len(paths_list) - 1)
-       
+        print(paths_list)       
         return paths_list.index(self.record_path.strip())
 
     def run_metrics(self, indices: list, paths_list: list, use_prior: bool):

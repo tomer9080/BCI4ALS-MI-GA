@@ -5,7 +5,6 @@ import sys
 from pathlib import Path
 import matplotlib.pyplot as plt
 
-
 # rootdir = "C:\\Users\\Latzres\\Desktop\\project\\BCI-Matlab-Code\\class_results"
 # scores_path = "C:\\Users\\Latzres\\Desktop\\project\\BCI-Matlab-Code\\class_scores"
 
@@ -31,6 +30,8 @@ def analyze_csv(scores_path):
                 recordings = df['Recording']
                 print(f'recordings = {recordings}\n')
                 #create plot for each header
+                means = []
+                means_headers = []
                 for header in headers:
                     values_list = np.array(df[header])
                     mean_header = np.mean(values_list)
@@ -40,7 +41,11 @@ def analyze_csv(scores_path):
                     plt.xlabel('Recording ID')
                     plt.ylabel('classification percentage')
                     print(f'{header} mean = {mean_header}\n')
+                    means.append(mean_header)
+                    means_headers.append(header)
                     plt.savefig(f'{subdir}\\{header}', dpi=600)
+                means_table = [means_headers, means]
+                np.savetxt(f'{subdir}\\models_avg_scores.csv', np.array(means_table, dtype=object), delimiter=',', fmt='%s')
 
 
 
