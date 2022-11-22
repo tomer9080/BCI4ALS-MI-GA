@@ -5,6 +5,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import Lasso
+from sympy import Line, Point2D, Eq
 from tabulate import tabulate
 import sys
 import os
@@ -13,7 +16,7 @@ from pathlib import Path
 classes_map = {'idle': 1, 'left': 2, 'right': 3}
 features_names_list = ['BP_15.5_18.5', 'BP_8_10.5', 'BP_10_15.5', 'BP_17.5_20.5', 'BP_12.5_30', 'RTP', 'SPEC_MOM', 'SPEC_EDGE', 'SPEC_ENT', 'SLOPE', 'INTERCEPT', 'MEAN_FREQ', 'OCC_BAND', 'POWER_BAND', 'WLT_ENT', 'KURT', 'SKEW', 'VAR', 'STD', 'LOG_ENE_ENT', 'BETA_ALPHA_RATIO', 'BP_THETA']
 headers = ['CSP1', 'CSP2', 'CSP3'] + [f'E{i}_{feature}' for i in range(1,12) for feature in features_names_list]
-table_headers = ['Feature', 'Score_(R^2)_Left', 'Score_(R^2)_Right', 'Mean_Mean_left', 'Var_Mean_left', 'Mean_Mean_right', 'Var_Mean_right', 'Mean_Var_left', 'Var_Var_left', 'Mean_Var_right', 'Var_Var_right']
+table_headers = ['Feature', 'Score_(R^2)_Left', 'Score_(R^2)_Right', 'Score_(LASSO)_Left', 'Score_(LASSO)_Right', 'Score_(R^1)_Left', 'Score_(R^1)_Right', 'R1_Left', 'R1_Right', 'R2_Left', 'R2_Right', 'Coef_Left', 'Coef_Right', 'Mean_Mean_left', 'Var_Mean_left', 'Mean_Mean_right', 'Var_Mean_right', 'Mean_Var_left', 'Var_Var_left', 'Mean_Var_right', 'Var_Var_right']
 
 
 def get_paths(paths_file=sys.argv[1], is_list=False, unify=False):
@@ -44,6 +47,34 @@ def get_paths(paths_file=sys.argv[1], is_list=False, unify=False):
         return unified_list
     return list_of_paths
 
+def calc_r1_distance(coef, intercept, x_axis, y_vals):
+    p1 = np.array([1, intercept])
+    p2 = np.array([x_axis[-1], x_axis[-1]*coef + intercept])
+    sum = 0
+    for a, b in zip(x_axis, y_vals):
+        p3 = np.array([a, b])
+        sum += np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)
+    return (sum / len(x_axis))[0]
+
+def calc_r2_distance(coef, intercept, x_axis, y_vals):
+    p1 = np.array([1, intercept])
+    p2 = np.array([x_axis[-1], x_axis[-1]*coef + intercept])
+    sum = 0
+    for a, b in zip(x_axis, y_vals):
+        p3 = np.array([a, b])
+        sum += (np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)) ** 2
+    return (sum / len(x_axis))[0]
+
+def calc_r1(coef, intercept, x_axis, y_vals):
+    u_sum = 0
+    y_mean = np.mean(y_vals)
+    v_sum = np.sum(y_vals - y_mean)
+    for x, y in zip(x_axis, y_vals):
+        y_hat = (coef * x) + intercept
+        u_sum += np.abs(y - y_hat)
+    r1_val = (1 - (u_sum/np.abs(v_sum)))
+    return r1_val
+    
 
 def plot_mean_and_variance(paths, metrics_right, metrics_left, feature):
     try:
@@ -255,10 +286,28 @@ def analyze(paths_file, is_list=False, corr=True):
         reg_l = LinearRegression()
         reg_l.fit(x, y_l)
 
+        r1_left = calc_r1_distance(coef=reg_l.coef_, intercept=reg_l.intercept_, x_axis=x, y_vals=y_l) 
+        r1_right = calc_r1_distance(coef=reg_r.coef_, intercept=reg_r.intercept_, x_axis=x, y_vals=y_r)
+        
+        r2_left = calc_r2_distance(coef=reg_l.coef_, intercept=reg_l.intercept_, x_axis=x, y_vals=y_l) 
+        r2_right = calc_r2_distance(coef=reg_r.coef_, intercept=reg_r.intercept_, x_axis=x, y_vals=y_r)
+
+        r1_score_left = calc_r1(coef=reg_l.coef_, intercept=reg_l.intercept_, x_axis=x, y_vals=y_l)[0] 
+        r1_score_right = calc_r1(coef=reg_r.coef_, intercept=reg_r.intercept_, x_axis=x, y_vals=y_r)[0]
+
+        left_coef = np.abs(reg_l.coef_[0])
+        right_coef = np.abs(reg_r.coef_[0])
+
+        reg_lasso_l = Lasso()
+        reg_lasso_l.fit(x, y_l)
+
+        reg_lasso_r = Lasso()
+        reg_lasso_r.fit(x, y_r)
+
         all_regs_r.append(reg_r)
         all_regs_l.append(reg_l)
         
-        row = [headers[feature], reg_l.score(x, y_l), reg_r.score(x, y_r), avg_mean_left, var_mean_left, avg_mean_right, var_mean_right, avg_var_left, var_var_left, avg_var_right, var_var_right]
+        row = [headers[feature], reg_l.score(x, y_l), reg_r.score(x, y_r), reg_lasso_l.score(x, y_l), reg_lasso_r.score(x, y_r), r1_score_left, r1_score_right, r1_left, r1_right, r2_left, r2_right, left_coef, right_coef, avg_mean_left, var_mean_left, avg_mean_right, var_mean_right, avg_var_left, var_var_left, avg_var_right, var_var_right]
         feature_row = np.append(feature_row, np.array([row]), axis=0)
 
         # plot - save figs in the right folder

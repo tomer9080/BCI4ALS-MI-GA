@@ -17,10 +17,13 @@ from sklearn.tree import DecisionTreeClassifier as DT
 from sklearn.model_selection import KFold
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import GridSearchCV
+from sklearn.linear_model import LogisticRegression
 from tabulate import tabulate
 import sys
 import os
 from OurFeatureSelection import Selector
+
+from Grid_search_params import build_gs_models
 
 # TODO: Add interface for choosing features as we want.
 # TODO: How to do the feature mentioned above.
@@ -66,20 +69,28 @@ def cross_validation_on_model(model, k, features, labels):
     print(f"All scores: {all_scores}")
     return avg_score, all_scores, all_models
 
-def print_model_best_params(model_name, best_params):
-    best_params_file = open(f"stats/{model_name}_params.txt", 'w')
-    best_params_file.write(f'{model_name} best params: {best_params}')
-    best_params_file.close()
+def save_best_model_stats(model_name, grid_result):
+    stats_file = open(f"GS_stats/{model_name}_stats.txt", 'w')
+    stats_file.write(f'{model_name} stats: \n')
+    stats_file.write("Best: %f using %s\n" % (grid_result.best_score_, grid_result.best_params_))
+
+    # means = grid_result.cv_results_['mean_test_score']
+    # stds = grid_result.cv_results_['std_test_score']
+    # params = grid_result.cv_results_['params']
+    
+    # row = []
+    # # for mean, stdev, param in zip(means, stds, params):
+
+    # for i in len(means):
+    #     row[i] = [means[i], stds[i], params[i]]
+
+    # table_headers = ["Classifier", "means", "stds", "params"]
+    # stats_file.write(tabulate(row, headers=table_headers))
+    stats_file.close()
 
 
 def classify_results(model, model_name, features_train, label_train, features_test, label_test, features_indices, cv=False, Kfold=5, params=None, unify=False):
     print(f"Running {model_name} analysis...")
-    if params is not None:
-        search = GridSearchCV(model, param_grid=params, cv=9)
-        search.fit(features_train, label_train)
-        best_model = search.best_estimator_
-        print_model_best_params(model_name, search.best_params_)
-        model = best_model
     model.fit(features_train, label_train)
     prediction = model.predict(features_test)
     test_results = prediction - label_test
@@ -134,6 +145,24 @@ def classify_results_ga(selection_params, features_train, label_train, features_
 
     return row, cv_row
 
+def classify_results_gs(model, model_name, features_train, label_train, features_test, label_test, grid, unify=False):
+    print(f"Running {model_name} analysis...")
+    grid_result = grid.fit(features_train, label_train)
+    best_model = grid.best_estimator_
+    save_best_model_stats(model_name, grid_result)
+
+    prediction = best_model.predict(features_test)
+    test_results = prediction - label_test
+    hit_rate = sum(test_results == 0)/len(label_test)
+
+    if unify:
+        table_row = [model_name, hit_rate, prediction, label_test]
+    else: 
+        table_row = [model_name, hit_rate, prediction, label_test, prediction - label_test] 
+
+    return table_row
+
+
 
 def get_dict_for_folder_from_path(path):
     list_of_path = path.split('\\')
@@ -147,10 +176,11 @@ def parse_cmdl():
     parser.add_argument('--unify', '-u', dest='unify', help='Unify folder and folder2 to "one" recording and classify', type=bool)
     parser.add_argument('--paths', '-pa', dest='paths', help='Path to paths file to run classisfication for each folder in paths file', type=str, default=None)
     parser.add_argument('--metric', '-m', dest='metric', help='Metric string - according to him we\'ll choose our features by our statistic methods', type=str, default="Score_(R^2)_Left,Score_(R^2)_Right")
-    parser.add_argument('--simple', '-s', dest='simple', help='Use simple metric (just sort dataframe by columns)', type=bool, default=True)
+    parser.add_argument('--simple', '-s', dest='simple', help='Use simple metric (just sort dataframe by columns)', type=int, default=1)
     parser.add_argument('--prior', '-pr', dest='prior', help='How many prior recordings to look back. if no prior to be used - please enter 0. default value is 3', type=int, default=3)
     parser.add_argument('--new_folder', '-n', dest='new_folder', help='Where to save the stats in the class_results folder.', type=str)
     parser.add_argument('--correlation', '-c', dest='corr', help='Wether use correlation or not in choosing the features', type=bool, default=False)
+    parser.add_argument('--ascending', '-a', dest='ascending', help='If using simple metric - sort in ascending order or not', type=bool, default=False)
     args = parser.parse_args()
     return {'folder': args.folder,
             'folder2': args.folder2,
@@ -160,7 +190,8 @@ def parse_cmdl():
             'simple': args.simple,
             'prior': args.prior,
             'new_folder': args.new_folder,
-            'corr': args.corr}
+            'corr': args.corr,
+            'ascending': args.ascending}
 
 
 def get_matlab_features(recordingFolder, recordingFolder_2, unify):
@@ -280,9 +311,9 @@ def classify(args_dict):
 
     #### ------------ features from statistical analysis ------------ ####
     file_path = args_dict['paths']
-    our_selector = Selector(file_path, record_path=recordingFolder, ascending=False, corr=args_dict["corr"])
+    our_selector = Selector(file_path, record_path=recordingFolder, ascending=args_dict["ascending"], corr=args_dict["corr"])
     should_use_prior = False if args_dict['prior'] == 0 else True
-    if args_dict['simple']:
+    if args_dict['simple'] == 1:
         our_features_indices = our_selector.select_features(args_dict['metric'].split(','), use_prior=should_use_prior, prior_recordings=args_dict['prior'])
     else:
         our_features_indices = our_selector.select_features(args_dict['metric'], use_prior=should_use_prior, prior_recordings=args_dict['prior'], simple_rule=False)
@@ -307,9 +338,9 @@ def classify(args_dict):
         {'name': 'KNN-7', 'model': KNN(7), 'cv': False},
         {'name': 'KNN-7 NCA', 'model': KNN(7), 'cv': False, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},
         {'name': 'KNN-7 STA', 'model': KNN(7), 'cv': False, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
-        {'name': 'SVC', 'model': SVC(), 'cv': True},# 'params': {'C': [0.1, 1, 2, 10, 100], 'gamma': [100,10,1,0.1,0.01,0.001],'kernel': ['rbf', 'poly', 'sigmoid']}},
-        {'name': 'SVC NCA', 'model': SVC(), 'cv': True, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},# 'params': {'C': [0.1, 1, 2, 10, 100], 'gamma': [100,10,1,0.1,0.01,0.001],'kernel': ['rbf', 'poly', 'sigmoid']}},
-        {'name': 'SVC STA', 'model': SVC(), 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},# 'params': {'C': [0.1, 1, 2, 10, 100], 'gamma': [100,10,1,0.1,0.01,0.001],'kernel': ['rbf', 'poly', 'sigmoid']}},
+        {'name': 'SVC', 'model': SVC(), 'cv': True},
+        {'name': 'SVC NCA', 'model': SVC(), 'cv': True, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},
+        {'name': 'SVC STA', 'model': SVC(), 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
         {'name': 'NB', 'model': NB(), 'cv': False},
         {'name': 'NB NCA', 'model': NB(), 'cv': False, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},
         {'name': 'NB STA', 'model': NB(), 'cv': False, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
@@ -321,8 +352,11 @@ def classify(args_dict):
         {'name': 'DT STA', 'model': DT(), 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
     ]
 
-    all_rows = []
+    # gs_models = build_gs_models(train_features_nca, test_features_nca, labels_train_nca, labels_test_nca, our_features_indices, train_features_stats, test_features_stats, labels_train_stats, labels_test_stats)
 
+    all_rows = []
+    
+    print('started models analysis\n')
     for model in models:
         f_train = features_train if model.get('ftr') is None else model.get('ftr')
         f_test = features_test if model.get('fte') is None else model.get('fte')
@@ -334,10 +368,24 @@ def classify(args_dict):
         if cv_row != []:
             all_rows.append(cv_row)
 
+    print('started GA models analysis\n')
     for model in ga_models:
         row, cv_row = classify_results_ga(model, features_train_ga, labels_train_ga, features_test_ga, labels_test_ga, recordingFolder, cv=True)
         all_rows.append(row)
         all_rows.append(cv_row)
+
+    # print('started GS models analysis\n')
+    # for model in gs_models:
+    #     f_train = features_train if model.get('ftr') is None else model.get('ftr')
+    #     f_test = features_test if model.get('fte') is None else model.get('fte')
+    #     l_train = label_train if model.get('ltr') is None else model.get('ltr')
+    #     l_test = label_test if model.get('lte') is None else model.get('lte')
+    #     indices = nca_selected_idx if model.get('indices') is None else model.get('indices')
+    #     row = classify_results_gs(model['model'], model['name'], features_train=f_train, features_test=f_test, label_train=l_train, label_test=l_test, grid=model['grid'], unify=args_dict['unify'])
+    #     all_rows.append(row)
+
+
+
 
     #### ---------- Priniting table ---------- ####
     print('')

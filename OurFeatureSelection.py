@@ -70,7 +70,11 @@ class Selector:
         simple_rule - means we want just to sort by a given list of values.
         """
         # first we need to run metrics_wrapper so we'll get some metrics.
-        paths_file = open(self.paths, 'r')
+        
+        #line below not working for some reason
+        # paths_file = open(self.paths, 'r')
+        paths_file = open('paths/paths_RL.txt', 'r')
+        
         paths_list = [line.strip() for line in paths_file.readlines()]
         current_index = self.get_recording_index_in_paths(paths_list)
         print('passed indices\n\n')
@@ -84,12 +88,16 @@ class Selector:
             chosen_features = self.get_best_indices_of_corr()
             return [int(x) for x in chosen_features]
         elif simple_rule:
-            chosen_features = self.metrics.sort_values(metric_rule, ascending=self.ascending)['Feature'][:num_of_features]
+            # TODO: add option to avg more than 2 metrics.
+            self.metrics["SUM_L_R"] = self.metrics[metric_rule[0]] + self.metrics[metric_rule[1]]
+            print(self.metrics["SUM_L_R"])
+            chosen_features = self.metrics.sort_values(["SUM_L_R"], ascending=self.ascending)['Feature'][:num_of_features]
         else:
-            chosen_features = self.metrics.query(metric_rule)['Feature'][:num_of_features]
-        print(f"chosen features: {chosen_features}")
+            chosen_features_raw = self.metrics.query(metric_rule)['Feature'][:num_of_features]
+            # chosen_features_raw["SUM_L_R"] = 
+        
         return [self.get_index_by_name(name) for name in chosen_features]
 
 if __name__ == "__main__":
-    selector = Selector('paths/paths_TK.txt')
+    selector = Selector('paths/paths_RL.txt')
     print(selector.select_features(['Var_Mean_left', 'Var_Mean_right']))

@@ -1,1 +1,1 @@
-SVC STA best params: {'C': 1, 'gamma': 0.01, 'kernel': 'rbf'}
+SVC STA best params: {'C': 2, 'gamma': 0.1, 'kernel': 'rbf'}
