@@ -1,4 +1,7 @@
 {
     "explorer.sortOrder": "type",
-    "explorer.sortOrderLexicographicOptions": "unicode"
+    "explorer.sortOrderLexicographicOptions": "unicode",
+    "cSpell.words": [
+        "sklearn"
+    ]
 }

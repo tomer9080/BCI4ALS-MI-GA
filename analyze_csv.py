@@ -18,6 +18,7 @@ def analyze_csv(scores_path):
     for subdir, dirs, files_top in os.walk(scores_path):
         if(subdir != scores_path):
             subdir_name = Path(subdir).parts
+            print(subdir_name)
             for x, y, file in os.walk(subdir):
                 #load csv
                 file_str = file[0]

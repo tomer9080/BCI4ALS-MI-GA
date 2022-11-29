@@ -26,7 +26,7 @@ def build_gs_models(train_features_nca, test_features_nca, labels_train_nca, lab
     LR_c_values = [100, 10, 1.0, 0.1, 0.01]
     # define grid search
     LR_grid = dict(solver=LR_solvers,penalty=LR_penalty,C=LR_c_values)
-    LR_cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=3, random_state=1)
+    LR_cv = RepeatedStratifiedKFold(n_splits=5, n_repeats=3, random_state=1)
     LR_grid_search = GridSearchCV(estimator=LR_model, param_grid=LR_grid, n_jobs=-1, cv=LR_cv, scoring='accuracy',error_score=0)
     # grid_result = grid_search.fit(X, y)
 
@@ -35,7 +35,7 @@ def build_gs_models(train_features_nca, test_features_nca, labels_train_nca, lab
     ridge_alpha = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
     # define grid search
     ridge_grid = dict(alpha=ridge_alpha)
-    ridge_cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=3, random_state=1)
+    ridge_cv = RepeatedStratifiedKFold(n_splits=5, n_repeats=3, random_state=1)
     ridge_grid_search = GridSearchCV(estimator=ridge_model, param_grid=ridge_grid, n_jobs=-1, cv=ridge_cv, scoring='accuracy',error_score=0)
 
     ## KNN params
@@ -45,7 +45,7 @@ def build_gs_models(train_features_nca, test_features_nca, labels_train_nca, lab
     KNN_metric = ['euclidean', 'manhattan', 'minkowski']
     # define grid search
     KNN_grid = dict(n_neighbors=n_neighbors,weights=weights,metric=KNN_metric)
-    KNN_cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=3, random_state=1)
+    KNN_cv = RepeatedStratifiedKFold(n_splits=5, n_repeats=3, random_state=1)
     KNN_grid_search = GridSearchCV(estimator=KNN_model, param_grid=KNN_grid, n_jobs=-1, cv=KNN_cv, scoring='accuracy',error_score=0)
 
     ## SVC params
@@ -55,7 +55,7 @@ def build_gs_models(train_features_nca, test_features_nca, labels_train_nca, lab
     gamma = ['scale']
     # define grid search
     SVC_grid = dict(kernel=SVC_kernel,C=C,gamma=gamma)
-    SVC_cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=3, random_state=1)
+    SVC_cv = RepeatedStratifiedKFold(n_splits=5, n_repeats=3, random_state=1)
     SVC_grid_search = GridSearchCV(estimator=SVC_model, param_grid=SVC_grid, n_jobs=-1, cv=SVC_cv, scoring='accuracy',error_score=0)
 
     ## Bagged Decision Trees params
@@ -63,7 +63,7 @@ def build_gs_models(train_features_nca, test_features_nca, labels_train_nca, lab
     bag_n_estimators = [10, 100, 1000]
     # define grid search
     bag_grid = dict(n_estimators=bag_n_estimators)
-    bag_cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=3, random_state=1)
+    bag_cv = RepeatedStratifiedKFold(n_splits=5, n_repeats=3, random_state=1)
     bag_grid_search = GridSearchCV(estimator=bag_model, param_grid=bag_grid, n_jobs=-1, cv=bag_cv, scoring='accuracy',error_score=0)
 
     ## RF params
@@ -72,7 +72,7 @@ def build_gs_models(train_features_nca, test_features_nca, labels_train_nca, lab
     RF_max_features = ['sqrt', 'log2']
     # define grid search
     RF_grid = dict(n_estimators=RF_n_estimators,max_features=RF_max_features)
-    RF_cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=3, random_state=1)
+    RF_cv = RepeatedStratifiedKFold(n_splits=5, n_repeats=3, random_state=1)
     RF_grid_search = GridSearchCV(estimator=RF_model, param_grid=RF_grid, n_jobs=-1, cv=RF_cv, scoring='accuracy',error_score=0)
 
     ## gradient boost params
@@ -83,7 +83,7 @@ def build_gs_models(train_features_nca, test_features_nca, labels_train_nca, lab
     gb_max_depth = [3, 7, 9]
     # define grid search
     gb_grid = dict(learning_rate=gb_learning_rate, n_estimators=gb_n_estimators, subsample=gb_subsample, max_depth=gb_max_depth)
-    gb_cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=3, random_state=1)
+    gb_cv = RepeatedStratifiedKFold(n_splits=5, n_repeats=3, random_state=1)
     gb_grid_search = GridSearchCV(estimator=gb_model, param_grid=gb_grid, n_jobs=-1, cv=gb_cv, scoring='accuracy',error_score=0)
 
 

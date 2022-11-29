@@ -12,11 +12,32 @@ from tabulate import tabulate
 import sys
 import os
 from pathlib import Path
+import sklearn.metrics as metrics
 
 classes_map = {'idle': 1, 'left': 2, 'right': 3}
 features_names_list = ['BP_15.5_18.5', 'BP_8_10.5', 'BP_10_15.5', 'BP_17.5_20.5', 'BP_12.5_30', 'RTP', 'SPEC_MOM', 'SPEC_EDGE', 'SPEC_ENT', 'SLOPE', 'INTERCEPT', 'MEAN_FREQ', 'OCC_BAND', 'POWER_BAND', 'WLT_ENT', 'KURT', 'SKEW', 'VAR', 'STD', 'LOG_ENE_ENT', 'BETA_ALPHA_RATIO', 'BP_THETA']
 headers = ['CSP1', 'CSP2', 'CSP3'] + [f'E{i}_{feature}' for i in range(1,12) for feature in features_names_list]
-table_headers = ['Feature', 'Score_(R^2)_Left', 'Score_(R^2)_Right', 'Score_(LASSO)_Left', 'Score_(LASSO)_Right', 'Score_(R^1)_Left', 'Score_(R^1)_Right', 'R1_Left', 'R1_Right', 'R2_Left', 'R2_Right', 'Coef_Left', 'Coef_Right', 'Mean_Mean_left', 'Var_Mean_left', 'Mean_Mean_right', 'Var_Mean_right', 'Mean_Var_left', 'Var_Var_left', 'Mean_Var_right', 'Var_Var_right']
+table_headers = ['Feature',
+                'Score_(R^2)_Left', 'Score_(R^2)_Right',
+                'Score_(LASSO)_Left', 'Score_(LASSO)_Right',
+                'Score_(R^1)_Left', 'Score_(R^1)_Right',
+                'R1_Left', 'R1_Right',
+                'R2_Left', 'R2_Right',
+                'Coef_Left', 'Coef_Right',
+                'explained_variance_left', 'explained_variance_right',
+                'max_error_left', 'max_error_right',
+                'mean_absolute_error_left', 'mean_absolute_error_right',
+                'mean_squared_error_left', 'mean_squared_error_right',
+                'median_absolute_error_left', 'median_absolute_error_right',
+                'mean_absolute_percentage_error_left', 'mean_absolute_percentage_error_right',
+                'mean_pinball_loss_left', 'mean_pinball_loss_right',
+                'd2_pinball_score_left', 'd2_pinball_score_right',
+                'd2_absolute_error_score_left', 'd2_absolute_error_score_right'
+                ]
+                # 'Mean_Mean_left', 'Var_Mean_left',
+                # 'Mean_Mean_right', 'Var_Mean_right',
+                # 'Mean_Var_left', 'Var_Var_left',
+                # 'Mean_Var_right', 'Var_Var_right'
 
 
 def get_paths(paths_file=sys.argv[1], is_list=False, unify=False):
@@ -64,6 +85,9 @@ def calc_r2_distance(coef, intercept, x_axis, y_vals):
         p3 = np.array([a, b])
         sum += (np.linalg.norm(np.cross(p2-p1, p1-p3))/np.linalg.norm(p2-p1)) ** 2
     return (sum / len(x_axis))[0]
+
+def get_y_pred(coef, intercept, x_axis):
+    return [(coef * x + intercept) for x in x_axis]
 
 def calc_r1(coef, intercept, x_axis, y_vals):
     u_sum = 0
@@ -276,39 +300,119 @@ def analyze(paths_file, is_list=False, corr=True):
         avg_mean_right, avg_mean_left, avg_var_right, avg_var_left = compute_avgs(metrics_right, metrics_left)
         
         var_mean_right, var_mean_left, var_var_right, var_var_left = compute_vars(metrics_right, metrics_left, paths, feature)
-
+        
+        # real values of the feature
         y_r = np.array(features_values_dict_r[headers[feature]])
         y_l = np.array(features_values_dict_l[headers[feature]])
         
+        # linear regression on right and left true values
         reg_r = LinearRegression()
         reg_r.fit(x, y_r)
 
         reg_l = LinearRegression()
         reg_l.fit(x, y_l)
 
-        r1_left = calc_r1_distance(coef=reg_l.coef_, intercept=reg_l.intercept_, x_axis=x, y_vals=y_l) 
-        r1_right = calc_r1_distance(coef=reg_r.coef_, intercept=reg_r.intercept_, x_axis=x, y_vals=y_r)
+        # extracting from linear regression for each class its coefficient and intercept
+        left_intercept = reg_l.intercept_
+        right_intercept = reg_r.intercept_
+
+        left_coef = reg_l.coef_
+        right_coef = reg_r.coef_
+
+        # getting the prediction to apply metrics on
+        y_l_pred = get_y_pred(left_coef, left_intercept, x)
+        y_r_pred = get_y_pred(right_coef, right_intercept, x)
+
+        # ---------- our metrics ------------
+        # r1_distance 
+        r1_left = calc_r1_distance(coef=reg_l.coef_, intercept=left_intercept, x_axis=x, y_vals=y_l) 
+        r1_right = calc_r1_distance(coef=reg_r.coef_, intercept=right_intercept, x_axis=x, y_vals=y_r)
         
-        r2_left = calc_r2_distance(coef=reg_l.coef_, intercept=reg_l.intercept_, x_axis=x, y_vals=y_l) 
-        r2_right = calc_r2_distance(coef=reg_r.coef_, intercept=reg_r.intercept_, x_axis=x, y_vals=y_r)
+        # r2_distance
+        r2_left = calc_r2_distance(coef=reg_l.coef_, intercept=left_intercept, x_axis=x, y_vals=y_l) 
+        r2_right = calc_r2_distance(coef=reg_r.coef_, intercept=right_intercept, x_axis=x, y_vals=y_r)
 
-        r1_score_left = calc_r1(coef=reg_l.coef_, intercept=reg_l.intercept_, x_axis=x, y_vals=y_l)[0] 
-        r1_score_right = calc_r1(coef=reg_r.coef_, intercept=reg_r.intercept_, x_axis=x, y_vals=y_r)[0]
+        # r1_score
+        r1_score_left = calc_r1(coef=reg_l.coef_, intercept=left_intercept, x_axis=x, y_vals=y_l)[0] 
+        r1_score_right = calc_r1(coef=reg_r.coef_, intercept=right_intercept, x_axis=x, y_vals=y_r)[0]
 
-        left_coef = np.abs(reg_l.coef_[0])
-        right_coef = np.abs(reg_r.coef_[0])
-
+        # coefficient abs value - want him to be closest to 0
+        left_coef_abs = np.abs(reg_l.coef_[0])
+        right_coef_abs = np.abs(reg_r.coef_[0])
+        
+        # Lasso regression - adding a regularization term to see if it helps.
         reg_lasso_l = Lasso()
         reg_lasso_l.fit(x, y_l)
 
         reg_lasso_r = Lasso()
         reg_lasso_r.fit(x, y_r)
+        # ---------- our metrics Done ----------------
+
+        # ---------- sklearn metrics -----------------
+        #
+        explained_variance_left = metrics.explained_variance_score(y_l, y_l_pred)
+        explained_variance_right = metrics.explained_variance_score(y_r, y_r_pred)
+        
+        #
+        max_error_left =  metrics.max_error(y_l, y_l_pred)
+        max_error_right = metrics.max_error(y_r, y_r_pred)
+        
+        #
+        mean_absolute_error_left =  metrics.mean_absolute_error(y_l, y_l_pred)
+        mean_absolute_error_right = metrics.mean_absolute_error(y_r, y_r_pred)
+        
+        #
+        mean_squared_error_left =  metrics.mean_squared_error(y_l, y_l_pred)
+        mean_squared_error_right = metrics.mean_squared_error(y_r, y_r_pred)
+        
+        #
+        median_absolute_error_left =  metrics.median_absolute_error(y_l, y_l_pred)
+        median_absolute_error_right = metrics.median_absolute_error(y_r, y_r_pred)
+        
+        #
+        mean_absolute_percentage_error_left =  metrics.mean_absolute_percentage_error(y_l, y_l_pred)
+        mean_absolute_percentage_error_right = metrics.mean_absolute_percentage_error(y_r, y_r_pred)
+        
+        #
+        mean_pinball_loss_left =  metrics.mean_pinball_loss(y_l, y_l_pred, alpha=0.7)
+        mean_pinball_loss_right = metrics.mean_pinball_loss(y_r, y_r_pred, alpha=0.7)
+        
+        #
+        d2_pinball_score_left =  metrics.d2_pinball_score(y_l, y_l_pred, alpha=0.7)
+        d2_pinball_score_right = metrics.d2_pinball_score(y_r, y_r_pred, alpha=0.7)
+        
+        #
+        d2_absolute_error_score_left =  metrics.d2_absolute_error_score(y_l, y_l_pred)
+        d2_absolute_error_score_right = metrics.d2_absolute_error_score(y_r, y_r_pred)
 
         all_regs_r.append(reg_r)
         all_regs_l.append(reg_l)
         
-        row = [headers[feature], reg_l.score(x, y_l), reg_r.score(x, y_r), reg_lasso_l.score(x, y_l), reg_lasso_r.score(x, y_r), r1_score_left, r1_score_right, r1_left, r1_right, r2_left, r2_right, left_coef, right_coef, avg_mean_left, var_mean_left, avg_mean_right, var_mean_right, avg_var_left, var_var_left, avg_var_right, var_var_right]
-        feature_row = np.append(feature_row, np.array([row]), axis=0)
+        row = [headers[feature],
+               reg_l.score(x, y_l), reg_r.score(x, y_r),
+               reg_lasso_l.score(x, y_l), reg_lasso_r.score(x, y_r),
+               r1_score_left, r1_score_right,
+               r1_left, r1_right,
+               r2_left, r2_right,
+               left_coef_abs, right_coef_abs
+               ]
+            #    avg_mean_left, var_mean_left,
+            #    avg_mean_right, var_mean_right,
+            #    avg_var_left, var_var_left,
+            #    avg_var_right, var_var_right
+
+        row_sklearn = [
+            explained_variance_left, explained_variance_right,
+            max_error_left, max_error_right,
+            mean_absolute_error_left, mean_absolute_error_right,
+            mean_squared_error_left, mean_squared_error_right,
+            median_absolute_error_left, median_absolute_error_right,
+            mean_absolute_percentage_error_left, mean_absolute_percentage_error_right,
+            mean_pinball_loss_left, mean_pinball_loss_right,
+            d2_pinball_score_left, d2_pinball_score_right,
+            d2_absolute_error_score_left, d2_absolute_error_score_right
+        ]
+        feature_row = np.append(feature_row, np.array([row + row_sklearn]), axis=0)
 
         # plot - save figs in the right folder
         if to_plot:
