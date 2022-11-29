@@ -3,6 +3,7 @@ from cmath import exp
 from warnings import catch_warnings
 import scipy.io as sio
 import numpy as np
+import pandas as pd
 import argparse
 from metrics_wrapper import get_paths
 from genetic_selection import GeneticSelectionCV 
@@ -18,6 +19,7 @@ from sklearn.model_selection import KFold
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import GridSearchCV
 from sklearn.linear_model import LogisticRegression
+from sklearn_genetic import GAFeatureSelectionCV
 from tabulate import tabulate
 import sys
 import os
@@ -31,6 +33,8 @@ from Grid_search_params import build_gs_models
 
 features_names_list = ['BP_15.5_18.5', 'BP_8_10.5', 'BP_10_15.5', 'BP_17.5_20.5', 'BP_12.5_30', 'RTP', 'SPEC_MOM', 'SPEC_EDGE', 'SPEC_ENT', 'SLOPE', 'INTERCEPT', 'MEAN_FREQ', 'OCC_BAND', 'POWER_BAND', 'WLT_ENT', 'KURT', 'SKEW', 'VAR', 'STD', 'LOG_ENE_ENT', 'BETA_ALPHA_RATIO', 'BP_THETA']
 headers = np.array(['CSP1', 'CSP2', 'CSP3'] + [f'E{i}_{feature}' for i in range(1,12) for feature in features_names_list])
+
+chosen_indices = {}
 
 # CROSS-VALIDATION
 def cross_validation_on_model(model, k, features, labels):
@@ -126,6 +130,7 @@ def classify_results_ga(selection_params, features_train, label_train, features_
         crossover_independent_proba = selection_params['cross_ind_prob']
     )
     selector = selector.fit(features_train, label_train)
+    chosen_indices[selection_params["name"]] = np.array([i for i, res in enumerate(selector.support_) if res == True])
     np.savetxt(f'{recordingFolder}\{selection_params["name"]}_ga_features.txt', headers[selector.support_], fmt='%s')
 
     prediction = selector.predict(features_test)
@@ -140,6 +145,40 @@ def classify_results_ga(selection_params, features_train, label_train, features_
     cv_row = []
     if cv:
         cv_prediction = cross_validation_on_model(selection_params['model'], Kfold, all_features[:,selector.support_], all_labels)
+        hit_rate = cv_prediction[0]
+        cv_row = [f'{selection_params["name"]} GA CV', hit_rate, [], label_test, []]
+
+    return row, cv_row
+
+
+def classify_results_ga_sklearn(selection_params, features_train, label_train, features_test, label_test, recordingFolder, cv=False, Kfold=5, unify=False):
+    print(f"Running {selection_params['name']} with GA features selection & analysis...")
+    selector = GAFeatureSelectionCV(
+        selection_params['model'],
+        cv = selection_params['cv'],
+        scoring = selection_params['scoring'],
+        max_features = selection_params['max_features'],
+        population_size = selection_params['n_population'],
+        crossover_probability = selection_params['cross_prob'],
+        mutation_probability = selection_params['muta_prob'],
+        generations = selection_params['n_gens'],
+    )
+    selector = selector.fit(features_train, label_train)
+    chosen_indices[selection_params["name"]] = np.array([i for i, res in enumerate(selector.best_features_) if res == True])
+    np.savetxt(f'{recordingFolder}\{selection_params["name"]}_ga_features_sklearn.txt', headers[selector.best_features_], fmt='%s')
+
+    prediction = selector.predict(features_test[:,selector.best_features_])
+    test_results = prediction - label_test
+    hit_rate = sum(test_results == 0)/len(label_test)
+
+    if unify:
+        row = [f'{selection_params["name"]} GA SK', hit_rate, prediction, label_test]
+    else:
+        row = [f'{selection_params["name"]} GA SK', hit_rate, prediction, label_test, prediction - label_test]
+
+    cv_row = []
+    if cv:
+        cv_prediction = cross_validation_on_model(selection_params['model'], Kfold, all_features[:,selector.best_features_], all_labels)
         hit_rate = cv_prediction[0]
         cv_row = [f'{selection_params["name"]} GA CV', hit_rate, [], label_test, []]
 
@@ -245,6 +284,7 @@ def create_sub_folder(folder_name):
     except FileExistsError:
         print(f"{folder_name} Already exists, moving on...")    
 
+
 def classify(args_dict):
 
     recordingFolder = args_dict['folder']
@@ -254,9 +294,11 @@ def classify(args_dict):
     global all_features
     global all_labels
     all_features, all_labels, test_indices, nca_selected_idx = get_all_features(recordingFolder, recordingFolder_2, args_dict['unify'])
-    
     nca = NCA(n_components=10)
     nca_all_features = nca.fit_transform(all_features, all_labels)
+    print("NCA features from python: \n")
+    nca_indices_chosen = np.argwhere(np.any(all_features == nca_all_features.reshape(60, 1, -1)))
+    print(nca_indices_chosen)
     print("shapes: ")
     print(all_features.shape, all_labels.shape, test_indices.shape, nca_selected_idx.shape, all_features[:,nca_selected_idx].shape)
     test_indices = test_indices - 1
@@ -303,12 +345,26 @@ def classify(args_dict):
          "caching": True,
          "muta_ind_prob": 0.025,
          "cross_ind_prob": 0.8 },
+        
+        {'name': 'RF', 
+         'model': RF(criterion='entropy', n_estimators=50),
+         'cv': 3,
+         "scoring": "accuracy",
+         "max_features": 10,
+         "n_population": 153,
+         "cross_prob": 0.5,
+         "muta_prob": 0.2,
+         "n_gens": 30,
+         "caching": True,
+         "muta_ind_prob": 0.025,
+         "cross_ind_prob": 0.8 },
 
     ]
 
     #### ------------ features from matlab neighborhood component analysis - takes 10 best features ------------ #
     features_train, label_train, features_test, label_test = get_matlab_features(recordingFolder, recordingFolder_2, args_dict['unify']) 
-
+    
+    chosen_indices["MATLAB"] = nca_selected_idx
     #### ------------ features from statistical analysis ------------ ####
     file_path = args_dict['paths']
     our_selector = Selector(file_path, record_path=recordingFolder, ascending=args_dict["ascending"], corr=args_dict["corr"])
@@ -323,6 +379,8 @@ def classify(args_dict):
 
     labels_train_stats = all_labels[train_indices]
     labels_test_stats = all_labels[test_indices]
+
+    chosen_indices["STA"] = np.array(our_features_indices)
 
     ##### ------------ Running Models Classifications ------------ #####
     models = [
@@ -373,6 +431,9 @@ def classify(args_dict):
         row, cv_row = classify_results_ga(model, features_train_ga, labels_train_ga, features_test_ga, labels_test_ga, recordingFolder, cv=True)
         all_rows.append(row)
         all_rows.append(cv_row)
+        row, cv_row = classify_results_ga_sklearn(model, features_train_ga, labels_train_ga, features_test_ga, labels_test_ga, recordingFolder, cv=True)
+        all_rows.append(row)
+        all_rows.append(cv_row)
 
     # print('started GS models analysis\n')
     # for model in gs_models:
@@ -396,6 +457,11 @@ def classify(args_dict):
     all_rows.insert(0, table_headers)
     create_sub_folder(folder_name=args_dict['new_folder'])
     np.savetxt(f'class_results/{args_dict["new_folder"]}/{folder_dict["name"]}_{folder_dict["date"]}_{folder_dict["num"]}.csv', np.array(all_rows, dtype=object), delimiter=',', fmt='%s')
+    chosen_headers = list(chosen_indices.keys())
+    chosen_vals = list(chosen_indices.values())
+    chosen_table = np.array([chosen_headers, chosen_vals])
+    np.savetxt(f'class_results/{args_dict["new_folder"]}/chosen_features_{folder_dict["name"]}_{folder_dict["date"]}_{folder_dict["num"]}.csv', np.array(chosen_table, dtype=object), delimiter=',', fmt='%s')
+
 
 if __name__ == '__main__':
     args_dict = parse_cmdl()

@@ -23,6 +23,7 @@ def analyze_csv(scores_path):
                 #load csv
                 file_str = file[0]
                 df = pd.read_csv(f'{subdir}\\{file_str}')
+                print(file_str)
                 #extract headers
                 headers = list(df.columns.values)
                 headers.pop(0)
@@ -58,6 +59,8 @@ def csv_scores(rootdir, base_path):
             for x, y, files_s in os.walk(subdir):
                 for file in files_s: 
                     print(f'{subdir}\\{file}')
+                    if 'chosen' in file:
+                        continue
                     df = pd.read_csv(f'{subdir}\\{file}')
                     #get classifier stats
                     success_rate = df['Success Rate'].tolist()

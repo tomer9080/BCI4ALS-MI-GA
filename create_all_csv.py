@@ -1,5 +1,22 @@
 import os 
-from metrics_wrapper import table_headers
+
+table_headers = ['Feature',
+                'Score_(R^2)_Left', 'Score_(R^2)_Right',
+                'Score_(LASSO)_Left', 'Score_(LASSO)_Right',
+                'Score_(R^1)_Left', 'Score_(R^1)_Right',
+                'R1_Left', 'R1_Right',
+                'R2_Left', 'R2_Right',
+                'Coef_Left', 'Coef_Right',
+                'explained_variance_left', 'explained_variance_right',
+                'max_error_left', 'max_error_right',
+                'mean_absolute_error_left', 'mean_absolute_error_right',
+                'mean_squared_error_left', 'mean_squared_error_right',
+                'median_absolute_error_left', 'median_absolute_error_right',
+                'mean_absolute_percentage_error_left', 'mean_absolute_percentage_error_right',
+                'mean_pinball_loss_left', 'mean_pinball_loss_right',
+                'd2_pinball_score_left', 'd2_pinball_score_right',
+                'd2_absolute_error_score_left', 'd2_absolute_error_score_right'
+                ]
 # check priors without UNIFY
 # for i in range(0,7):
 #     os.system(f'python MI5_ModelTraining.py -pa paths\\paths_TK.txt -pr {i} -n TK_rec_pr{i}')

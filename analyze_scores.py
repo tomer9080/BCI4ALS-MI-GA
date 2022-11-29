@@ -20,6 +20,8 @@ def analyze_scores():
     all_scores = {}
     for (root, dirs, files) in os.walk(root_path):
         for dir in dirs:
+            if 'unified' in dir:
+                continue
             scores = get_sta_scores(f'{root_path}\\{dir}')
             for header in scores.columns:
                 if 'STA' in header:
