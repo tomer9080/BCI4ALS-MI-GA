@@ -16,21 +16,25 @@ def create_path(base_parts):
 
 def analyze_csv(scores_path):
     for subdir, dirs, files_top in os.walk(scores_path):
-        if(subdir != scores_path):
-            subdir_name = Path(subdir).parts
+        subdir_list = Path(subdir).parts
+        subdir_name = subdir_list[len(subdir_list)-1]
+        if(subdir != scores_path and  subdir_name != 'None'):
+            print("starting analysis for:")
             print(subdir_name)
+            print()
             for x, y, file in os.walk(subdir):
                 #load csv
                 file_str = file[0]
                 df = pd.read_csv(f'{subdir}\\{file_str}')
-                print(file_str)
+                
                 #extract headers
                 headers = list(df.columns.values)
                 headers.pop(0)
-                print(f'headers:\n {headers}\n')
+
                 #extract recordings
                 recordings = df['Recording']
-                print(f'recordings = {recordings}\n')
+                recordings = [i.replace('.csv', '') for i in recordings]
+
                 #create plot for each header
                 means = []
                 means_headers = []
@@ -38,10 +42,13 @@ def analyze_csv(scores_path):
                     values_list = np.array(df[header])
                     mean_header = np.mean(values_list)
                     plt.clf()
+                    fig = plt.figure(figsize=(6.4, 9.4))
                     plt.plot(recordings, values_list)
-                    plt.title(f'{header} classification \n mean value = {mean_header}')
+                    plt.title(f'{subdir_name} \n {header} classification \n mean value = {mean_header}')
                     plt.xlabel('Recording ID')
                     plt.ylabel('classification percentage')
+                    plt.xticks(fontsize=6, rotation=90)
+
                     print(f'{header} mean = {mean_header}\n')
                     means.append(mean_header)
                     means_headers.append(header)

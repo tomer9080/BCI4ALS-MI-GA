@@ -25,6 +25,8 @@ import sys
 import os
 from OurFeatureSelection import Selector
 
+from models_params import build_ga_models
+from models_params import build_models
 from Grid_search_params import build_gs_models
 
 # TODO: Add interface for choosing features as we want.
@@ -114,7 +116,7 @@ def classify_results(model, model_name, features_train, label_train, features_te
     return table_row, table_cv_row
 
 
-def classify_results_ga(selection_params, features_train, label_train, features_test, label_test, recordingFolder, cv=False, Kfold=5, unify=False):
+def classify_results_ga(selection_params, features_train, label_train, features_test, label_test, recordingFolder, folder_dict, cv=False, Kfold=5, unify=False):
     print(f"Running {selection_params['name']} with GA features selection & analysis...")
     selector = GeneticSelectionCV(
         selection_params['model'],
@@ -132,6 +134,8 @@ def classify_results_ga(selection_params, features_train, label_train, features_
     selector = selector.fit(features_train, label_train)
     chosen_indices[selection_params["name"]] = np.array([i for i, res in enumerate(selector.support_) if res == True])
     np.savetxt(f'{recordingFolder}\{selection_params["name"]}_ga_features.txt', headers[selector.support_], fmt='%s')
+    np.savetxt(f'ga_features\\{selection_params["name"]}\\{folder_dict["name"]}_{folder_dict["date"]}_{folder_dict["num"]}_ga_features.txt',  headers[selector.support_], fmt='%s')
+        
 
     prediction = selector.predict(features_test)
     test_results = prediction - label_test
@@ -162,7 +166,10 @@ def classify_results_ga_sklearn(selection_params, features_train, label_train, f
         crossover_probability = selection_params['cross_prob'],
         mutation_probability = selection_params['muta_prob'],
         generations = selection_params['n_gens'],
+        n_jobs=2
     )
+    # del globals()['Individual']
+    print(globals())
     selector = selector.fit(features_train, label_train)
     chosen_indices[selection_params["name"]] = np.array([i for i, res in enumerate(selector.best_features_) if res == True])
     np.savetxt(f'{recordingFolder}\{selection_params["name"]}_ga_features_sklearn.txt', headers[selector.best_features_], fmt='%s')
@@ -319,47 +326,7 @@ def classify(args_dict):
     labels_train_ga = all_labels[train_indices]
     labels_test_ga = all_labels[test_indices]
 
-    ga_models = [
-        {'name': 'SVC', 
-         'model': SVC(),
-         'cv': 3,
-         "scoring": "accuracy",
-         "max_features": 10,
-         "n_population": 153,
-         "cross_prob": 0.5,
-         "muta_prob": 0.2,
-         "n_gens": 60,
-         "caching": True,
-         "muta_ind_prob": 0.025,
-         "cross_ind_prob": 0.8 }, 
-        
-        {'name': 'LDA', 
-         'model': LDA(),
-         'cv': 3,
-         "scoring": "accuracy",
-         "max_features": 10,
-         "n_population": 153,
-         "cross_prob": 0.5,
-         "muta_prob": 0.2,
-         "n_gens": 60,
-         "caching": True,
-         "muta_ind_prob": 0.025,
-         "cross_ind_prob": 0.8 },
-        
-        {'name': 'RF', 
-         'model': RF(criterion='entropy', n_estimators=50),
-         'cv': 3,
-         "scoring": "accuracy",
-         "max_features": 10,
-         "n_population": 153,
-         "cross_prob": 0.5,
-         "muta_prob": 0.2,
-         "n_gens": 30,
-         "caching": True,
-         "muta_ind_prob": 0.025,
-         "cross_ind_prob": 0.8 },
-
-    ]
+    ga_models = build_ga_models()
 
     #### ------------ features from matlab neighborhood component analysis - takes 10 best features ------------ #
     features_train, label_train, features_test, label_test = get_matlab_features(recordingFolder, recordingFolder_2, args_dict['unify']) 
@@ -383,32 +350,11 @@ def classify(args_dict):
     chosen_indices["STA"] = np.array(our_features_indices)
 
     ##### ------------ Running Models Classifications ------------ #####
-    models = [
-        {'name': 'LDA', 'model': LDA(), 'cv': True},
-        {'name': 'LDA NCA', 'model': LDA(), 'cv': True, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},
-        {'name': 'LDA STA', 'model': LDA(), 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
-        {'name': 'QDA', 'model': QDA(), 'cv': True},
-        {'name': 'QDA NCA', 'model': QDA(), 'cv': True, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},
-        {'name': 'QDA STA', 'model': QDA(), 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
-        {'name': 'KNN-5', 'model': KNN(5), 'cv': False},
-        {'name': 'KNN-5 NCA', 'model': KNN(5), 'cv': False, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},
-        {'name': 'KNN-5 STA', 'model': KNN(5), 'cv': False, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
-        {'name': 'KNN-7', 'model': KNN(7), 'cv': False},
-        {'name': 'KNN-7 NCA', 'model': KNN(7), 'cv': False, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},
-        {'name': 'KNN-7 STA', 'model': KNN(7), 'cv': False, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
-        {'name': 'SVC', 'model': SVC(), 'cv': True},
-        {'name': 'SVC NCA', 'model': SVC(), 'cv': True, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},
-        {'name': 'SVC STA', 'model': SVC(), 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
-        {'name': 'NB', 'model': NB(), 'cv': False},
-        {'name': 'NB NCA', 'model': NB(), 'cv': False, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},
-        {'name': 'NB STA', 'model': NB(), 'cv': False, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
-        {'name': 'RF', 'model': RF(criterion='entropy'), 'cv': True},
-        {'name': 'RF NCA', 'model': RF(criterion='entropy'), 'cv': True, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},
-        {'name': 'RF STA', 'model': RF(criterion='entropy'), 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
-        {'name': 'DT', 'model': DT(), 'cv': True},
-        {'name': 'DT NCA', 'model': DT(), 'cv': True, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca},
-        {'name': 'DT STA', 'model': DT(), 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
-    ]
+    folder_dict = get_dict_for_folder_from_path(recordingFolder)
+
+    
+    models = build_models(train_features_nca, test_features_nca, labels_train_nca, labels_test_nca, our_features_indices, train_features_stats, test_features_stats, labels_train_stats, labels_test_stats)
+
 
     # gs_models = build_gs_models(train_features_nca, test_features_nca, labels_train_nca, labels_test_nca, our_features_indices, train_features_stats, test_features_stats, labels_train_stats, labels_test_stats)
 
@@ -428,10 +374,11 @@ def classify(args_dict):
 
     print('started GA models analysis\n')
     for model in ga_models:
-        row, cv_row = classify_results_ga(model, features_train_ga, labels_train_ga, features_test_ga, labels_test_ga, recordingFolder, cv=True)
-        all_rows.append(row)
-        all_rows.append(cv_row)
-        row, cv_row = classify_results_ga_sklearn(model, features_train_ga, labels_train_ga, features_test_ga, labels_test_ga, recordingFolder, cv=True)
+        # if 'SVC' in model.get('name'):
+        #     row, cv_row = classify_results_ga_sklearn(model, features_train_ga, labels_train_ga, features_test_ga, labels_test_ga, recordingFolder, cv=True)
+        #     all_rows.append(row)
+        #     all_rows.append(cv_row)
+        row, cv_row = classify_results_ga(model, features_train_ga, labels_train_ga, features_test_ga, labels_test_ga, recordingFolder, folder_dict, cv=True)
         all_rows.append(row)
         all_rows.append(cv_row)
 
@@ -453,7 +400,6 @@ def classify(args_dict):
     table_headers = ["Classifier", "Success Rate", "Classifier Prediction", "Test Labels", "Sub Labels"]
     print(tabulate(all_rows, headers=table_headers))
 
-    folder_dict = get_dict_for_folder_from_path(recordingFolder)
     all_rows.insert(0, table_headers)
     create_sub_folder(folder_name=args_dict['new_folder'])
     np.savetxt(f'class_results/{args_dict["new_folder"]}/{folder_dict["name"]}_{folder_dict["date"]}_{folder_dict["num"]}.csv', np.array(all_rows, dtype=object), delimiter=',', fmt='%s')
