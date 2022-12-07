@@ -1,13 +1,10 @@
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis as QDA
 from sklearn.neighbors import KNeighborsClassifier as KNN
-from sklearn.neighbors import NeighborhoodComponentsAnalysis as NCA
 from sklearn.svm import SVC
 from sklearn.naive_bayes import BernoulliNB as NB
 from sklearn.ensemble import RandomForestClassifier as RF
 from sklearn.tree import DecisionTreeClassifier as DT
-
-
 
 
 def build_models(train_features_nca, test_features_nca, labels_train_nca, labels_test_nca, our_features_indices, train_features_stats, test_features_stats, labels_train_stats, labels_test_stats):

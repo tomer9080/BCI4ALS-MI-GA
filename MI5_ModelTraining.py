@@ -1,33 +1,18 @@
-from cProfile import label
-from cmath import exp
-from warnings import catch_warnings
 import scipy.io as sio
 import numpy as np
-import pandas as pd
 import argparse
-from metrics_wrapper import get_paths
-from genetic_selection import GeneticSelectionCV 
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
-from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis as QDA
-from sklearn.neighbors import KNeighborsClassifier as KNN
-from sklearn.neighbors import NeighborhoodComponentsAnalysis as NCA
-from sklearn.svm import SVC
-from sklearn.naive_bayes import BernoulliNB as NB
-from sklearn.ensemble import RandomForestClassifier as RF
-from sklearn.tree import DecisionTreeClassifier as DT
-from sklearn.model_selection import KFold
-from sklearn.metrics import accuracy_score
-from sklearn.model_selection import GridSearchCV
-from sklearn.linear_model import LogisticRegression
-from sklearn_genetic import GAFeatureSelectionCV
-from tabulate import tabulate
-import sys
 import os
+from genetic_selection import GeneticSelectionCV
+from sklearn.neighbors import NeighborhoodComponentsAnalysis as NCA
+from sklearn.model_selection import KFold
+from sklearn_genetic import GAFeatureSelectionCV
 from OurFeatureSelection import Selector
-
-from models_params import build_ga_models
-from models_params import build_models
+from metrics_wrapper import get_paths
+from sklearn.metrics import accuracy_score
+from tabulate import tabulate
+from models_params import build_ga_models, build_models
 from Grid_search_params import build_gs_models
+import pickle
 
 # TODO: Add interface for choosing features as we want.
 # TODO: How to do the feature mentioned above.
@@ -97,10 +82,12 @@ def save_best_model_stats(model_name, grid_result):
 
 def classify_results(model, model_name, features_train, label_train, features_test, label_test, features_indices, cv=False, Kfold=5, params=None, unify=False):
     print(f"Running {model_name} analysis...")
-    model.fit(features_train, label_train)
+    fitted = model.fit(features_train, label_train)
     prediction = model.predict(features_test)
     test_results = prediction - label_test
     hit_rate = sum(test_results == 0)/len(label_test)
+
+    pickle.dump(model, file=open(f'tmp/{model_name}_object.pkl', 'wb'))
 
     if unify:
         table_row = [model_name, hit_rate, prediction, label_test]
@@ -190,6 +177,7 @@ def classify_results_ga_sklearn(selection_params, features_train, label_train, f
         cv_row = [f'{selection_params["name"]} GA CV', hit_rate, [], label_test, []]
 
     return row, cv_row
+
 
 def classify_results_gs(model, model_name, features_train, label_train, features_test, label_test, grid, unify=False):
     print(f"Running {model_name} analysis...")
@@ -372,15 +360,15 @@ def classify(args_dict):
         if cv_row != []:
             all_rows.append(cv_row)
 
-    print('started GA models analysis\n')
-    for model in ga_models:
-        # if 'SVC' in model.get('name'):
-        #     row, cv_row = classify_results_ga_sklearn(model, features_train_ga, labels_train_ga, features_test_ga, labels_test_ga, recordingFolder, cv=True)
-        #     all_rows.append(row)
-        #     all_rows.append(cv_row)
-        row, cv_row = classify_results_ga(model, features_train_ga, labels_train_ga, features_test_ga, labels_test_ga, recordingFolder, folder_dict, cv=True)
-        all_rows.append(row)
-        all_rows.append(cv_row)
+    # print('started GA models analysis\n')
+    # for model in ga_models:
+    #     # if 'SVC' in model.get('name'):
+    #     #     row, cv_row = classify_results_ga_sklearn(model, features_train_ga, labels_train_ga, features_test_ga, labels_test_ga, recordingFolder, cv=True)
+    #     #     all_rows.append(row)
+    #     #     all_rows.append(cv_row)
+    #     row, cv_row = classify_results_ga(model, features_train_ga, labels_train_ga, features_test_ga, labels_test_ga, recordingFolder, folder_dict, cv=True)
+    #     all_rows.append(row)
+    #     all_rows.append(cv_row)
 
     # print('started GS models analysis\n')
     # for model in gs_models:
@@ -430,3 +418,6 @@ if __name__ == '__main__':
                     args_dict['folder2'] = path[1]
                     print(f'second path: {path[1]}')                    
                 classify(args_dict)
+
+    model = pickle.load(open('tmp\\LDA_object.pkl', 'rb'))
+    print(model.predict(all_features[:,:10]))

@@ -73,7 +73,7 @@ class Selector:
         
         #line below not working for some reason
         # paths_file = open(self.paths, 'r')
-        paths_file = open('paths/paths_RL.txt', 'r')
+        paths_file = open('paths/paths_TK.txt', 'r')
         
         paths_list = [line.strip() for line in paths_file.readlines()]
         current_index = self.get_recording_index_in_paths(paths_list)
