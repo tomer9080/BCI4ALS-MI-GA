@@ -112,7 +112,9 @@ def plot_mean_and_variance(paths, metrics_right, metrics_left, feature):
     plt.legend(labels=['Right', 'Left'])
     plt.title(f'Means of feature {headers[feature]} over time', size=21)
     plt.xlabel('Recording ID', size=18)
+    plt.xticks(rotation=90)
     plt.ylabel(f'Mean value of feature {headers[feature]}', size=18)
+    plt.tight_layout()
     plt.savefig(f'plots\{headers[feature]}\\Means', dpi=600)
     plt.clf()
 
@@ -121,7 +123,9 @@ def plot_mean_and_variance(paths, metrics_right, metrics_left, feature):
     plt.legend(labels=['Right', 'Left'])
     plt.title(f'Variance of feature {headers[feature]} over time', size=21)
     plt.xlabel('Recording ID', size=18)
+    plt.xticks(rotation=90)
     plt.ylabel(f'Variance value of feature {headers[feature]}', size=18)
+    plt.tight_layout()
     plt.savefig(f"plots\{headers[feature]}\\Vars", dpi=600)
     plt.clf()
 
@@ -133,17 +137,18 @@ def plot_easy(x, y1, y2=None, xlabel='x axis', ylabel='y axis', title='easy plot
     plt.title(title, size=21)
     plt.xlabel(xlabel, size=18)
     plt.ylabel(ylabel, size=18)
+    plt.tight_layout()
     if save:
         plt.savefig(f'plots\{headers[feature]}\\' + title.replace('.','_'), dpi=600)
         plt.clf()
 
 def reg_plot_easy(x, y1, y2, xlabel='x axis', ylabel='y axis', title='easy plot', legend=[], save=True, feature=0):
     # regression plot using seaborn
-    sns.regplot(x=x, y=y1, color='blue', marker='+')
-    sns.regplot(x=x, y=y2, color='magenta', marker='+')
+    sns.regplot(x=x, y=y1, color='blue', marker='+', label=legend[0])
+    sns.regplot(x=x, y=y2, color='red', marker='+', label=legend[1])
     
     # Legend, title and labels.
-    plt.legend(labels=legend)
+    plt.legend()
     plt.title(title, size=24)
     plt.xlabel(xlabel, size=18)
     plt.ylabel(ylabel, size=18)
