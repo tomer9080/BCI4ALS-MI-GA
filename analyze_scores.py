@@ -26,11 +26,12 @@ def analyze_scores():
             for header in scores.columns:
                 if 'STA' in header:
                     all_scores[f'{dir}_{header}'] = scores[header][0]
-    sta_scores = open("./stats/stats_scores.txt", 'wt')
+    sta_scores = open("./stats/stats_scores.csv", 'wt')
     all_scores_sorted = dict(sorted(all_scores.items(), key=lambda x:x[1]))
     print(all_scores_sorted)
+    sta_scores.write("Model,Score\n")
     for key, val in all_scores_sorted.items():
-        sta_scores.write(f"{key}: {val}\n")
+        sta_scores.write(f"{key},{val}\n")
     sta_scores.close()
 
 
