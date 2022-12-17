@@ -6,13 +6,9 @@ import ModelsUtils
 from MetricsFeatureSelection import Selector
 from metrics_wrapper import get_paths
 from tabulate import tabulate
-from models_params import build_ga_models, build_models
-from Grid_search_params import build_gs_models
+from ModelsParams import build_ga_models, build_models
+from GridSearchParams import build_gs_models
 from sklearn.neighbors import NeighborhoodComponentsAnalysis as NCA
-
-# TODO: Add interface for choosing features as we want.
-# TODO: How to do the feature mentioned above.
-# TODO: Add genetic algorithm feature selection
 
 features_names_list = Utils.features_names_list
 headers = Utils.headers
@@ -30,13 +26,10 @@ def classify(args_dict):
     all_features, all_labels, test_indices, nca_selected_idx = Utils.get_all_features(recordingFolder, recordingFolder_2, args_dict['unify'])
     nca = NCA(n_components=10)
     nca_all_features = nca.fit_transform(all_features, all_labels)
-    print("NCA features from python: \n")
-    nca_indices_chosen = np.argwhere(np.any(all_features == nca_all_features.reshape(60, 1, -1)))
-    print(nca_indices_chosen)
-    print("shapes: ")
     print(all_features.shape, all_labels.shape, test_indices.shape, nca_selected_idx.shape, all_features[:,nca_selected_idx].shape)
     test_indices = test_indices - 1
     train_indices = [i for i in range(len(all_labels)) if i not in test_indices]
+
 
     #### ------------ NCA analysis ------------ ####
     train_features_nca = nca_all_features[train_indices]
@@ -53,12 +46,12 @@ def classify(args_dict):
     labels_train_ga = all_labels[train_indices]
     labels_test_ga = all_labels[test_indices]
 
-    ga_models = build_ga_models()
 
     #### ------------ features from matlab neighborhood component analysis - takes 10 best features ------------ #
     features_train, label_train, features_test, label_test = Utils.get_matlab_features(recordingFolder, recordingFolder_2, args_dict['unify']) 
-    
     chosen_indices["MATLAB"] = nca_selected_idx
+
+
     #### ------------ features from statistical analysis ------------ ####
     file_path = args_dict['paths']
     our_selector = Selector(file_path, record_path=recordingFolder, ascending=args_dict["ascending"], corr=args_dict["corr"])
@@ -78,15 +71,12 @@ def classify(args_dict):
 
     ##### ------------ Running Models Classifications ------------ #####
     folder_dict = Utils.get_dict_for_folder_from_path(recordingFolder)
-
-    
     models = build_models(train_features_nca, test_features_nca, labels_train_nca, labels_test_nca, our_features_indices, train_features_stats, test_features_stats, labels_train_stats, labels_test_stats)
-
-
-    # gs_models = build_gs_models(train_features_nca, test_features_nca, labels_train_nca, labels_test_nca, our_features_indices, train_features_stats, test_features_stats, labels_train_stats, labels_test_stats)
+    ga_models = build_ga_models()
 
     all_rows = []
-    
+
+    ##### ============= NCA ANALYSIS ( MATLAB & PYTHON ) ============= #####
     print('started models analysis\n')
     for model in models:
         f_train = features_train if model.get('ftr') is None else model.get('ftr')
@@ -94,32 +84,31 @@ def classify(args_dict):
         l_train = label_train if model.get('ltr') is None else model.get('ltr')
         l_test = label_test if model.get('lte') is None else model.get('lte')
         indices = nca_selected_idx if model.get('indices') is None else model.get('indices')
-        row, cv_row = ModelsUtils.classify_results(model['model'], model['name'], features_train=f_train, features_test=f_test, label_train=l_train, features_indices=indices, label_test=l_test, cv=model['cv'], params=model.get('params'), unify=args_dict['unify'], all_features=all_features, all_labels=all_labels)
+        row, cv_row = ModelsUtils.classify_results(model['model'], model['name'], features_train=f_train, features_test=f_test, label_train=l_train, features_indices=indices, label_test=l_test, cv=model['cv'], params=model.get('params'), all_features=all_features, all_labels=all_labels, args=args_dict)
         all_rows.append(row)
         if cv_row != []:
             all_rows.append(cv_row)
 
-    print('started GA models analysis\n')
-    for model in ga_models:
-        # if 'SVC' in model.get('name'):
-        #     row, cv_row = classify_results_ga_sklearn(model, features_train_ga, labels_train_ga, features_test_ga, labels_test_ga, recordingFolder, cv=True)
-        #     all_rows.append(row)
-        #     all_rows.append(cv_row)
-        row, cv_row = ModelsUtils.classify_results_ga(model, features_train_ga, labels_train_ga, features_test_ga, labels_test_ga, recordingFolder, folder_dict, cv=True, chosen_indices=chosen_indices, all_features=all_features, all_labels=all_labels)
-        all_rows.append(row)
-        all_rows.append(cv_row)
+    ##### ============= GA ANALYSIS ============= #####
+    if args_dict['ga']:
+        print('started GA models analysis\n')
+        for model in ga_models:
+            row, cv_row = ModelsUtils.classify_results_ga(model, features_train_ga, labels_train_ga, features_test_ga, labels_test_ga, recordingFolder, folder_dict, cv=True, chosen_indices=chosen_indices, all_features=all_features, all_labels=all_labels)
+            all_rows.append(row)
+            all_rows.append(cv_row)
 
-    # print('started GS models analysis\n')
-    # for model in gs_models:
-    #     f_train = features_train if model.get('ftr') is None else model.get('ftr')
-    #     f_test = features_test if model.get('fte') is None else model.get('fte')
-    #     l_train = label_train if model.get('ltr') is None else model.get('ltr')
-    #     l_test = label_test if model.get('lte') is None else model.get('lte')
-    #     indices = nca_selected_idx if model.get('indices') is None else model.get('indices')
-    #     row = classify_results_gs(model['model'], model['name'], features_train=f_train, features_test=f_test, label_train=l_train, label_test=l_test, grid=model['grid'], unify=args_dict['unify'])
-    #     all_rows.append(row)
-
-
+    ##### ============= RUN GS - ONLY UPON REQUEST FROM CMDL ============= #####
+    if args_dict['grid']:
+        gs_models = build_gs_models(train_features_nca, test_features_nca, labels_train_nca, labels_test_nca, our_features_indices, train_features_stats, test_features_stats, labels_train_stats, labels_test_stats)
+        print('started GS models analysis\n')
+        for model in gs_models:
+            f_train = features_train if model.get('ftr') is None else model.get('ftr')
+            f_test = features_test if model.get('fte') is None else model.get('fte')
+            l_train = label_train if model.get('ltr') is None else model.get('ltr')
+            l_test = label_test if model.get('lte') is None else model.get('lte')
+            indices = nca_selected_idx if model.get('indices') is None else model.get('indices')
+            row = ModelsUtils.classify_results_gs(model['model'], model['name'], features_train=f_train, features_test=f_test, label_train=l_train, label_test=l_test, grid=model['grid'], unify=args_dict['unify'])
+            all_rows.append(row)
 
 
     #### ---------- Priniting table ---------- ####
@@ -157,6 +146,3 @@ if __name__ == '__main__':
                     args_dict['folder2'] = path[1]
                     print(f'second path: {path[1]}')                    
                 classify(args_dict)
-
-    model = pickle.load(open('tmp\\LDA_object.pkl', 'rb'))
-    print(model.predict(all_features[:,:10]))

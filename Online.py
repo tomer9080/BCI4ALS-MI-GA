@@ -6,9 +6,43 @@ TODO: be able to use any classifier.
 TODO: use pickle to load the classifier of the desired run
 TODO: use parser to tell 
 """
+import OurUtils as Utils
+import numpy as np
+import ModelsUtils
+import pandas as pd
+import os
 
-import pickle
+from pathlib import Path
+from tabulate import tabulate
+from Parsers import parse_cmdl_online
+
+def run_online(args_dict: dict):
+    offline_models_path = f'models\{args_dict["name"]}\{Utils.get_subdir(args_dict["offline"])}'
+    online_models_path = f'models/{Utils.get_subdir(args_dict["online"])}'
+    all_features, all_labels, _, _ = Utils.get_all_features(args_dict['online'])
+    rows = []
+    for subdir, _, _ in os.walk('models'):
+        if subdir != offline_models_path:
+            continue
+        for _, _, files_s in os.walk(subdir):
+            for file in files_s:
+                offline_model = Utils.load_from_pickle(f'{subdir}\\{file}')
+                features_df = Utils.get_by_name_and_recording_selected_features_df(args_dict['name'], args_dict['online'])
+                model_name = (Path(file).parts)[-1].replace('_object.pkl', '')
+                if 'STA' in file:
+                    sta_row = ModelsUtils.classify_online_model(offline_model, model_name, features_df[1], all_features, all_labels)
+                    rows.append(sta_row)
+                else:
+                    matlab_row = ModelsUtils.classify_online_model(offline_model, model_name, features_df[0], all_features, all_labels)
+                    rows.append(matlab_row)
+                
+    
+    ### ------ Print Results ------ ###
+    print('')
+    table_headers = ["Classifier", "Success Rate", "Classifier Prediction", "Test Labels", "Sub Labels"]
+    print(tabulate(rows, headers=table_headers, maxcolwidths=[300] * 5))
+
 
 if __name__ == "__main__":
-    model = pickle.load(open('tmp\\LDA_object.pkl', 'rb'))
-    print(model.params)
+    args_dict = parse_cmdl_online()
+    run_online(args_dict)

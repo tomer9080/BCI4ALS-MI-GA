@@ -46,16 +46,16 @@ def cross_validation_on_model(model, k, features, labels):
     return avg_score, all_scores, all_models
 
 
-def classify_results(model, model_name, features_train, label_train, features_test, label_test, features_indices, cv=False, Kfold=5, params=None, unify=False, all_features=[], all_labels=[]):
+def classify_results(model, model_name, features_train, label_train, features_test, label_test, features_indices, cv=False, Kfold=5, params=None, all_features=[], all_labels=[], args: dict={}):
     print(f"Running {model_name} analysis...")
-    fitted = model.fit(features_train, label_train)
+    model.fit(features_train, label_train)
     prediction = model.predict(features_test)
     test_results = prediction - label_test
     hit_rate = sum(test_results == 0)/len(label_test)
 
-    Utils.save_to_pickle(model, f'tmp/{model_name}_object.pkl')
+    Utils.save_to_pickle(model, f'{model_name}_object.pkl', args=args)
 
-    if unify:
+    if args.get('unify', False):
         table_row = [model_name, hit_rate, prediction, label_test]
     else: 
         table_row = [model_name, hit_rate, prediction, label_test, prediction - label_test] 
@@ -163,3 +163,10 @@ def classify_results_gs(model, model_name, features_train, label_train, features
 
     return table_row
 
+def classify_online_model(offline_model, model_name, features_indices, all_features, all_labels):
+    print(f"Running online classification! {model_name}")
+    offline_prediction = offline_model.predict(all_features[:,features_indices])
+    result = offline_prediction - all_labels
+    hit_rate = sum(result == 0)/len(all_labels)
+
+    return [model_name, hit_rate, offline_prediction, all_labels, offline_prediction - all_labels]

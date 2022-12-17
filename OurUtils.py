@@ -2,19 +2,34 @@ import pickle
 import os
 import scipy.io as sio
 import numpy as np
+import pandas as pd
+
 
 features_names_list = ['BP_15.5_18.5', 'BP_8_10.5', 'BP_10_15.5', 'BP_17.5_20.5', 'BP_12.5_30', 'RTP', 'SPEC_MOM', 'SPEC_EDGE', 'SPEC_ENT', 'SLOPE', 'INTERCEPT', 'MEAN_FREQ', 'OCC_BAND', 'POWER_BAND', 'WLT_ENT', 'KURT', 'SKEW', 'VAR', 'STD', 'LOG_ENE_ENT', 'BETA_ALPHA_RATIO', 'BP_THETA']
 headers = np.array(['CSP1', 'CSP2', 'CSP3'] + [f'E{i}_{feature}' for i in range(1,12) for feature in features_names_list])
 
-def save_to_pickle(model, path):
-    pickle.dump(model, file=open(path, 'wb'))
+
+def save_to_pickle(model, path, args: dict={}):
+    if args.get('save_models', False):
+        subdir = get_subdir(args['folder'])
+        create_sub_folder_models(subdir)
+        pickle.dump(model, file=open(f'models\{subdir}\{path}', 'wb'))
+
 
 def load_from_pickle(path):
     model = pickle.load(open(path, 'rb'))
     return model
 
 
-def get_dict_for_folder_from_path(path):
+def get_subdir(path) -> str:
+    return get_subdir_from_full_path_dict(get_dict_for_folder_from_path(path))
+
+
+def get_subdir_from_full_path_dict(path_dict: dict) -> str:
+    return path_dict['name'] + '_' + path_dict['date'] + '_' + str(path_dict['num'])
+
+
+def get_dict_for_folder_from_path(path) -> dict:
     list_of_path = path.split('\\')
     return {"name": list_of_path[-2], "date": list_of_path[-3], "num": int(list_of_path[-1][-2:])}
 
@@ -42,7 +57,7 @@ def get_matlab_features(recordingFolder, recordingFolder_2, unify):
     return features_train, label_train, features_test, label_test
 
 
-def get_all_features(recordingFolder, recordingFolder_2, unify):
+def get_all_features(recordingFolder, recordingFolder_2="None", unify=False):
     all_features = sio.loadmat(recordingFolder + '\AllDataInFeatures.mat')['AllDataInFeatures']
     all_labels = sio.loadmat(recordingFolder + '\\trainingVec.mat')['trainingVec'].ravel()
     test_indices = sio.loadmat(recordingFolder + '\\testIdx.mat')['testIdx'].ravel()
@@ -70,11 +85,37 @@ def create_sub_folder(folder_name):
     except FileExistsError:
         print(f"{folder_name} Already exists, moving on...")    
 
+
+def create_sub_folder_models(folder_name):
+    try:
+        os.mkdir(f'models\{folder_name}')
+    except FileExistsError:
+        print(f"{folder_name} Already exists, moving on...")    
+
+
 def create_sub_folder_for_ga_features(folder_name):
     try:
         os.mkdir(f'ga_features\{folder_name}')
     except FileExistsError:
         print(f"{folder_name} Already exists, moving on...")    
+
+
+def get_array_from_str(array_str):
+    tmp = array_str.replace('[','').replace(']', '')
+    tmp = ' '.join(tmp.split())
+    tmp = tmp.split()
+    return np.array([int(item) for item in tmp])
+
+def get_by_name_and_recording_selected_features_df(name, recording):
+    recording_subname = get_subdir(recording)
+    df = pd.read_csv(f'class_results\{name}\chosen_features_{recording_subname}.csv', delimiter=',')
+    arrays = []
+    arrays.append(df['MATLAB'].iloc[0])
+    arrays.append(df['STA'].iloc[0])
+    features = []
+    for array in arrays:
+        features.append(get_array_from_str(array))
+    return features
 
 
 def save_best_model_stats(model_name, grid_result):
