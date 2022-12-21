@@ -76,6 +76,7 @@ def classify(args_dict):
 
     all_rows = []
 
+    major_dict = {'MV': {}, 'MV_GA': {}, 'MV_ALL': {}}
     ##### ============= NCA ANALYSIS ( MATLAB & PYTHON ) ============= #####
     print('started models analysis\n')
     for model in models:
@@ -84,7 +85,7 @@ def classify(args_dict):
         l_train = label_train if model.get('ltr') is None else model.get('ltr')
         l_test = label_test if model.get('lte') is None else model.get('lte')
         indices = nca_selected_idx if model.get('indices') is None else model.get('indices')
-        row, cv_row = ModelsUtils.classify_results(model['model'], model['name'], features_train=f_train, features_test=f_test, label_train=l_train, features_indices=indices, label_test=l_test, cv=model['cv'], params=model.get('params'), all_features=all_features, all_labels=all_labels, args=args_dict)
+        row, cv_row = ModelsUtils.classify_results(model['model'], model['name'], features_train=f_train, features_test=f_test, label_train=l_train, features_indices=indices, label_test=l_test, cv=model['cv'], params=model.get('params'), all_features=all_features, all_labels=all_labels, args=args_dict, mv_dict=major_dict)
         all_rows.append(row)
         if cv_row != []:
             all_rows.append(cv_row)
@@ -93,7 +94,7 @@ def classify(args_dict):
     if args_dict['ga']:
         print('started GA models analysis\n')
         for model in ga_models:
-            row, cv_row = ModelsUtils.classify_results_ga(model, features_train_ga, labels_train_ga, features_test_ga, labels_test_ga, recordingFolder, folder_dict, cv=True, chosen_indices=chosen_indices, all_features=all_features, all_labels=all_labels)
+            row, cv_row = ModelsUtils.classify_results_ga(model, features_train_ga, labels_train_ga, features_test_ga, labels_test_ga, recordingFolder, folder_dict, cv=True, chosen_indices=chosen_indices, all_features=all_features, all_labels=all_labels, mv_dict=major_dict)
             all_rows.append(row)
             all_rows.append(cv_row)
 
@@ -110,6 +111,10 @@ def classify(args_dict):
             row = ModelsUtils.classify_results_gs(model['model'], model['name'], features_train=f_train, features_test=f_test, label_train=l_train, label_test=l_test, grid=model['grid'], unify=args_dict['unify'])
             all_rows.append(row)
 
+    ##### ============= RUN Majority Vote ============= #####
+    major_dict['MV_ALL'] = {**major_dict['MV_GA'], **major_dict['MV']}
+    for key in major_dict.keys():
+        all_rows.append(ModelsUtils.classify_majority(key, major_dict[key], labels_test_nca))
 
     #### ---------- Priniting table ---------- ####
     print('')

@@ -46,7 +46,7 @@ def cross_validation_on_model(model, k, features, labels):
     return avg_score, all_scores, all_models
 
 
-def classify_results(model, model_name, features_train, label_train, features_test, label_test, features_indices, cv=False, Kfold=5, params=None, all_features=[], all_labels=[], args: dict={}):
+def classify_results(model, model_name, features_train, label_train, features_test, label_test, features_indices, cv=False, Kfold=5, params=None, all_features=[], all_labels=[], args: dict={}, mv_dict: dict={}):
     print(f"Running {model_name} analysis...")
     model.fit(features_train, label_train)
     prediction = model.predict(features_test)
@@ -54,6 +54,8 @@ def classify_results(model, model_name, features_train, label_train, features_te
     hit_rate = sum(test_results == 0)/len(label_test)
 
     Utils.save_to_pickle(model, f'{model_name}_object.pkl', args=args)
+
+    mv_dict['MV'][model_name] = np.array(model.predict_proba(features_test))
 
     if args.get('unify', False):
         table_row = [model_name, hit_rate, prediction, label_test]
@@ -69,7 +71,7 @@ def classify_results(model, model_name, features_train, label_train, features_te
     return table_row, table_cv_row
 
 
-def classify_results_ga(selection_params, features_train, label_train, features_test, label_test, recordingFolder, folder_dict, cv=False, Kfold=5, unify=False, chosen_indices={}, all_features=[], all_labels=[]):
+def classify_results_ga(selection_params, features_train, label_train, features_test, label_test, recordingFolder, folder_dict, cv=False, Kfold=5, unify=False, chosen_indices={}, all_features=[], all_labels=[], mv_dict: dict={}):
     print(f"Running {selection_params['name']} with GA features selection & analysis...")
     selector = GeneticSelectionCV(
         selection_params['model'],
@@ -90,10 +92,11 @@ def classify_results_ga(selection_params, features_train, label_train, features_
     Utils.create_sub_folder_for_ga_features(selection_params["name"])
     np.savetxt(f'ga_features\\{selection_params["name"]}\\{folder_dict["name"]}_{folder_dict["date"]}_{folder_dict["num"]}_ga_features.txt',  headers[selector.support_], fmt='%s')
         
-
     prediction = selector.predict(features_test)
     test_results = prediction - label_test
     hit_rate = sum(test_results == 0)/len(label_test)
+
+    mv_dict['MV_GA'][selection_params['name']] = selector.predict_proba(features_test)
 
     if unify:
         row = [f'{selection_params["name"]} GA', hit_rate, prediction, label_test]
@@ -122,8 +125,6 @@ def classify_results_ga_sklearn(selection_params, features_train, label_train, f
         generations = selection_params['n_gens'],
         n_jobs=2
     )
-    # del globals()['Individual']
-    print(globals())
     selector = selector.fit(features_train, label_train)
     chosen_indices[selection_params["name"]] = np.array([i for i, res in enumerate(selector.best_features_) if res == True])
     np.savetxt(f'{recordingFolder}\{selection_params["name"]}_ga_features_sklearn.txt', headers[selector.best_features_], fmt='%s')
@@ -170,3 +171,13 @@ def classify_online_model(offline_model, model_name, features_indices, all_featu
     hit_rate = sum(result == 0)/len(all_labels)
 
     return [model_name, hit_rate, offline_prediction, all_labels, offline_prediction - all_labels]
+
+
+def classify_majority(key, proba_matrices: dict, label_test):
+    print(np.array(list(proba_matrices.values())))
+    matrices_sum = np.sum(np.array(list(proba_matrices.values())), axis=0)
+    print(matrices_sum)
+    decision_matrix: np.ndarray = matrices_sum / len(proba_matrices.keys())
+    prediction = list(np.argmax(decision_matrix, axis=1) + 1)
+    hit_rate = sum(prediction - label_test == 0) / len(label_test)
+    return [key, hit_rate, prediction, label_test, prediction - label_test]
