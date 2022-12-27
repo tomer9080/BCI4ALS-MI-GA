@@ -4,12 +4,13 @@ from sklearn.model_selection import KFold
 from sklearn_genetic import GAFeatureSelectionCV
 from sklearn.metrics import accuracy_score
 import OurUtils as Utils
+import copy
 
 features_names_list = Utils.features_names_list
 headers = Utils.headers
 
 # CROSS-VALIDATION
-def cross_validation_on_model(model, k, features, labels):
+def cross_validation_on_model(model, k, features, labels, mv=False, nca_indicies=None):
     """
     cross_validation_on_model - given a model, runs a k-fold CV on him, and return a 
     tuple (avg_score, all_scores, all_models)
@@ -24,7 +25,6 @@ def cross_validation_on_model(model, k, features, labels):
     """
     kf = KFold(n_splits=k, shuffle=False)
 
-    i = 1
     all_scores = []
     all_models = []
     for train_index, test_index in kf.split(features):
@@ -34,13 +34,23 @@ def cross_validation_on_model(model, k, features, labels):
         y_test = labels[test_index]
             
         #Train the model
-        model.fit(X_train, y_train) #Training the model
-        score = accuracy_score(y_test, model.predict(X_test))
+        if not mv:
+            model.fit(X_train, y_train) #Training the model
+            score = accuracy_score(y_test, model.predict(X_test))
+            all_scores.append(score)
+            all_models.append(model)
+        else:
+            taken_models = {}
+            for key, classifier in model.items():
+                if 'GA' in key:
+                    classifier.fit(X_train, y_train) #Training the model
+                else:
+                    classifier.fit(X_train[:,nca_indicies], y_train) #Training the model
+                taken_models[key] = classifier
+            score_list = classify_majority(None, taken_models, features, labels, test_index, nca_indicies)
+            all_scores.append(score_list[1])
+            all_models.append(taken_models)
         
-        all_scores.append(score)
-        all_models.append(model)
-        i += 1
-    
     avg_score = np.average(all_scores)
     print(f"All scores: {all_scores}")
     return avg_score, all_scores, all_models
@@ -55,7 +65,7 @@ def classify_results(model, model_name, features_train, label_train, features_te
 
     Utils.save_to_pickle(model, f'{model_name}_object.pkl', args=args)
 
-    mv_dict['MV'][model_name] = np.array(model.predict_proba(features_test))
+    mv_dict['MV'][model_name] = copy.deepcopy(model)
 
     if args.get('unify', False):
         table_row = [model_name, hit_rate, prediction, label_test]
@@ -93,10 +103,11 @@ def classify_results_ga(selection_params, features_train, label_train, features_
     np.savetxt(f'ga_features\\{selection_params["name"]}\\{folder_dict["name"]}_{folder_dict["date"]}_{folder_dict["num"]}_ga_features.txt',  headers[selector.support_], fmt='%s')
         
     prediction = selector.predict(features_test)
+    print(f"GA features shape:{features_test.shape}")
     test_results = prediction - label_test
     hit_rate = sum(test_results == 0)/len(label_test)
 
-    mv_dict['MV_GA'][selection_params['name']] = selector.predict_proba(features_test)
+    mv_dict['MV_GA'][selection_params['name'] + ' GA'] = copy.deepcopy(selector)
 
     if unify:
         row = [f'{selection_params["name"]} GA', hit_rate, prediction, label_test]
@@ -173,11 +184,23 @@ def classify_online_model(offline_model, model_name, features_indices, all_featu
     return [model_name, hit_rate, offline_prediction, all_labels, offline_prediction - all_labels]
 
 
-def classify_majority(key, proba_matrices: dict, label_test):
-    print(np.array(list(proba_matrices.values())))
-    matrices_sum = np.sum(np.array(list(proba_matrices.values())), axis=0)
-    print(matrices_sum)
-    decision_matrix: np.ndarray = matrices_sum / len(proba_matrices.keys())
+def classify_majority(key_name, models: dict, features, labels, test_indices, nca_indices):
+    label_test = labels[test_indices]
+    taken_models = {}
+    for key, model in models.items():
+        features_test = features[:,nca_indices]
+        features_test = features_test[test_indices,:]
+        if 'GA' in key:
+            features_test = features[test_indices,:]
+            print(features_test.shape)
+        score = accuracy_score(label_test, model.predict(features_test))
+        if score > 0.4:
+            taken_models[key] = model.predict_proba(features_test)
+    
+    matrices_sum = np.sum(np.array(list(taken_models.values())), axis=0)
+    decision_matrix: np.ndarray = matrices_sum / len(taken_models.keys())
     prediction = list(np.argmax(decision_matrix, axis=1) + 1)
     hit_rate = sum(prediction - label_test == 0) / len(label_test)
-    return [key, hit_rate, prediction, label_test, prediction - label_test]
+    row = [key_name, hit_rate, prediction, label_test, prediction - label_test]
+    
+    return row
