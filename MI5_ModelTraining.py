@@ -120,7 +120,6 @@ def classify(args_dict):
         # mv_cv_prediction = ModelsUtils.cross_validation_on_model(major_dict[key], 5, all_features, all_labels, mv=True, nca_indicies=nca_selected_idx)
         # mv_hit_rate = mv_cv_prediction[0]
         # cv_row = [f'{key} CV', mv_hit_rate, [], label_test, []]
-        
         # all_rows.append(cv_row)
 
     #### ---------- Priniting table ---------- ####
