@@ -6,3 +6,4 @@ __pycache__
 full_ga_class_results
 ga_features
 models
+*_ga_features.txt

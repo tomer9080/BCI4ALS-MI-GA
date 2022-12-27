@@ -69,11 +69,8 @@ class Selector:
         prior_recordings - integer, determines how back (in recordings sacle) we want to look using our prior.
         simple_rule - means we want just to sort by a given list of values.
         """
-        # first we need to run metrics_wrapper so we'll get some metrics.
-        
-        #line below not working for some reason
-        # paths_file = open(self.paths, 'r')
-        paths_file = open('paths/paths_TK.txt', 'r')
+        # first we need to run metrics_wrapper so we'll get some metrics.        
+        paths_file = open('paths/paths.txt', 'r')
         
         paths_list = [line.strip() for line in paths_file.readlines()]
         current_index = self.get_recording_index_in_paths(paths_list)
@@ -98,6 +95,7 @@ class Selector:
         
         return [self.get_index_by_name(name) for name in chosen_features]
 
+# Testing purposes
 if __name__ == "__main__":
     selector = Selector('paths/paths_RL.txt')
     print(selector.select_features(['Var_Mean_left', 'Var_Mean_right']))
