@@ -4,7 +4,6 @@ import scipy.io as sio
 import numpy as np
 import pandas as pd
 
-
 features_names_list = ['BP_15.5_18.5', 'BP_8_10.5', 'BP_10_15.5', 'BP_17.5_20.5', 'BP_12.5_30', 'RTP', 'SPEC_MOM', 'SPEC_EDGE', 'SPEC_ENT', 'SLOPE', 'INTERCEPT', 'MEAN_FREQ', 'OCC_BAND', 'POWER_BAND', 'WLT_ENT', 'KURT', 'SKEW', 'VAR', 'STD', 'LOG_ENE_ENT', 'BETA_ALPHA_RATIO', 'BP_THETA']
 headers = np.array(['CSP1', 'CSP2', 'CSP3'] + [f'E{i}_{feature}' for i in range(1,12) for feature in features_names_list])
 
@@ -62,8 +61,7 @@ def get_all_features(recordingFolder, recordingFolder_2="None", unify=False):
     all_labels = sio.loadmat(recordingFolder + '\\trainingVec.mat')['trainingVec'].ravel()
     test_indices = sio.loadmat(recordingFolder + '\\testIdx.mat')['testIdx'].ravel()
     nca_selected_idx = sio.loadmat(recordingFolder + '\\SelectedIdx.mat')['SelectedIdx'].ravel() - 1 
-    print(nca_selected_idx)
-    print(headers[nca_selected_idx])
+
     if recordingFolder_2 is not None and unify:
         all_features_2 = sio.loadmat(recordingFolder_2 + '\AllDataInFeatures.mat')['AllDataInFeatures']
         all_labels_2 = sio.loadmat(recordingFolder_2 + '\\trainingVec.mat')['trainingVec'].ravel()
@@ -77,7 +75,6 @@ def get_all_features(recordingFolder, recordingFolder_2="None", unify=False):
         nca_selected_idx = np.concatenate((nca_selected_idx[:5], nca_selected_idx_2[:5]), axis=0)
         print(f"concatenated headers: {headers[nca_selected_idx]}")
     return all_features, all_labels, test_indices, nca_selected_idx
-
 
 def create_sub_folder(folder_name):
     try:

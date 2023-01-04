@@ -1,9 +1,7 @@
 """
 Parsers library - including function that parses for each part in pipeline
 """
-
 import argparse
-
 
 def parse_cmdl_offline():
     parser = argparse.ArgumentParser(description='This script is running classifiers on the requested folder, and then produces a table and csv file to compare between \n various classifiers and feature selection methods.')
@@ -20,6 +18,7 @@ def parse_cmdl_offline():
     parser.add_argument('--grid', '-gr', dest='grid', help='run grid search on classifiers', type=bool, default=False)
     parser.add_argument('--genetic_algorithm', '-ga', dest='genetic', help='run ga classification', type=bool, default=False)
     parser.add_argument('--save_models', '-sm', dest='save_models', help='save models to pickle files', type=bool, default=False)
+    parser.add_argument('--expanded', '-ex', dest='expanded', help='Use expanded features to run with', type=bool, default=False)
     args = parser.parse_args()
     return {'folder': args.folder,
             'folder2': args.folder2,
@@ -33,7 +32,8 @@ def parse_cmdl_offline():
             'ascending': args.ascending,
             'grid': args.grid,
             'ga': args.genetic,
-            'save_models': args.save_models
+            'save_models': args.save_models,
+            'expanded': args.expanded
             }
 
 

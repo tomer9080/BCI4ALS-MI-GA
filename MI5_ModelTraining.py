@@ -3,12 +3,14 @@ import Parsers
 import pickle
 import OurUtils as Utils
 import ModelsUtils
+import FeaturesExpansion
 from MetricsFeatureSelection import Selector
 from metrics_wrapper import get_paths
 from tabulate import tabulate
 from ModelsParams import build_ga_models, build_models
 from GridSearchParams import build_gs_models
 from sklearn.neighbors import NeighborhoodComponentsAnalysis as NCA
+
 
 features_names_list = Utils.features_names_list
 headers = Utils.headers
@@ -24,31 +26,32 @@ def classify(args_dict):
     global all_features
     global all_labels
     all_features, all_labels, test_indices, nca_selected_idx = Utils.get_all_features(recordingFolder, recordingFolder_2, args_dict['unify'])
-    nca = NCA(n_components=10)
-    nca_all_features = nca.fit_transform(all_features, all_labels)
-    print(all_features.shape, all_labels.shape, test_indices.shape, nca_selected_idx.shape, all_features[:,nca_selected_idx].shape)
     test_indices = test_indices - 1
     train_indices = [i for i in range(len(all_labels)) if i not in test_indices]
 
+    num_features = 10
+    if args_dict["expanded"]:
+        num_features = 15
+        all_features = FeaturesExpansion.expand_features(recordingFolder)
+
+    nca = NCA(n_components=num_features)
+    nca_all_features = nca.fit_transform(all_features, all_labels)
+    print(all_features.shape, all_labels.shape, test_indices.shape, nca_selected_idx.shape, all_features[:,nca_selected_idx].shape)
+
+    #### ------------ Labels ------------ ####
+    labels_train_nca = labels_train_ga = label_train = all_labels[train_indices]
+    labels_test_nca = labels_test_ga = label_test = all_labels[test_indices]
 
     #### ------------ NCA analysis ------------ ####
     train_features_nca = nca_all_features[train_indices]
     test_features_nca = nca_all_features[test_indices]
 
-    labels_train_nca = all_labels[train_indices]
-    labels_test_nca = all_labels[test_indices]
-
-
     #### ------------ GENETIC ALGORITHM analysis ------------ ####
     features_train_ga = all_features[train_indices]
     features_test_ga = all_features[test_indices]
 
-    labels_train_ga = all_labels[train_indices]
-    labels_test_ga = all_labels[test_indices]
-
-
     #### ------------ features from matlab neighborhood component analysis - takes 10 best features ------------ #
-    features_train, label_train, features_test, label_test = Utils.get_matlab_features(recordingFolder, recordingFolder_2, args_dict['unify']) 
+    features_train, _, features_test, _ = Utils.get_matlab_features(recordingFolder, recordingFolder_2, args_dict['unify']) 
     chosen_indices["MATLAB"] = nca_selected_idx
 
 
@@ -72,7 +75,7 @@ def classify(args_dict):
     ##### ------------ Running Models Classifications ------------ #####
     folder_dict = Utils.get_dict_for_folder_from_path(recordingFolder)
     models = build_models(train_features_nca, test_features_nca, labels_train_nca, labels_test_nca, our_features_indices, train_features_stats, test_features_stats, labels_train_stats, labels_test_stats)
-    ga_models = build_ga_models()
+    ga_models = build_ga_models(15)
 
     all_rows = []
 
@@ -113,10 +116,10 @@ def classify(args_dict):
 
     ##### ============= RUN Majority Vote ============= #####
     major_dict['MV_ALL'] = {**major_dict['MV_GA'], **major_dict['MV']}
-    for key in major_dict.keys():
-        row = ModelsUtils.classify_majority(key, major_dict[key], all_features, all_labels, test_indices, nca_selected_idx)
+    # for key in major_dict.keys():
+    #     row = ModelsUtils.classify_majority(key, major_dict[key], all_features, all_labels, test_indices, nca_selected_idx)
         
-        all_rows.append(row)
+    #     all_rows.append(row)
         # mv_cv_prediction = ModelsUtils.cross_validation_on_model(major_dict[key], 5, all_features, all_labels, mv=True, nca_indicies=nca_selected_idx)
         # mv_hit_rate = mv_cv_prediction[0]
         # cv_row = [f'{key} CV', mv_hit_rate, [], label_test, []]

@@ -98,9 +98,9 @@ def classify_results_ga(selection_params, features_train, label_train, features_
     )
     selector = selector.fit(features_train, label_train)
     chosen_indices[selection_params["name"]] = np.array([i for i, res in enumerate(selector.support_) if res == True])
-    np.savetxt(f'{recordingFolder}\{selection_params["name"]}_ga_features.txt', headers[selector.support_], fmt='%s')
-    Utils.create_sub_folder_for_ga_features(selection_params["name"])
-    np.savetxt(f'ga_features\\{selection_params["name"]}\\{folder_dict["name"]}_{folder_dict["date"]}_{folder_dict["num"]}_ga_features.txt',  headers[selector.support_], fmt='%s')
+    # np.savetxt(f'{recordingFolder}\{selection_params["name"]}_ga_features.txt', headers[selector.support_], fmt='%s')
+    # Utils.create_sub_folder_for_ga_features(selection_params["name"])
+    # np.savetxt(f'ga_features\\{selection_params["name"]}\\{folder_dict["name"]}_{folder_dict["date"]}_{folder_dict["num"]}_ga_features.txt',  headers[selector.support_], fmt='%s')
         
     prediction = selector.predict(features_test)
     print(f"GA features shape:{features_test.shape}")
