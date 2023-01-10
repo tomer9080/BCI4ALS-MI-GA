@@ -16,8 +16,7 @@ from sklearn.ensemble import BaggingClassifier
 from sklearn.ensemble import GradientBoostingClassifier
 
 
-
-def build_gs_models(train_features_nca, test_features_nca, labels_train_nca, labels_test_nca, our_features_indices, train_features_stats, test_features_stats, labels_train_stats, labels_test_stats):
+def build_gs_models(our_features_indices, train_features_stats, test_features_stats, labels_train_stats, labels_test_stats):
 
     ## LogisticRegression params
     LR_model = LogisticRegression(max_iter=1000)
@@ -90,31 +89,24 @@ def build_gs_models(train_features_nca, test_features_nca, labels_train_nca, lab
     gs_models = [
 
         {'name': 'GS LogisticRegression', 'model': LR_model, 'cv': True, 'grid': LR_grid_search},
-        {'name': 'GS LogisticRegression NCA', 'model': LR_model, 'cv': True, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca, 'grid': LR_grid_search},
         {'name': 'GS LogisticRegression STA', 'model': LR_model, 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats, 'grid': LR_grid_search},
 
         {'name': 'GS Ridge', 'model': ridge_model, 'cv': True, 'grid': ridge_grid_search},
-        {'name': 'GS Ridge NCA', 'model': ridge_model, 'cv': True, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca, 'grid': ridge_grid_search},
         {'name': 'GS Ridge STA', 'model': ridge_model, 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats, 'grid': ridge_grid_search},
  
         {'name': 'GS KNN', 'model': KNN_model, 'cv': True, 'grid': KNN_grid_search},
-        {'name': 'GS KNN NCA', 'model': KNN_model, 'cv': True, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca, 'grid': KNN_grid_search},
         {'name': 'GS KNN STA', 'model': KNN_model, 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats, 'grid': KNN_grid_search},
  
         {'name': 'GS SVC', 'model': SVC_model, 'cv': True, 'grid': SVC_grid_search},
-        {'name': 'GS SVC NCA', 'model': SVC_model, 'cv': True, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca, 'grid': SVC_grid_search},
         {'name': 'GS SVC STA', 'model': SVC_model, 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats, 'grid': SVC_grid_search},
  
         {'name': 'GS Bag', 'model': bag_model, 'cv': True, 'grid': bag_grid_search},
-        {'name': 'GS Bag NCA', 'model': bag_model, 'cv': True, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca, 'grid': bag_grid_search},
         {'name': 'GS Bag STA', 'model': bag_model, 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats, 'grid': bag_grid_search},
  
         {'name': 'GS RF', 'model': RF_model, 'cv': True, 'grid': RF_grid_search},
-        {'name': 'GS RF NCA', 'model': RF_model, 'cv': True, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca, 'grid': RF_grid_search},
         {'name': 'GS RF STA', 'model': RF_model, 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats, 'grid': RF_grid_search},
  
         {'name': 'GS Gradient Boost', 'model': gb_model, 'cv': True, 'grid': gb_grid_search},
-        {'name': 'GS Gradient Boost NCA', 'model': gb_model, 'cv': True, 'ftr': train_features_nca, 'fte': test_features_nca, 'ltr': labels_train_nca, 'lte': labels_test_nca, 'grid': gb_grid_search},
         {'name': 'GS Gradient Boost STA', 'model': gb_model, 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats, 'grid': gb_grid_search}
  
     ]

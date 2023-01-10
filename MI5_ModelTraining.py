@@ -34,17 +34,9 @@ def classify(args_dict):
         num_features = 15
         all_features = FeaturesExpansion.expand_features(recordingFolder)
 
-    print(all_features.shape, all_labels.shape)
-    nca = NCA(n_components=num_features)
-    nca_all_features = nca.fit_transform(all_features[train_indices,:], all_labels[train_indices])
-
     #### ------------ Labels ------------ ####
-    labels_train_nca = labels_train_ga = label_train = all_labels[train_indices]
-    labels_test_nca = labels_test_ga = label_test = all_labels[test_indices]
-
-    #### ------------ NCA analysis ------------ ####
-    train_features_nca = nca_all_features[train_indices]
-    test_features_nca = nca_all_features[test_indices]
+    labels_train_ga = label_train = all_labels[train_indices]
+    labels_test_ga = label_test = all_labels[test_indices]
 
     #### ------------ GENETIC ALGORITHM analysis ------------ ####
     features_train_ga = all_features[train_indices]
@@ -54,15 +46,14 @@ def classify(args_dict):
     features_train, _, features_test, _ = Utils.get_matlab_features(recordingFolder, recordingFolder_2, args_dict['unify']) 
     chosen_indices["MATLAB"] = nca_selected_idx
 
-
     #### ------------ features from statistical analysis ------------ ####
     file_path = args_dict['paths']
     our_selector = Selector(file_path, record_path=recordingFolder, ascending=args_dict["ascending"], corr=args_dict["corr"])
     should_use_prior = False if args_dict['prior'] == 0 else True
     if args_dict['simple'] == 1:
-        our_features_indices = our_selector.select_features(args_dict['metric'].split(','), use_prior=should_use_prior, prior_recordings=args_dict['prior'])
+        our_features_indices = our_selector.select_features(args_dict['metric'].split(','), use_prior=should_use_prior, prior_recordings=args_dict['prior'], num_of_features=num_features)
     else:
-        our_features_indices = our_selector.select_features(args_dict['metric'], use_prior=should_use_prior, prior_recordings=args_dict['prior'], simple_rule=False)
+        our_features_indices = our_selector.select_features(args_dict['metric'], use_prior=should_use_prior, prior_recordings=args_dict['prior'], simple_rule=False, num_of_features=num_features)
     
     train_features_stats = all_features[train_indices][:,our_features_indices]
     test_features_stats = all_features[test_indices][:,our_features_indices]
@@ -74,7 +65,7 @@ def classify(args_dict):
 
     ##### ------------ Running Models Classifications ------------ #####
     folder_dict = Utils.get_dict_for_folder_from_path(recordingFolder)
-    models = build_models(train_features_nca, test_features_nca, labels_train_nca, labels_test_nca, our_features_indices, train_features_stats, test_features_stats, labels_train_stats, labels_test_stats)
+    models = build_models(our_features_indices, train_features_stats, test_features_stats, labels_train_stats, labels_test_stats)
     ga_models = build_ga_models(15)
 
     all_rows = []
@@ -103,7 +94,7 @@ def classify(args_dict):
 
     ##### ============= RUN GS - ONLY UPON REQUEST FROM CMDL ============= #####
     if args_dict['grid']:
-        gs_models = build_gs_models(train_features_nca, test_features_nca, labels_train_nca, labels_test_nca, our_features_indices, train_features_stats, test_features_stats, labels_train_stats, labels_test_stats)
+        gs_models = build_gs_models(our_features_indices, train_features_stats, test_features_stats, labels_train_stats, labels_test_stats)
         print('started GS models analysis\n')
         for model in gs_models:
             f_train = features_train if model.get('ftr') is None else model.get('ftr')
@@ -117,7 +108,9 @@ def classify(args_dict):
     ##### ============= RUN Majority Vote ============= #####
     major_dict['MV_ALL'] = {**major_dict['MV_GA'], **major_dict['MV']}
     for key in major_dict.keys():
-        row = ModelsUtils.classify_majority(key, major_dict[key], all_features, all_labels, test_indices, nca_selected_idx, nca)
+        if len(major_dict[key].keys()) == 0:
+            continue
+        row = ModelsUtils.classify_majority(key, major_dict[key], all_features, all_labels, test_indices, nca_selected_idx, our_features_indices)
         all_rows.append(row)
         # mv_cv_prediction = ModelsUtils.cross_validation_on_model(major_dict[key], 5, all_features, all_labels, mv=True, nca_indicies=nca_selected_idx)
         # mv_hit_rate = mv_cv_prediction[0]
@@ -159,3 +152,12 @@ if __name__ == '__main__':
                     args_dict['folder2'] = path[1]
                     print(f'second path: {path[1]}')                    
                 classify(args_dict)
+
+
+## To be thrown Away some day ## 
+
+    #### ------------ NCA analysis ------------ ####
+    # nca = NCA(n_components=num_features)
+    # nca_all_features = nca.fit_transform(all_features, all_labels)
+    # train_features_nca = nca_all_features[train_indices]
+    # test_features_nca = nca_all_features[test_indices]
