@@ -34,9 +34,9 @@ def classify(args_dict):
         num_features = 15
         all_features = FeaturesExpansion.expand_features(recordingFolder)
 
+    print(all_features.shape, all_labels.shape)
     nca = NCA(n_components=num_features)
-    nca_all_features = nca.fit_transform(all_features, all_labels)
-    print(all_features.shape, all_labels.shape, test_indices.shape, nca_selected_idx.shape, all_features[:,nca_selected_idx].shape)
+    nca_all_features = nca.fit_transform(all_features[train_indices,:], all_labels[train_indices])
 
     #### ------------ Labels ------------ ####
     labels_train_nca = labels_train_ga = label_train = all_labels[train_indices]
@@ -116,10 +116,9 @@ def classify(args_dict):
 
     ##### ============= RUN Majority Vote ============= #####
     major_dict['MV_ALL'] = {**major_dict['MV_GA'], **major_dict['MV']}
-    # for key in major_dict.keys():
-    #     row = ModelsUtils.classify_majority(key, major_dict[key], all_features, all_labels, test_indices, nca_selected_idx)
-        
-    #     all_rows.append(row)
+    for key in major_dict.keys():
+        row = ModelsUtils.classify_majority(key, major_dict[key], all_features, all_labels, test_indices, nca_selected_idx, nca)
+        all_rows.append(row)
         # mv_cv_prediction = ModelsUtils.cross_validation_on_model(major_dict[key], 5, all_features, all_labels, mv=True, nca_indicies=nca_selected_idx)
         # mv_hit_rate = mv_cv_prediction[0]
         # cv_row = [f'{key} CV', mv_hit_rate, [], label_test, []]

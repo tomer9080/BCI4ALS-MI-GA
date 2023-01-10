@@ -133,3 +133,20 @@ def save_best_model_stats(model_name, grid_result):
     # table_headers = ["Classifier", "means", "stds", "params"]
     # stats_file.write(tabulate(row, headers=table_headers))
     stats_file.close()
+
+def get_same_indices(nca_features: np.ndarray, all_features: np.ndarray, L: np.ndarray):
+    indices = []
+    print(nca_features.shape)
+    print(L)
+    hofhi = (np.linalg.inv(L.T@L))
+    print(hofhi.shape)
+    muhpal = (L.T @ nca_features)
+    print(muhpal.shape)
+    nca_features = hofhi @ muhpal
+    print(nca_features.shape)
+    for i in range(nca_features.shape[1]):
+        for j in range(all_features.shape[1]):
+            print(all_features[:,j] - nca_features[:,i])
+            if np.array_equal(all_features[:,j], nca_features[:,i]):
+                indices.append(j)
+    return indices
