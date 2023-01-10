@@ -47,25 +47,26 @@ def classify(args_dict):
     chosen_indices["MATLAB"] = nca_selected_idx
 
     #### ------------ features from statistical analysis ------------ ####
-    file_path = args_dict['paths']
-    our_selector = Selector(file_path, record_path=recordingFolder, ascending=args_dict["ascending"], corr=args_dict["corr"])
-    should_use_prior = False if args_dict['prior'] == 0 else True
-    if args_dict['simple'] == 1:
-        our_features_indices = our_selector.select_features(args_dict['metric'].split(','), use_prior=should_use_prior, prior_recordings=args_dict['prior'], num_of_features=num_features)
-    else:
-        our_features_indices = our_selector.select_features(args_dict['metric'], use_prior=should_use_prior, prior_recordings=args_dict['prior'], simple_rule=False, num_of_features=num_features)
+    # file_path = args_dict['paths']
+    # our_selector = Selector(file_path, record_path=recordingFolder, ascending=args_dict["ascending"], corr=args_dict["corr"])
+    # should_use_prior = False if args_dict['prior'] == 0 else True
+    # if args_dict['simple'] == 1:
+    #     our_features_indices = our_selector.select_features(args_dict['metric'].split(','), use_prior=should_use_prior, prior_recordings=args_dict['prior'], num_of_features=num_features)
+    # else:
+    #     our_features_indices = our_selector.select_features(args_dict['metric'], use_prior=should_use_prior, prior_recordings=args_dict['prior'], simple_rule=False, num_of_features=num_features)
     
-    train_features_stats = all_features[train_indices][:,our_features_indices]
-    test_features_stats = all_features[test_indices][:,our_features_indices]
+    # train_features_stats = all_features[train_indices][:,our_features_indices]
+    # test_features_stats = all_features[test_indices][:,our_features_indices]
 
-    labels_train_stats = all_labels[train_indices]
-    labels_test_stats = all_labels[test_indices]
+    # labels_train_stats = all_labels[train_indices]
+    # labels_test_stats = all_labels[test_indices]
 
-    chosen_indices["STA"] = np.array(our_features_indices)
+    # chosen_indices["STA"] = np.array(our_features_indices)
 
     ##### ------------ Running Models Classifications ------------ #####
     folder_dict = Utils.get_dict_for_folder_from_path(recordingFolder)
-    models = build_models(our_features_indices, train_features_stats, test_features_stats, labels_train_stats, labels_test_stats)
+    # models = build_models(our_features_indices, train_features_stats, test_features_stats, labels_train_stats, labels_test_stats)
+    models = build_models()
     ga_models = build_ga_models(15)
 
     all_rows = []
@@ -110,7 +111,7 @@ def classify(args_dict):
     for key in major_dict.keys():
         if len(major_dict[key].keys()) == 0:
             continue
-        row = ModelsUtils.classify_majority(key, major_dict[key], all_features, all_labels, test_indices, nca_selected_idx, our_features_indices)
+        row = ModelsUtils.classify_majority(key, major_dict[key], all_features, all_labels, test_indices, nca_selected_idx)
         all_rows.append(row)
         # mv_cv_prediction = ModelsUtils.cross_validation_on_model(major_dict[key], 5, all_features, all_labels, mv=True, nca_indicies=nca_selected_idx)
         # mv_hit_rate = mv_cv_prediction[0]

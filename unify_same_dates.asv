@@ -1,0 +1,21 @@
+fileName = 'paths\paths_unify.txt';
+FID = fopen(fileName);
+data = textscan(FID,'%s');
+fclose(FID);
+paths = string(data{:})';
+dims = size(paths);
+% dims(2)
+for i = 1:2:2
+%     paths(1, i)
+    %% load MIDATA.mat for each;
+    % unify them, and also unify the
+    midata1 = load(strcat(paths(1, i),'/MIData.mat'));
+    midata2 = load(strcat(paths(1, i + 1),'/MIData.mat'));
+    tvec1 = cell2mat(struct2cell(load(strcat(paths(1, i) ,'/trainingVec'))));
+    tvec2 = cell2mat(struct2cell(load(strcat(paths(1, i + 1) ,'/trainingVec'))));
+    midata = [midata1.MIDAR midata2];
+    tvec = [tvec1 tvec2];
+    
+end
+
+fprintf("FINISHED RUN\n");

@@ -184,7 +184,7 @@ def classify_online_model(offline_model, model_name, features_indices, all_featu
     return [model_name, hit_rate, offline_prediction, all_labels, offline_prediction - all_labels]
 
 
-def classify_majority(key_name, models: dict, features, labels, test_indices, nca_indices, sta_indices):
+def classify_majority(key_name, models: dict, features, labels, test_indices, nca_indices):
     label_test = labels[test_indices]
     taken_models = {}
     for key, model in models.items():

@@ -70,7 +70,8 @@ class Selector:
         simple_rule - means we want just to sort by a given list of values.
         """
         # first we need to run metrics_wrapper so we'll get some metrics.        
-        paths_file = open('paths/paths.txt', 'r')
+        # paths_file = open('paths/paths.txt', 'r')
+        paths_file = open('paths/paths_unified.txt', 'r')
         
         paths_list = [line.strip() for line in paths_file.readlines()]
         current_index = self.get_recording_index_in_paths(paths_list)

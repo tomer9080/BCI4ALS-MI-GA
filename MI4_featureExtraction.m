@@ -1,4 +1,4 @@
-function [] = MI4_featureExtraction(recordingFolder)
+function [] = MI4_featureExtraction(recordingFolder, i)
 %% This function extracts features for the machine learning process.
 % Starts by visualizing the data (power spectrum) to find the best powerbands.
 % Next section computes the best common spatial patterns from all available
@@ -18,7 +18,7 @@ load(strcat(recordingFolder,'/MIData.mat'));                     % load the EEG 
 targetLabels = cell2mat(struct2cell(load(strcat(recordingFolder,'/trainingVec'))));
 
 Features2Select = 10;                                           % number of featuers for feature selection
-num4test = 5;                                                   % define how many test trials after feature extraction
+num4test = 5 * (i + 1);                                                   % define how many test trials after feature extraction
 numClasses = length(unique(targetLabels));                      % set number of possible targets (classes)
 Fs = 125;                                                       % openBCI Cyton+Daisy by Bluetooth sample rate
 trials = size(MIData,1);                                        % get number of trials from main data variable
