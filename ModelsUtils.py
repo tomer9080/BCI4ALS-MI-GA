@@ -191,7 +191,7 @@ def classify_majority(key_name, models: dict, features, labels, test_indices, nc
         features_test = features[:,nca_indices]
         features_test = features_test[test_indices,:]
         print(key)
-        if 'STA' in key:
+        if any([model_name in key for model_name in ['STA', 'QDA', 'DT']]):
             continue
         if 'GA' in key:
             features_test = features[test_indices,:]
@@ -200,7 +200,11 @@ def classify_majority(key_name, models: dict, features, labels, test_indices, nc
         if score > 0.4:
             taken_models[key] = model.predict_proba(features_test)
     
-    matrices_sum = np.sum(np.array(list(taken_models.values())), axis=0)
+    # matrices_sum = np.sum(np.array(list(taken_models.values())), axis=0)
+    matrices_mul = np.ones((30,3))
+    for key, matrix in taken_models.items():
+        matrices_mul *= matrix
+    matrices_sum = matrices_mul
     decision_matrix: np.ndarray = matrices_sum / len(taken_models.keys())
     prediction = list(np.argmax(decision_matrix, axis=1) + 1)
     hit_rate = sum(prediction - label_test == 0) / len(label_test)
