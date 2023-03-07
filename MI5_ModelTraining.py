@@ -95,7 +95,7 @@ def classify(args_dict):
 
     ##### ============= RUN GS - ONLY UPON REQUEST FROM CMDL ============= #####
     if args_dict['grid']:
-        gs_models = build_gs_models(our_features_indices, train_features_stats, test_features_stats, labels_train_stats, labels_test_stats)
+        gs_models = build_gs_models()
         print('started GS models analysis\n')
         for model in gs_models:
             f_train = features_train if model.get('ftr') is None else model.get('ftr')

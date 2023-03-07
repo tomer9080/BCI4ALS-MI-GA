@@ -4,6 +4,14 @@ function [] = DA_OT(folder1, folder2)
     micov2 = load(strcat(folder2, '/MICov.mat')).MICov;
     
     
+%     micov1 = load(strcat(folder1, '/MIFFTCov.mat')).MIFFTCov;
+%     micov2 = load(strcat(folder2, '/MIFFTCov.mat')).MIFFTCov;
+
+ 
+%     micov1 = load(strcat(folder1, '/MIFEATURESCov.mat')).MIFEATURESCov;
+%     micov2 = load(strcat(folder2, '/MIFEATURESCov.mat')).MIFEATURESCov;
+
+
     tvec1 = cell2mat(struct2cell(load(strcat(folder1 ,'/trainingVec'))));
     tvec2 = cell2mat(struct2cell(load(strcat(folder2 ,'/trainingVec'))));
     
@@ -18,7 +26,7 @@ function [] = DA_OT(folder1, folder2)
     mX     = CovsToVecs(cat(3, Covs{:}));
 
     %%
-    mTSNE = tsne(mX')';
+    mTSNE = tsne(mX', 'Distance', 'chebychev')';
     figure; PlotData(mTSNE, tvec, vS);
     subplot(1,2,1); title('Before applying OT', 'Interpreter', 'Latex');
 
@@ -45,7 +53,7 @@ function [] = DA_OT(folder1, folder2)
     res               = mean( mdlLinearSVM.predict(mX2') == tvec2' );
 
     %%
-    mTSNE = tsne(mX')';
+    mTSNE = tsne(mX', 'Distance', 'chebychev')';
     figure; PlotData(mTSNE, tvec, vS);
     subplot(1,2,1); title('After applying OT', 'Interpreter', 'Latex');
     subplot(1,2,2); title(['Accuracy - $', num2str(100*res), '\%$'], 'Interpreter', 'Latex');

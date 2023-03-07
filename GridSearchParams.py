@@ -16,7 +16,7 @@ from sklearn.ensemble import BaggingClassifier
 from sklearn.ensemble import GradientBoostingClassifier
 
 
-def build_gs_models(our_features_indices, train_features_stats, test_features_stats, labels_train_stats, labels_test_stats):
+def build_gs_models(our_features_indices=[], train_features_stats=[], test_features_stats=[], labels_train_stats=[], labels_test_stats=[]):
 
     ## LogisticRegression params
     LR_model = LogisticRegression(max_iter=1000)
