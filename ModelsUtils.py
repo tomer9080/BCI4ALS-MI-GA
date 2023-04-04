@@ -201,7 +201,7 @@ def classify_majority(key_name, models: dict, features, labels, test_indices, nc
             taken_models[key] = model.predict_proba(features_test)
     
     # matrices_sum = np.sum(np.array(list(taken_models.values())), axis=0)
-    matrices_mul = np.ones((30,3))
+    matrices_mul = np.ones((15,3))
     for key, matrix in taken_models.items():
         matrices_mul *= matrix
     matrices_sum = matrices_mul
@@ -210,4 +210,37 @@ def classify_majority(key_name, models: dict, features, labels, test_indices, nc
     hit_rate = sum(prediction - label_test == 0) / len(label_test)
     row = [key_name, hit_rate, prediction, label_test, prediction - label_test]
     
+    return row
+
+def classify_ensemble(key_name, models: dict, features, labels, test_indices, nca_indices, eta=0):
+    weights = {key: 1 for key in models.keys()} # initializing all weights to 1
+    prob_matrices = {}
+    train_indices = [i for i in range(len(labels)) if i not in test_indices]
+    print(train_indices)
+    # Zip all matrices - work line by line to be each prediction.
+    # This is "training" the model
+    for key, model in models.items():
+        train_features = features[:,nca_indices]
+        train_features = train_features[train_indices,:]
+        prob_matrices[key] = model.predict_proba(train_features)
+    for j, i in enumerate(train_indices):
+        y_true = labels[i]
+        for key, matrix in prob_matrices.items():
+            prediction = np.argmax(matrix[j,:]) + 1
+            print(f"{key}: {(prediction, y_true)}")
+            if prediction != y_true:
+                weights[key] *= (1 - eta)
+    print(weights)
+    # return a prediction
+    prediction_row = [] 
+    features_test = features[:,nca_indices]
+    features_test = features_test[test_indices,:]
+    final_proba_matrix = np.zeros((len(test_indices), 3))
+    for key, model in models.items():
+        final_proba_matrix += (weights[key] * model.predict_proba(features_test))
+    prediction = list(np.argmax(final_proba_matrix, axis=1) + 1)
+    label_test = labels[test_indices]
+    hit_rate = sum(prediction - label_test == 0) / len(label_test)
+    row = [key_name, hit_rate, prediction, label_test, prediction - label_test]
+
     return row

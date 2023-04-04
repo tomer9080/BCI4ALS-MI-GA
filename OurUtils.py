@@ -30,6 +30,8 @@ def get_subdir_from_full_path_dict(path_dict: dict) -> str:
 
 def get_dict_for_folder_from_path(path) -> dict:
     list_of_path = path.split('\\')
+    print(list_of_path)
+    print(path)
     return {"name": list_of_path[-2], "date": list_of_path[-3], "num": int(list_of_path[-1][-2:])}
 
 

@@ -111,7 +111,8 @@ def classify(args_dict):
     for key in major_dict.keys():
         if len(major_dict[key].keys()) == 0:
             continue
-        row = ModelsUtils.classify_majority(key, major_dict[key], all_features, all_labels, test_indices, nca_selected_idx)
+        # row = ModelsUtils.classify_majority(key, major_dict[key], all_features, all_labels, test_indices, nca_selected_idx)
+        row = ModelsUtils.classify_ensemble(key, major_dict[key], all_features, all_labels, test_indices, nca_selected_idx)
         all_rows.append(row)
         # mv_cv_prediction = ModelsUtils.cross_validation_on_model(major_dict[key], 5, all_features, all_labels, mv=True, nca_indicies=nca_selected_idx)
         # mv_hit_rate = mv_cv_prediction[0]

@@ -6,6 +6,7 @@ from sklearn.naive_bayes import BernoulliNB as NB
 from sklearn.ensemble import RandomForestClassifier as RF
 from sklearn.tree import DecisionTreeClassifier as DT
 from sklearn.ensemble import GradientBoostingClassifier as GB
+from sklearn.ensemble import AdaBoostClassifier as AB
 
 
 def build_models(our_features_indices=[], train_features_stats=[], test_features_stats=[], labels_train_stats=[], labels_test_stats=[]):
@@ -27,6 +28,7 @@ def build_models(our_features_indices=[], train_features_stats=[], test_features
         {'name': 'DT', 'model': DT(), 'cv': True},
         # {'name': 'DT STA', 'model': DT(), 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
         {'name': 'GB', 'model': GB(), 'cv': True},
+        {'name': 'AB', 'model': AB(), 'cv': True},
     ]
 
     return models
