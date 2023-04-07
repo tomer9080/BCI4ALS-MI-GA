@@ -66,6 +66,9 @@ def get_ga_features() -> dict():
     for subdir, _, _ in os.walk('ga_features'):
         if subdir == 'ga_features':
             continue
+        print(subdir)
+        if subdir.count('\\') < 2:
+            continue
         for _, _, files_s in os.walk(subdir):
             hist = {}
             subdir_list = Path(subdir).parts
@@ -78,8 +81,9 @@ def get_ga_features() -> dict():
                         hist[line] += 1
                     else:
                         hist[line] = 1
-            hist = {key: item for key, item in hist.items() if item > 2}
+            hist = {key: item for key, item in hist.items()}
             all_hists[model_name] = hist
+    Utils.save_dict_to_pickle(all_hists, 'ga_models_features_hists')
     return all_hists
 
 def show_hist_ga():
@@ -97,8 +101,7 @@ def show_hist_ga():
         plt.savefig(f'ga_hists/{model}_hist', dpi=600)
 
 
-
-
 if __name__ == "__main__":
     # show_hist_ga()
-    get_models_scores()
+    # get_models_scores()
+    print(get_ga_features())

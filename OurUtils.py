@@ -6,7 +6,10 @@ import pandas as pd
 
 features_names_list = ['BP_15.5_18.5', 'BP_8_10.5', 'BP_10_15.5', 'BP_17.5_20.5', 'BP_12.5_30', 'RTP', 'SPEC_MOM', 'SPEC_EDGE', 'SPEC_ENT', 'SLOPE', 'INTERCEPT', 'MEAN_FREQ', 'OCC_BAND', 'POWER_BAND', 'WLT_ENT', 'KURT', 'SKEW', 'VAR', 'STD', 'LOG_ENE_ENT', 'BETA_ALPHA_RATIO', 'BP_THETA']
 headers = np.array(['CSP1', 'CSP2', 'CSP3'] + [f'E{i}_{feature}' for i in range(1,12) for feature in features_names_list])
+from_feature_name_to_index = {name: i for i, name in enumerate(headers)}
 
+def save_dict_to_pickle(dict_to_save, name):
+    pickle.dump(dict_to_save, file=open(f'stats\\{name}', 'wb'))
 
 def save_to_pickle(model, path, args: dict={}):
     if args.get('save_models', False):

@@ -8,6 +8,14 @@ import copy
 
 features_names_list = Utils.features_names_list
 headers = Utils.headers
+from_name_to_index = Utils.from_feature_name_to_index
+
+def reduce_ga_search_space(features: np.ndarray, model_name):
+    hists_ga: dict = Utils.load_from_pickle('stats\\ga_models_features_hists')
+    hist: dict = hists_ga[model_name]
+    mask = [feature in hist.keys() for feature in headers]
+    return features[:,mask]
+
 
 # CROSS-VALIDATION
 def cross_validation_on_model(model, k, features, labels, mv=False, nca_indicies=None):
@@ -96,14 +104,16 @@ def classify_results_ga(selection_params, features_train, label_train, features_
         mutation_independent_proba = selection_params['muta_ind_prob'],
         crossover_independent_proba = selection_params['cross_ind_prob']
     )
-    selector = selector.fit(features_train, label_train)
+    reduced_features = reduce_ga_search_space(features=features_train, model_name=selection_params['name'])
+    print(reduced_features.shape)
+    selector = selector.fit(reduced_features, label_train)
     chosen_indices[selection_params["name"]] = np.array([i for i, res in enumerate(selector.support_) if res == True])
     # np.savetxt(f'{recordingFolder}\{selection_params["name"]}_ga_features.txt', headers[selector.support_], fmt='%s')
-    # Utils.create_sub_folder_for_ga_features(selection_params["name"])
+    # Utils.create_sub_folder_for_ga_features(f'{selection_params["name"]}')
     # np.savetxt(f'ga_features\\{selection_params["name"]}\\{folder_dict["name"]}_{folder_dict["date"]}_{folder_dict["num"]}_ga_features.txt',  headers[selector.support_], fmt='%s')
-        
-    prediction = selector.predict(features_test)
-    print(f"GA features shape:{features_test.shape}")
+    
+    reduced_features_test = reduce_ga_search_space(features_test, model_name=selection_params['name'])
+    prediction = selector.predict(reduced_features_test)
     test_results = prediction - label_test
     hit_rate = sum(test_results == 0)/len(label_test)
 
@@ -115,8 +125,9 @@ def classify_results_ga(selection_params, features_train, label_train, features_
         row = [f'{selection_params["name"]} GA', hit_rate, prediction, label_test, prediction - label_test]
 
     cv_row = []
+    reduced_all_features = reduce_ga_search_space(all_features.copy(), selection_params['name'])
     if cv:
-        cv_prediction = cross_validation_on_model(selection_params['model'], Kfold, all_features[:,selector.support_], all_labels)
+        cv_prediction = cross_validation_on_model(selection_params['model'], Kfold, reduced_all_features[:,selector.support_], all_labels)
         hit_rate = cv_prediction[0]
         cv_row = [f'{selection_params["name"]} GA CV', hit_rate, [], label_test, []]
 
@@ -212,31 +223,38 @@ def classify_majority(key_name, models: dict, features, labels, test_indices, nc
     
     return row
 
-def classify_ensemble(key_name, models: dict, features, labels, test_indices, nca_indices, eta=0):
+def classify_ensemble(key_name, models: dict, features, labels, test_indices, nca_indices, eta=0.2):
     weights = {key: 1 for key in models.keys()} # initializing all weights to 1
     prob_matrices = {}
     train_indices = [i for i in range(len(labels)) if i not in test_indices]
-    print(train_indices)
     # Zip all matrices - work line by line to be each prediction.
     # This is "training" the model
     for key, model in models.items():
-        train_features = features[:,nca_indices]
-        train_features = train_features[train_indices,:]
+        if 'GA' in key:
+            print(f'Here! :{features.shape}')
+            train_features = reduce_ga_search_space(features, key.replace(' GA', ''))
+            train_features = train_features[train_indices,:]
+        else:
+            train_features = features[:,nca_indices]
+            train_features = train_features[train_indices,:]
         prob_matrices[key] = model.predict_proba(train_features)
     for j, i in enumerate(train_indices):
         y_true = labels[i]
         for key, matrix in prob_matrices.items():
             prediction = np.argmax(matrix[j,:]) + 1
-            print(f"{key}: {(prediction, y_true)}")
+            # print(f"{key}: {(prediction, y_true)}")
             if prediction != y_true:
                 weights[key] *= (1 - eta)
     print(weights)
     # return a prediction
-    prediction_row = [] 
-    features_test = features[:,nca_indices]
-    features_test = features_test[test_indices,:]
     final_proba_matrix = np.zeros((len(test_indices), 3))
     for key, model in models.items():
+        if 'GA' in key:
+            features_test = reduce_ga_search_space(features, key.replace(' GA', ''))
+            features_test = features_test[test_indices,:]
+        else:
+            features_test = features[:,nca_indices]
+            features_test = features_test[test_indices,:]
         final_proba_matrix += (weights[key] * model.predict_proba(features_test))
     prediction = list(np.argmax(final_proba_matrix, axis=1) + 1)
     label_test = labels[test_indices]
