@@ -66,11 +66,11 @@ def get_ga_features() -> dict():
     for subdir, _, _ in os.walk('ga_features'):
         if subdir == 'ga_features':
             continue
-        print(subdir)
         if subdir.count('\\') < 2:
             continue
         for _, _, files_s in os.walk(subdir):
             hist = {}
+            print(subdir)
             subdir_list = Path(subdir).parts
             model_name = subdir_list[-1]
             for file in files_s:
@@ -90,18 +90,21 @@ def show_hist_ga():
     all_hist = get_ga_features()
 
     for model, hist in all_hist.items():
-        plt.bar(hist.keys(), hist.values(), color='b')
-        plt.title(f'Most selected features by GA on {model} model')
-        plt.xlabel('Feature')
-        plt.ylabel('Count')
-        plt.ylim((2,6.5))
-        plt.xticks(fontsize=5, rotation=80)
-        plt.yticks(np.arange(2, 6.5, step=1))
-        plt.tight_layout()
-        plt.savefig(f'ga_hists/{model}_hist', dpi=600)
+        fig = plt.figure()
+        ax = fig.add_subplot(1,1,1)
+        ax.bar(hist.keys(), list(hist.values()), color='b')
+        print(f'{model}: {list(hist.values())}')
+        ax.set_title(f'Most selected features by GA on {model} model')
+        ax.set_xlabel('Feature')
+        ax.set_ylabel('Count')
+        fig.tight_layout()
+        fig.savefig(f'ga_hists/{model}_hist', dpi=600)
+        fig.clear()
+        
+        
 
 
 if __name__ == "__main__":
     # show_hist_ga()
     # get_models_scores()
-    print(get_ga_features())
+    show_hist_ga()

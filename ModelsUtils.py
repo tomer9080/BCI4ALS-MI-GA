@@ -12,9 +12,11 @@ from_name_to_index = Utils.from_feature_name_to_index
 
 def reduce_ga_search_space(features: np.ndarray, model_name):
     hists_ga: dict = Utils.load_from_pickle('stats\\ga_models_features_hists')
-    hist: dict = hists_ga[model_name]
+    hist: dict = hists_ga.get(model_name)
+    if hist is None:
+        return features, [True] * len(headers)
     mask = [feature in hist.keys() for feature in headers]
-    return features[:,mask]
+    return features[:,mask], mask
 
 
 # CROSS-VALIDATION
@@ -104,15 +106,15 @@ def classify_results_ga(selection_params, features_train, label_train, features_
         mutation_independent_proba = selection_params['muta_ind_prob'],
         crossover_independent_proba = selection_params['cross_ind_prob']
     )
-    reduced_features = reduce_ga_search_space(features=features_train, model_name=selection_params['name'])
+    reduced_features, mask = reduce_ga_search_space(features=features_train, model_name=selection_params['name'])
     print(reduced_features.shape)
     selector = selector.fit(reduced_features, label_train)
     chosen_indices[selection_params["name"]] = np.array([i for i, res in enumerate(selector.support_) if res == True])
     # np.savetxt(f'{recordingFolder}\{selection_params["name"]}_ga_features.txt', headers[selector.support_], fmt='%s')
-    # Utils.create_sub_folder_for_ga_features(f'{selection_params["name"]}')
-    # np.savetxt(f'ga_features\\{selection_params["name"]}\\{folder_dict["name"]}_{folder_dict["date"]}_{folder_dict["num"]}_ga_features.txt',  headers[selector.support_], fmt='%s')
+    Utils.create_sub_folder_for_ga_features(f'{selection_params["name"]}')
+    np.savetxt(f'ga_features\\{selection_params["name"]}\\{folder_dict["name"]}_{folder_dict["date"]}_{folder_dict["num"]}_ga_features.txt',  headers[mask][selector.support_], fmt='%s')
     
-    reduced_features_test = reduce_ga_search_space(features_test, model_name=selection_params['name'])
+    reduced_features_test, _ = reduce_ga_search_space(features_test, model_name=selection_params['name'])
     prediction = selector.predict(reduced_features_test)
     test_results = prediction - label_test
     hit_rate = sum(test_results == 0)/len(label_test)
@@ -125,44 +127,9 @@ def classify_results_ga(selection_params, features_train, label_train, features_
         row = [f'{selection_params["name"]} GA', hit_rate, prediction, label_test, prediction - label_test]
 
     cv_row = []
-    reduced_all_features = reduce_ga_search_space(all_features.copy(), selection_params['name'])
+    reduced_all_features, _ = reduce_ga_search_space(all_features.copy(), selection_params['name'])
     if cv:
         cv_prediction = cross_validation_on_model(selection_params['model'], Kfold, reduced_all_features[:,selector.support_], all_labels)
-        hit_rate = cv_prediction[0]
-        cv_row = [f'{selection_params["name"]} GA CV', hit_rate, [], label_test, []]
-
-    return row, cv_row
-
-
-def classify_results_ga_sklearn(selection_params, features_train, label_train, features_test, label_test, recordingFolder, cv=False, Kfold=5, unify=False, chosen_indices={}, all_features=[], all_labels=[]):
-    print(f"Running {selection_params['name']} with GA features selection & analysis...")
-    selector = GAFeatureSelectionCV(
-        selection_params['model'],
-        cv = selection_params['cv'],
-        scoring = selection_params['scoring'],
-        max_features = selection_params['max_features'],
-        population_size = selection_params['n_population'],
-        crossover_probability = selection_params['cross_prob'],
-        mutation_probability = selection_params['muta_prob'],
-        generations = selection_params['n_gens'],
-        n_jobs=2
-    )
-    selector = selector.fit(features_train, label_train)
-    chosen_indices[selection_params["name"]] = np.array([i for i, res in enumerate(selector.best_features_) if res == True])
-    np.savetxt(f'{recordingFolder}\{selection_params["name"]}_ga_features_sklearn.txt', headers[selector.best_features_], fmt='%s')
-
-    prediction = selector.predict(features_test[:,selector.best_features_])
-    test_results = prediction - label_test
-    hit_rate = sum(test_results == 0)/len(label_test)
-
-    if unify:
-        row = [f'{selection_params["name"]} GA SK', hit_rate, prediction, label_test]
-    else:
-        row = [f'{selection_params["name"]} GA SK', hit_rate, prediction, label_test, prediction - label_test]
-
-    cv_row = []
-    if cv:
-        cv_prediction = cross_validation_on_model(selection_params['model'], Kfold, all_features[:,selector.best_features_], all_labels)
         hit_rate = cv_prediction[0]
         cv_row = [f'{selection_params["name"]} GA CV', hit_rate, [], label_test, []]
 
@@ -232,7 +199,7 @@ def classify_ensemble(key_name, models: dict, features, labels, test_indices, nc
     for key, model in models.items():
         if 'GA' in key:
             print(f'Here! :{features.shape}')
-            train_features = reduce_ga_search_space(features, key.replace(' GA', ''))
+            train_features, _ = reduce_ga_search_space(features, key.replace(' GA', ''))
             train_features = train_features[train_indices,:]
         else:
             train_features = features[:,nca_indices]
@@ -250,7 +217,7 @@ def classify_ensemble(key_name, models: dict, features, labels, test_indices, nc
     final_proba_matrix = np.zeros((len(test_indices), 3))
     for key, model in models.items():
         if 'GA' in key:
-            features_test = reduce_ga_search_space(features, key.replace(' GA', ''))
+            features_test, _ = reduce_ga_search_space(features, key.replace(' GA', ''))
             features_test = features_test[test_indices,:]
         else:
             features_test = features[:,nca_indices]
@@ -262,3 +229,41 @@ def classify_ensemble(key_name, models: dict, features, labels, test_indices, nc
     row = [key_name, hit_rate, prediction, label_test, prediction - label_test]
 
     return row
+
+# Maybe to bee demolished:
+"""
+def classify_results_ga_sklearn(selection_params, features_train, label_train, features_test, label_test, recordingFolder, cv=False, Kfold=5, unify=False, chosen_indices={}, all_features=[], all_labels=[]):
+    print(f"Running {selection_params['name']} with GA features selection & analysis...")
+    selector = GAFeatureSelectionCV(
+        selection_params['model'],
+        cv = selection_params['cv'],
+        scoring = selection_params['scoring'],
+        max_features = selection_params['max_features'],
+        population_size = selection_params['n_population'],
+        crossover_probability = selection_params['cross_prob'],
+        mutation_probability = selection_params['muta_prob'],
+        generations = selection_params['n_gens'],
+        n_jobs=2
+    )
+    selector = selector.fit(features_train, label_train)
+    chosen_indices[selection_params["name"]] = np.array([i for i, res in enumerate(selector.best_features_) if res == True])
+    np.savetxt(f'{recordingFolder}\{selection_params["name"]}_ga_features_sklearn.txt', headers[selector.best_features_], fmt='%s')
+
+    prediction = selector.predict(features_test[:,selector.best_features_])
+    test_results = prediction - label_test
+    hit_rate = sum(test_results == 0)/len(label_test)
+
+    if unify:
+        row = [f'{selection_params["name"]} GA SK', hit_rate, prediction, label_test]
+    else:
+        row = [f'{selection_params["name"]} GA SK', hit_rate, prediction, label_test, prediction - label_test]
+
+    cv_row = []
+    if cv:
+        cv_prediction = cross_validation_on_model(selection_params['model'], Kfold, all_features[:,selector.best_features_], all_labels)
+        hit_rate = cv_prediction[0]
+        cv_row = [f'{selection_params["name"]} GA CV', hit_rate, [], label_test, []]
+
+    return row, cv_row
+
+"""
