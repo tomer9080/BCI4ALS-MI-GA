@@ -4,6 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import OurUtils as Utils
 from pathlib import Path
+from OurUtils import from_feature_name_to_index
 
 ### ============= Models Scores ============ ###
 def get_ga_scores():
@@ -82,7 +83,11 @@ def get_ga_features() -> dict():
                     else:
                         hist[line] = 1
             hist = {key: item for key, item in hist.items()}
-            all_hists[model_name] = hist
+            if all_hists.get(model_name):
+                all_keys = set(list(hist.keys()) + list(all_hists[model_name].keys()))
+                all_hists[model_name] = {key: all_hists[model_name].get(key, 0) + hist.get(key, 0) for key in all_keys}
+            else:
+                all_hists[model_name] = hist
     Utils.save_dict_to_pickle(all_hists, 'ga_models_features_hists')
     return all_hists
 
@@ -92,7 +97,9 @@ def show_hist_ga():
     for model, hist in all_hist.items():
         fig = plt.figure()
         ax = fig.add_subplot(1,1,1)
-        ax.bar(hist.keys(), list(hist.values()), color='b')
+        filtered_hist = {key: item for key, item in hist.items() if item > 2}
+        sorted_filtered = {key: val for key, val in sorted(filtered_hist.items(), key=lambda ele: ele[1])}
+        ax.bar(sorted_filtered.keys(), list(sorted_filtered.values()), color='b')
         print(f'{model}: {list(hist.values())}')
         ax.set_title(f'Most selected features by GA on {model} model')
         ax.set_xlabel('Feature')
