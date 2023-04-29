@@ -3,8 +3,11 @@ from genetic_selection import GeneticSelectionCV
 from sklearn.model_selection import KFold
 from sklearn_genetic import GAFeatureSelectionCV
 from sklearn.metrics import accuracy_score
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import StackingClassifier
 import OurUtils as Utils
 import copy
+from Stacking import Stacking
 
 features_names_list = Utils.features_names_list
 headers = Utils.headers
@@ -14,6 +17,7 @@ def reduce_ga_search_space(features: np.ndarray, model_name):
     hists_ga: dict = Utils.load_from_pickle('stats\\ga_models_features_hists')
     hist: dict = hists_ga.get(model_name)
     if hist is None:
+        print("momo")
         return features, [True] * len(headers)
     mask = [feature in hist.keys() for feature in headers]
     return features[:,mask], mask
@@ -57,7 +61,7 @@ def cross_validation_on_model(model, k, features, labels, mv=False, nca_indicies
                 else:
                     classifier.fit(X_train[:,nca_indicies], y_train) #Training the model
                 taken_models[key] = classifier
-            score_list = classify_majority(None, taken_models, features, labels, test_index, nca_indicies)
+            score_list = classify_ensemble(None, taken_models, features, labels, test_index, nca_indicies)
             all_scores.append(score_list[1])
             all_models.append(taken_models)
         
@@ -153,6 +157,7 @@ def classify_results_gs(model, model_name, features_train, label_train, features
 
     return table_row
 
+
 def classify_online_model(offline_model, model_name, features_indices, all_features, all_labels):
     print(f"Running online classification! {model_name}")
     offline_prediction = offline_model.predict(all_features[:,features_indices])
@@ -161,44 +166,17 @@ def classify_online_model(offline_model, model_name, features_indices, all_featu
 
     return [model_name, hit_rate, offline_prediction, all_labels, offline_prediction - all_labels]
 
-
-def classify_majority(key_name, models: dict, features, labels, test_indices, nca_indices):
-    label_test = labels[test_indices]
-    taken_models = {}
-    for key, model in models.items():
-        features_test = features[:,nca_indices]
-        features_test = features_test[test_indices,:]
-        print(key)
-        if any([model_name in key for model_name in ['STA', 'QDA', 'DT']]):
-            continue
-        if 'GA' in key:
-            features_test = features[test_indices,:]
-            print("To be GA or not to be")
-        score = accuracy_score(label_test, model.predict(features_test))
-        if score > 0.4:
-            taken_models[key] = model.predict_proba(features_test)
-    
-    # matrices_sum = np.sum(np.array(list(taken_models.values())), axis=0)
-    matrices_mul = np.ones((15,3))
-    for key, matrix in taken_models.items():
-        matrices_mul *= matrix
-    matrices_sum = matrices_mul
-    decision_matrix: np.ndarray = matrices_sum / len(taken_models.keys())
-    prediction = list(np.argmax(decision_matrix, axis=1) + 1)
-    hit_rate = sum(prediction - label_test == 0) / len(label_test)
-    row = [key_name, hit_rate, prediction, label_test, prediction - label_test]
-    
-    return row
+def get_train_indices(test_indices, labels):
+    return [i for i in range(len(labels)) if i not in test_indices]
 
 def classify_ensemble(key_name, models: dict, features, labels, test_indices, nca_indices, eta=0.2):
     weights = {key: 1 for key in models.keys()} # initializing all weights to 1
     prob_matrices = {}
-    train_indices = [i for i in range(len(labels)) if i not in test_indices]
+    train_indices = get_train_indices(test_indices, labels)
     # Zip all matrices - work line by line to be each prediction.
     # This is "training" the model
     for key, model in models.items():
         if 'GA' in key:
-            print(f'Here! :{features.shape}')
             train_features, _ = reduce_ga_search_space(features, key.replace(' GA', ''))
             train_features = train_features[train_indices,:]
         else:
@@ -209,10 +187,10 @@ def classify_ensemble(key_name, models: dict, features, labels, test_indices, nc
         y_true = labels[i]
         for key, matrix in prob_matrices.items():
             prediction = np.argmax(matrix[j,:]) + 1
-            # print(f"{key}: {(prediction, y_true)}")
             if prediction != y_true:
                 weights[key] *= (1 - eta)
     print(weights)
+
     # return a prediction
     final_proba_matrix = np.zeros((len(test_indices), 3))
     for key, model in models.items():
@@ -230,40 +208,29 @@ def classify_ensemble(key_name, models: dict, features, labels, test_indices, nc
 
     return row
 
-# Maybe to bee demolished:
-"""
-def classify_results_ga_sklearn(selection_params, features_train, label_train, features_test, label_test, recordingFolder, cv=False, Kfold=5, unify=False, chosen_indices={}, all_features=[], all_labels=[]):
-    print(f"Running {selection_params['name']} with GA features selection & analysis...")
-    selector = GAFeatureSelectionCV(
-        selection_params['model'],
-        cv = selection_params['cv'],
-        scoring = selection_params['scoring'],
-        max_features = selection_params['max_features'],
-        population_size = selection_params['n_population'],
-        crossover_probability = selection_params['cross_prob'],
-        mutation_probability = selection_params['muta_prob'],
-        generations = selection_params['n_gens'],
-        n_jobs=2
-    )
-    selector = selector.fit(features_train, label_train)
-    chosen_indices[selection_params["name"]] = np.array([i for i, res in enumerate(selector.best_features_) if res == True])
-    np.savetxt(f'{recordingFolder}\{selection_params["name"]}_ga_features_sklearn.txt', headers[selector.best_features_], fmt='%s')
+def make_stacking_model(models: dict):
+    level0 = list(models.items())
+    level1 = LogisticRegression()
+    model = StackingClassifier(estimators=level0, final_estimator=level1, cv=5)
+    return model
 
-    prediction = selector.predict(features_test[:,selector.best_features_])
-    test_results = prediction - label_test
-    hit_rate = sum(test_results == 0)/len(label_test)
+def classify_stacking(key_name, models: dict, features, labels, test_indices, nca_indices):
+    stacking_model = make_stacking_model(models)
+    train_indices = get_train_indices(test_indices, labels)
+    stacking_model.fit(features[train_indices,:][:,nca_indices], labels[train_indices])
+    prediction = stacking_model.predict((features[test_indices,:])[:,nca_indices])
+    label_test = labels[test_indices]
+    hit_rate = sum(prediction - label_test == 0) / len(label_test)
+    row = [key_name, hit_rate, prediction, label_test, prediction - label_test]
 
-    if unify:
-        row = [f'{selection_params["name"]} GA SK', hit_rate, prediction, label_test]
-    else:
-        row = [f'{selection_params["name"]} GA SK', hit_rate, prediction, label_test, prediction - label_test]
+    return row
 
-    cv_row = []
-    if cv:
-        cv_prediction = cross_validation_on_model(selection_params['model'], Kfold, all_features[:,selector.best_features_], all_labels)
-        hit_rate = cv_prediction[0]
-        cv_row = [f'{selection_params["name"]} GA CV', hit_rate, [], label_test, []]
+def our_classify_stacking(key_name, models: dict, features, labels, test_indices, nca_indices):
+    stacking_model = Stacking(models, test_indices, nca_indices, labels, features, LogisticRegression())
+    stacking_model.fit()
+    prediction = stacking_model.predict()
+    label_test = labels[test_indices]
+    hit_rate = sum(prediction - label_test == 0) / len(label_test)
+    row = [key_name, hit_rate, prediction, label_test, prediction - label_test]
 
-    return row, cv_row
-
-"""
+    return row

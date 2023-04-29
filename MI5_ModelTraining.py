@@ -119,6 +119,12 @@ def classify(args_dict):
         # cv_row = [f'{key} CV', mv_hit_rate, [], label_test, []]
         # all_rows.append(cv_row)
 
+    ##### ============= RUN Stacking ============= #####
+    all_rows.append(ModelsUtils.classify_stacking(f'STACKING', major_dict['MV'], all_features, all_labels, test_indices, nca_selected_idx))
+    all_rows.append(ModelsUtils.our_classify_stacking(f'OSTACKING', major_dict['MV'], all_features, all_labels, test_indices, nca_selected_idx))
+    all_rows.append(ModelsUtils.our_classify_stacking(f'OSTACKING GA', major_dict['MV_GA'], all_features, all_labels, test_indices, nca_selected_idx))
+    all_rows.append(ModelsUtils.our_classify_stacking(f'OSTACKING ALL', major_dict['MV_ALL'], all_features, all_labels, test_indices, nca_selected_idx))
+
     #### ---------- Priniting table ---------- ####
     print('')
     table_headers = ["Classifier", "Success Rate", "Classifier Prediction", "Test Labels", "Sub Labels"]
@@ -154,12 +160,3 @@ if __name__ == '__main__':
                     args_dict['folder2'] = path[1]
                     print(f'second path: {path[1]}')                    
                 classify(args_dict)
-
-
-## To be thrown Away some day ## 
-
-    #### ------------ NCA analysis ------------ ####
-    # nca = NCA(n_components=num_features)
-    # nca_all_features = nca.fit_transform(all_features, all_labels)
-    # train_features_nca = nca_all_features[train_indices]
-    # test_features_nca = nca_all_features[test_indices]
