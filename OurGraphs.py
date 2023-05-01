@@ -65,9 +65,10 @@ def get_models_scores():
 def get_ga_features() -> dict():
     all_hists = {}
     for subdir, _, _ in os.walk('ga_features'):
+        print(subdir)
         if subdir == 'ga_features':
             continue
-        if subdir.count('\\') < 2:
+        if subdir.count('\\') + subdir.count('/') < 2:
             continue
         for _, _, files_s in os.walk(subdir):
             hist = {}
@@ -75,7 +76,7 @@ def get_ga_features() -> dict():
             subdir_list = Path(subdir).parts
             model_name = subdir_list[-1]
             for file in files_s:
-                features_file = open(f'{subdir}\\{file}', 'rt')
+                features_file = open(f'{os.path.join(subdir, file)}', 'rt')
                 lines = [line.strip() for line in features_file]
                 for line in lines:
                     if hist.get(line):
@@ -97,7 +98,7 @@ def show_hist_ga():
     for model, hist in all_hist.items():
         fig = plt.figure()
         ax = fig.add_subplot(1,1,1)
-        filtered_hist = {key: item for key, item in hist.items() if item > 2}
+        filtered_hist = {key: item for key, item in hist.items() if item > 20}
         sorted_filtered = {key: val for key, val in sorted(filtered_hist.items(), key=lambda ele: ele[1])}
         ax.bar(sorted_filtered.keys(), list(sorted_filtered.values()), color='b')
         print(f'{model}: {list(hist.values())}')
@@ -105,6 +106,8 @@ def show_hist_ga():
         ax.set_xlabel('Feature')
         ax.set_ylabel('Count')
         fig.tight_layout()
+        ax.set_xticks(ticks=list(sorted_filtered.keys()))
+        ax.set_xticklabels(list(sorted_filtered.keys()), rotation=45, fontsize=5)
         fig.savefig(f'ga_hists/{model}_hist', dpi=600)
         fig.clear()
         
@@ -114,4 +117,5 @@ def show_hist_ga():
 if __name__ == "__main__":
     # show_hist_ga()
     # get_models_scores()
+    print("KKaki")
     show_hist_ga()

@@ -1,12 +1,12 @@
 import numpy as np
 from genetic_selection import GeneticSelectionCV
 from sklearn.model_selection import KFold
-from sklearn_genetic import GAFeatureSelectionCV
 from sklearn.metrics import accuracy_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import StackingClassifier
 import OurUtils as Utils
 import copy
+import os
 from Stacking import Stacking
 
 features_names_list = Utils.features_names_list
@@ -14,7 +14,7 @@ headers = Utils.headers
 from_name_to_index = Utils.from_feature_name_to_index
 
 def reduce_ga_search_space(features: np.ndarray, model_name):
-    hists_ga: dict = Utils.load_from_pickle('stats\\ga_models_features_hists')
+    hists_ga: dict = Utils.load_from_pickle(os.path.join('stats', 'ga_models_features_hists'))
     hist: dict = hists_ga.get(model_name)
     if hist is None:
         print("momo")
@@ -116,7 +116,7 @@ def classify_results_ga(selection_params, features_train, label_train, features_
     chosen_indices[selection_params["name"]] = np.array([i for i, res in enumerate(selector.support_) if res == True])
     # np.savetxt(f'{recordingFolder}\{selection_params["name"]}_ga_features.txt', headers[selector.support_], fmt='%s')
     Utils.create_sub_folder_for_ga_features(f'{selection_params["name"]}')
-    np.savetxt(f'ga_features\\{selection_params["name"]}\\{folder_dict["name"]}_{folder_dict["date"]}_{folder_dict["num"]}_ga_features.txt',  headers[mask][selector.support_], fmt='%s')
+    np.savetxt(os.path.join('ga_features', selection_params["name"], f'{folder_dict["name"]}_{folder_dict["date"]}_ {folder_dict["num"]}_ga_features.txt'), headers[mask][selector.support_], fmt='%s')
     
     reduced_features_test, _ = reduce_ga_search_space(features_test, model_name=selection_params['name'])
     prediction = selector.predict(reduced_features_test)

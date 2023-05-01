@@ -4,8 +4,7 @@ import pickle
 import OurUtils as Utils
 import ModelsUtils
 import FeaturesExpansion
-from MetricsFeatureSelection import Selector
-from metrics_wrapper import get_paths
+# from MetricsFeatureSelection import Selector
 from tabulate import tabulate
 from ModelsParams import build_ga_models, build_models
 from GridSearchParams import build_gs_models
@@ -145,14 +144,14 @@ if __name__ == '__main__':
         classify(args_dict)
     else:
         if args_dict['unify'] is None:
-            paths = get_paths(paths_file=args_dict['paths'])
+            paths = Utils.get_paths(paths_file=args_dict['paths'])
             for path in paths:
                 args_dict['folder'] = path
                 print(f'running now classify on path: {path}')
                 classify(args_dict)
 
         else:
-            paths = get_paths(paths_file=args_dict['paths'],unify=args_dict['unify'])
+            paths = Utils.get_paths(paths_file=args_dict['paths'],unify=args_dict['unify'])
             for path in paths:
                 args_dict['folder'] = path[0]
                 print(f'first path: {path[0]}')
