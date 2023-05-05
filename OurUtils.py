@@ -104,10 +104,15 @@ def create_sub_folder_models(folder_name):
     except FileExistsError:
         print(f"{folder_name} Already exists, moving on...")    
 
+def get_index_max():
+    list_dirs = os.listdir('ga_features')
+    index_max = max([int(name.strip('ga_run_')) for name in list_dirs])
+    os.mkdir(os.path.join('ga_features', f'ga_run_{index_max + 1}'))
+    return index_max + 1
 
-def create_sub_folder_for_ga_features(folder_name):
+def create_sub_folder_for_ga_features(folder_name, index_max):
     try:
-        os.mkdir(os.path.join('ga_features', folder_name))
+        os.mkdir(os.path.join('ga_features', f'ga_run_{index_max}', folder_name))
     except FileExistsError:
         print(f"{folder_name} Already exists, moving on...")    
 

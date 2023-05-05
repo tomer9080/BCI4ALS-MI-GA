@@ -88,6 +88,7 @@ def classify(args_dict):
     if args_dict['ga']:
         print('started GA models analysis\n')
         for model in ga_models:
+            model['index_max'] = args_dict['index_max']
             row, cv_row = ModelsUtils.classify_results_ga(model, features_train_ga, labels_train_ga, features_test_ga, labels_test_ga, recordingFolder, folder_dict, cv=True, chosen_indices=chosen_indices, all_features=all_features, all_labels=all_labels, mv_dict=major_dict)
             all_rows.append(row)
             all_rows.append(cv_row)

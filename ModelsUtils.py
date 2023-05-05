@@ -115,8 +115,8 @@ def classify_results_ga(selection_params, features_train, label_train, features_
     selector = selector.fit(reduced_features, label_train)
     chosen_indices[selection_params["name"]] = np.array([i for i, res in enumerate(selector.support_) if res == True])
     # np.savetxt(f'{recordingFolder}\{selection_params["name"]}_ga_features.txt', headers[selector.support_], fmt='%s')
-    Utils.create_sub_folder_for_ga_features(f'{selection_params["name"]}')
-    np.savetxt(os.path.join('ga_features', selection_params["name"], f'{folder_dict["name"]}_{folder_dict["date"]}_ {folder_dict["num"]}_ga_features.txt'), headers[mask][selector.support_], fmt='%s')
+    Utils.create_sub_folder_for_ga_features(selection_params["name"], selection_params['index_max'])
+    np.savetxt(os.path.join('ga_features', f'ga_run_{selection_params["index_max"]}', selection_params["name"], f'{folder_dict["name"]}_{folder_dict["date"]}_ {folder_dict["num"]}_ga_features.txt'), headers[mask][selector.support_], fmt='%s')
     
     reduced_features_test, _ = reduce_ga_search_space(features_test, model_name=selection_params['name'])
     prediction = selector.predict(reduced_features_test)

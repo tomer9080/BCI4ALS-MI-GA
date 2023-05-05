@@ -2,6 +2,7 @@
 Parsers library - including function that parses for each part in pipeline
 """
 import argparse
+import OurUtils as Utils
 
 def parse_cmdl_offline():
     parser = argparse.ArgumentParser(description='This script is running classifiers on the requested folder, and then produces a table and csv file to compare between \n various classifiers and feature selection methods.')
@@ -33,7 +34,8 @@ def parse_cmdl_offline():
             'grid': args.grid,
             'ga': args.genetic,
             'save_models': args.save_models,
-            'expanded': args.expanded
+            'expanded': args.expanded,
+            'index_max': Utils.get_index_max()
             }
 
 

@@ -19,8 +19,6 @@ class Stacking:
     def get_ga_features(self, model, name: str, train=True):
         reduced_features, mask = ModelsUtils.reduce_ga_search_space(features=self.features, model_name=name.replace(' GA', ''))
         to_ret = (reduced_features[self.train_indices,:]) if train else (reduced_features[self.test_indices,:])
-        print(name)
-        print(to_ret.shape)
         return to_ret
 
     def fit(self):

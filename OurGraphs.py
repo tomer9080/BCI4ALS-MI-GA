@@ -117,5 +117,4 @@ def show_hist_ga():
 if __name__ == "__main__":
     # show_hist_ga()
     # get_models_scores()
-    print("KKaki")
     show_hist_ga()
