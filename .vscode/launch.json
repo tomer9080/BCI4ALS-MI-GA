@@ -13,7 +13,7 @@
             "justMyCode": true
         },
         {
-            "name": "debug for proj",
+            "name": "debug for MI5",
             "type": "python",
             "request": "launch",
             "stopOnEntry": true,
@@ -21,6 +21,12 @@
             "windows": {
                 "args": ["-f Recordings\\09-08-22\\TK\\Sub318324886002  -ga True", ">>", "stats\\res.txt"]
               }
+        },
+        {
+            "name": "debug for graph",
+            "type": "python",
+            "request": "launch",
+            "stopOnEntry": true,
         }
     ]
 }

@@ -110,10 +110,23 @@ def show_hist_ga():
         ax.set_xticklabels(list(sorted_filtered.keys()), rotation=45, fontsize=5)
         fig.savefig(f'ga_hists/{model}_hist', dpi=600)
         fig.clear()
-        
-        
 
-
+        #save top ten features to a different figure
+        fig = plt.figure()
+        ax = fig.add_subplot(1,1,1)
+        top_ten = list(sorted_filtered.keys())[-10:]
+        top_ten_vals = [sorted_filtered[key] for key in top_ten]
+        ax.bar(top_ten, top_ten_vals, color='b')
+        ax.set_title(f'Top ten features selected by GA on {model} model')
+        ax.set_xlabel('Feature')
+        ax.set_ylabel('Count')
+        fig.tight_layout()
+        ax.set_xticks(ticks=top_ten)
+        ax.set_xticklabels(top_ten, rotation=45, fontsize=5)
+        fig.savefig(f'top_ten_features/{model}_top_ten_features', dpi=600)
+        fig.clear()
+        
+    
 if __name__ == "__main__":
     # show_hist_ga()
     # get_models_scores()
