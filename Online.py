@@ -9,6 +9,7 @@ TODO: use parser to tell
 import OurUtils as Utils
 import numpy as np
 import ModelsUtils
+import ModelsParams
 import pandas as pd
 import os
 
@@ -16,8 +17,34 @@ from pathlib import Path
 from tabulate import tabulate
 from Parsers import parse_cmdl_online
 
+def build_ga_online_models(features, labels):
+    # iterate over all the models
+    ga_online_models = ModelsParams.build_models()
+    for model in ga_online_models:
+        reduced_features, mask = ModelsUtils.reduce_ga_search_space(features, model.get('name'))
+        model['model'].fit(reduced_features, labels)
+        model['indices'] = mask
+    return ga_online_models
+
+
+def run_online_ga(args_dict: dict):
+    # build models
+    features, labels, _, _ = Utils.get_all_features(args_dict['offline'])
+    ga_online_models = build_ga_online_models(features, labels)
+    
+    # now get new features for online classification
+    features, labels, _, _ = Utils.get_all_features(args_dict['online'])
+    rows = []
+    for model in ga_online_models:
+        rows.append(ModelsUtils.classify_online_model(model['model'], model['name'], model['indices'], features, labels))
+    
+    print('')
+    table_headers = ["Classifier", "Success Rate", "Classifier Prediction", "Test Labels", "Sub Labels"]
+    print(tabulate(rows, headers=table_headers, maxcolwidths=[300] * 5))
+
+
 def run_online(args_dict: dict):
-    offline_models_path = f'models\{args_dict["name"]}\{Utils.get_subdir(args_dict["offline"])}'
+    offline_models_path = os.path.join('models', args_dict['name'], Utils.get_subdir(args_dict['offline']))
     online_models_path = f'models/{Utils.get_subdir(args_dict["online"])}'
     all_features, all_labels, _, _ = Utils.get_all_features(args_dict['online'])
     rows = []
@@ -36,7 +63,6 @@ def run_online(args_dict: dict):
                     matlab_row = ModelsUtils.classify_online_model(offline_model, model_name, features_df[0], all_features, all_labels)
                     rows.append(matlab_row)
                 
-    
     ### ------ Print Results ------ ###
     print('')
     table_headers = ["Classifier", "Success Rate", "Classifier Prediction", "Test Labels", "Sub Labels"]
@@ -45,4 +71,7 @@ def run_online(args_dict: dict):
 
 if __name__ == "__main__":
     args_dict = parse_cmdl_online()
-    run_online(args_dict)
+    import sys
+    print(sys.argv)
+    # run_online(args_dict)
+    run_online_ga(args_dict)

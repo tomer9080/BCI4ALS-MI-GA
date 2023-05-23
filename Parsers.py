@@ -4,6 +4,13 @@ Parsers library - including function that parses for each part in pipeline
 import argparse
 import OurUtils as Utils
 
+class globs:
+    
+    args_dict = {}
+
+    def __init__(self) -> None:
+        pass
+
 def parse_cmdl_offline():
     parser = argparse.ArgumentParser(description='This script is running classifiers on the requested folder, and then produces a table and csv file to compare between \n various classifiers and feature selection methods.')
     parser.add_argument('--folder', '-f', dest='folder', help='Folder path of the recording we want to classify', type=str)
@@ -20,32 +27,40 @@ def parse_cmdl_offline():
     parser.add_argument('--genetic_algorithm', '-ga', dest='genetic', help='run ga classification', type=bool, default=False)
     parser.add_argument('--save_models', '-sm', dest='save_models', help='save models to pickle files', type=bool, default=False)
     parser.add_argument('--expanded', '-ex', dest='expanded', help='Use expanded features to run with', type=bool, default=False)
+    parser.add_argument('--threshold', '-th', dest='threshold', help='Must run with GA. Reduces search spaceto search for features that have been chosen before >= the threshold', type=int, default=0)
     args = parser.parse_args()
-    return {'folder': args.folder,
-            'folder2': args.folder2,
-            'unify': args.unify,
-            'paths': args.paths,
-            'metric': args.metric,
-            'simple': args.simple,
-            'prior': args.prior,
-            'new_folder': args.new_folder,
-            'corr': args.corr,
-            'ascending': args.ascending,
-            'grid': args.grid,
-            'ga': args.genetic,
-            'save_models': args.save_models,
-            'expanded': args.expanded,
-            'index_max': Utils.get_index_max()
-            }
-
+    globs.args_dict = {'folder': args.folder,
+                'folder2': args.folder2,
+                'unify': args.unify,
+                'paths': args.paths,
+                'metric': args.metric,
+                'simple': args.simple,
+                'prior': args.prior,
+                'new_folder': args.new_folder,
+                'corr': args.corr,
+                'ascending': args.ascending,
+                'grid': args.grid,
+                'ga': args.genetic,
+                'save_models': args.save_models,
+                'expanded': args.expanded,
+                'index_max': Utils.get_index_max(),
+                'threshold': args.threshold
+                }
+    return globs.args_dict
 
 def parse_cmdl_online():
     parser = argparse.ArgumentParser(description='This script is running classifiers on the requested folder, and then produces a table and csv file to compare between \n various classifiers and feature selection methods.')
     parser.add_argument('--offline', '-off', dest='offline', help='Folder path of the models that were trained offline', type=str)
     parser.add_argument('--online', '-on', dest='online', help='Folder path of the recording we want to run online classification on', type=str, default=None)
     parser.add_argument('--name', '-n', dest='name', help='Folder name of which run we want to take chosen features from', type=str, default=None)
+    parser.add_argument('--threshold', '-th', dest='threshold', help='Must run with GA. Reduces search space to search for features that have been chosen before >= the threshold', type=int, default=0)
     args = parser.parse_args()
-    return {'offline': args.offline,
-            'online': args.online,
-            'name': args.name
-            }
+    globs.args_dict = {'offline': args.offline,
+                'online': args.online,
+                'name': args.name,
+                'threshold': args.threshold
+                }
+    return globs.args_dict
+
+def get_args_dict():
+    return globs.args_dict

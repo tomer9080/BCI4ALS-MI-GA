@@ -39,7 +39,7 @@ def build_gs_models(our_features_indices=[], train_features_stats=[], test_featu
 
     ## KNN params
     KNN_model = KNN()
-    n_neighbors = range(1, 21, 2)
+    n_neighbors = range(1, 16, 2)
     weights = ['uniform', 'distance']
     KNN_metric = ['euclidean', 'manhattan', 'minkowski']
     # define grid search

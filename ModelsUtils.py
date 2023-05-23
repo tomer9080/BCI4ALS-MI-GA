@@ -8,18 +8,20 @@ import OurUtils as Utils
 import copy
 import os
 from Stacking import Stacking
+from Parsers import get_args_dict
 
 features_names_list = Utils.features_names_list
 headers = Utils.headers
 from_name_to_index = Utils.from_feature_name_to_index
 
 def reduce_ga_search_space(features: np.ndarray, model_name):
+    threshold = get_args_dict().get('threshold', 0)
+    print("Wallak threshold is {}".format(threshold))
     hists_ga: dict = Utils.load_from_pickle(os.path.join('stats', 'ga_models_features_hists'))
     hist: dict = hists_ga.get(model_name)
     if hist is None:
-        print("momo")
         return features, [True] * len(headers)
-    mask = [feature in hist.keys() for feature in headers]
+    mask = [(feature in hist.keys() and hist.get(feature, 0) >= threshold) for feature in headers]
     return features[:,mask], mask
 
 
@@ -29,11 +31,11 @@ def cross_validation_on_model(model, k, features, labels, mv=False, nca_indicies
     cross_validation_on_model - given a model, runs a k-fold CV on him, and return a 
     tuple (avg_score, all_scores, all_models)
     :param - model: the model we want to CV
-    :param - k: k fold paramater
+    :param - k: k fold parameter
     :param - features: the features to train the model on
     :param - labels: the label to train the model on
     :return: tuple (avg_score, all_scores, all_models)
-    avg_score - the mean score from all folda predictions
+    avg_score - the mean score from all fold predictions
     all_scores - all of the scores for each fold
     all_models - all the models that has been trained on the cv session.
     """

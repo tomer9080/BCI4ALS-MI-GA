@@ -23,10 +23,16 @@
               }
         },
         {
-            "name": "debug for graph",
+            "name": "Debug Online",
             "type": "python",
             "request": "launch",
             "stopOnEntry": true,
-        }
+            "program": "Online.py",
+            "args": ["-off","Recordings/15-08-22/TK/Sub318324886001","-on", "Recordings/15-08-22/TK/Sub318324886002", "-th", "80", ">", "./stats/online_res.txt"],
+            // "windows": {
+            //     "args": ["-off","Recordings\\15-08-22\\TK\\Sub318324886001","-on", "Recordings\\15-08-22\\TK\\Sub318324886002", "-th", "80", ">", ".\\stats\\online_res.txt"]
+            //   }
+        },
+     
     ]
 }
