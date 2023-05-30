@@ -32,8 +32,8 @@ class Stacking:
             new_dataset_test.append(model.predict(self.nca_features_test))
 
         for key, model in self.ga_models.items():
-            new_dataset_train.append(model.predict(self.get_ga_features(model, key)))
-            new_dataset_test.append(model.predict(self.get_ga_features(model, name=key, train=False)))
+            new_dataset_train.append(model.predict(self.features[self.train_indices,:]))
+            new_dataset_test.append(model.predict(self.features[self.test_indices,:]))
 
         new_dataset = np.array(new_dataset_train, dtype=object)
         self.new_dataset = new_dataset.T  # Transposed to make rows to columns.

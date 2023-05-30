@@ -8,6 +8,7 @@ import OurUtils as Utils
 import copy
 import os
 from Stacking import Stacking
+from GAModel import GAModel
 from Parsers import get_args_dict
 
 features_names_list = Utils.features_names_list
@@ -75,6 +76,7 @@ def cross_validation_on_model(model, k, features, labels, mv=False, nca_indicies
 def classify_results(model, model_name, features_train, label_train, features_test, label_test, features_indices, cv=False, Kfold=5, params=None, all_features=[], all_labels=[], args: dict={}, mv_dict: dict={}):
     print(f"Running {model_name} analysis...")
     model.fit(features_train, label_train)
+    
     prediction = model.predict(features_test)
     test_results = prediction - label_test
     hit_rate = sum(test_results == 0)/len(label_test)
@@ -99,29 +101,15 @@ def classify_results(model, model_name, features_train, label_train, features_te
 
 def classify_results_ga(selection_params, features_train, label_train, features_test, label_test, recordingFolder, folder_dict, cv=False, Kfold=5, unify=False, chosen_indices={}, all_features=[], all_labels=[], mv_dict: dict={}):
     print(f"Running {selection_params['name']} with GA features selection & analysis...")
-    selector = GeneticSelectionCV(
-        selection_params['model'],
-        cv = selection_params['cv'],
-        scoring = selection_params['scoring'],
-        max_features = selection_params['max_features'],
-        n_population = selection_params['n_population'],
-        crossover_proba = selection_params['cross_prob'],
-        mutation_proba = selection_params['muta_prob'],
-        n_generations = selection_params['n_gens'],
-        caching = selection_params['caching'],
-        mutation_independent_proba = selection_params['muta_ind_prob'],
-        crossover_independent_proba = selection_params['cross_ind_prob']
-    )
-    reduced_features, mask = reduce_ga_search_space(features=features_train, model_name=selection_params['name'])
-    print(reduced_features.shape)
-    selector = selector.fit(reduced_features, label_train)
-    chosen_indices[selection_params["name"]] = np.array([i for i, res in enumerate(selector.support_) if res == True])
-    # np.savetxt(f'{recordingFolder}\{selection_params["name"]}_ga_features.txt', headers[selector.support_], fmt='%s')
-    Utils.create_sub_folder_for_ga_features(selection_params["name"], selection_params['index_max'])
-    np.savetxt(os.path.join('ga_features', f'ga_run_{selection_params["index_max"]}', selection_params["name"], f'{folder_dict["name"]}_{folder_dict["date"]}_ {folder_dict["num"]}_ga_features.txt'), headers[mask][selector.support_], fmt='%s')
+    selector = GAModel(selection_params['name'], selection_params['model'])
     
-    reduced_features_test, _ = reduce_ga_search_space(features_test, model_name=selection_params['name'])
-    prediction = selector.predict(reduced_features_test)
+    selector = selector.fit(features_train, label_train)
+    chosen_indices[selection_params["name"]] = np.array([i for i, res in enumerate(selector.support_) if res == True])
+    
+    # Utils.create_sub_folder_for_ga_features(selection_params["name"], selection_params['index_max'])
+    # np.savetxt(os.path.join('ga_features', f'ga_run_{selection_params["index_max"]}', selection_params["name"], f'{folder_dict["name"]}_{folder_dict["date"]}_ {folder_dict["num"]}_ga_features.txt'), headers[mask][selector.support_], fmt='%s')
+    
+    prediction = selector.predict(features_test)
     test_results = prediction - label_test
     hit_rate = sum(test_results == 0)/len(label_test)
 
@@ -179,8 +167,8 @@ def classify_ensemble(key_name, models: dict, features, labels, test_indices, nc
     # This is "training" the model
     for key, model in models.items():
         if 'GA' in key:
-            train_features, _ = reduce_ga_search_space(features, key.replace(' GA', ''))
-            train_features = train_features[train_indices,:]
+            # train_features, _ = reduce_ga_search_space(features, key.replace(' GA', ''))
+            train_features = features[train_indices,:]
         else:
             train_features = features[:,nca_indices]
             train_features = train_features[train_indices,:]
@@ -197,8 +185,8 @@ def classify_ensemble(key_name, models: dict, features, labels, test_indices, nc
     final_proba_matrix = np.zeros((len(test_indices), 3))
     for key, model in models.items():
         if 'GA' in key:
-            features_test, _ = reduce_ga_search_space(features, key.replace(' GA', ''))
-            features_test = features_test[test_indices,:]
+            # features_test, _ = reduce_ga_search_space(features, key.replace(' GA', ''))
+            features_test = features[test_indices,:]
         else:
             features_test = features[:,nca_indices]
             features_test = features_test[test_indices,:]

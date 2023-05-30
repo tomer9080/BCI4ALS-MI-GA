@@ -48,7 +48,7 @@ def get_dict_for_folder_from_path(path) -> dict:
     return {"name": list_of_path[-2], "date": list_of_path[-3], "num": int(list_of_path[-1][-2:])}
 
 
-def get_matlab_features(recordingFolder, recordingFolder_2, unify):
+def get_matlab_features(recordingFolder, recordingFolder_2=None, unify=False):
     # features from matlab neighborhood component analysis - takes 10 best features.
     features_train = sio.loadmat(os.path.join(recordingFolder , 'FeaturesTrainSelected.mat'))['FeaturesTrainSelected']
     label_train = sio.loadmat(os.path.join(recordingFolder , 'LabelTrain.mat'))['LabelTrain'].ravel()
@@ -71,7 +71,7 @@ def get_matlab_features(recordingFolder, recordingFolder_2, unify):
     return features_train, label_train, features_test, label_test
 
 
-def get_all_features(recordingFolder, recordingFolder_2="None", unify=False):
+def get_all_features(recordingFolder, recordingFolder_2=None, unify=False):
     all_features = sio.loadmat(os.path.join(recordingFolder , 'AllDataInFeatures.mat'))['AllDataInFeatures']
     all_labels = sio.loadmat(os.path.join(recordingFolder , 'trainingVec.mat'))['trainingVec'].ravel()
     test_indices = sio.loadmat(os.path.join(recordingFolder , 'testIdx.mat'))['testIdx'].ravel()
@@ -103,6 +103,14 @@ def create_sub_folder_models(folder_name):
         os.mkdir(os.path.join('models', folder_name))
     except FileExistsError:
         print(f"{folder_name} Already exists, moving on...")    
+
+
+def create_study_sub_folder(folder_name):
+    try:
+        os.mkdir(os.path.join('studies', folder_name))
+    except FileExistsError:
+        print(f"{folder_name} Already exists, moving on...")    
+
 
 def get_index_max():
     list_dirs = os.listdir('ga_features')
