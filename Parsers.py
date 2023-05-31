@@ -62,5 +62,17 @@ def parse_cmdl_online():
                 }
     return globs.args_dict
 
+def parse_cmdl_studies():
+    parser = argparse.ArgumentParser(description='This script is running analysis using contour plots.')
+    parser.add_argument('--model', '-m', dest='model', help='The Model we want the data from', type=str)
+    parser.add_argument('--attr1', '-a1', dest='attr1', help='Folder path of the recording we want to run online classification on', type=str, default=None)
+    parser.add_argument('--attr2', '-a2', dest='attr2', help='Folder name of which run we want to take chosen features from', type=str, default=None)
+    args = parser.parse_args()
+    globs.args_dict =  {'model': args.model,
+                        'attr1': args.attr1,
+                        'attr2': args.attr2
+                        }
+    return globs.args_dict
+
 def get_args_dict():
     return globs.args_dict
