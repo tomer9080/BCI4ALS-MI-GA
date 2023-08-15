@@ -1,6 +1,8 @@
 import optuna
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+import os.path
 from GAModel import GAModel
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.neighbors import KNeighborsClassifier as KNN
@@ -39,13 +41,17 @@ def objective(trial, path):
     return acc
 
 
-def objective_ga(trial, path, model, model_name):
+def objective_ga(trial, paths, model, model_name):
     
+    index = trial.number // 50
+    print(index, trial.number)
+    path = paths[index]
+
     X, y = get_Xy(path)
     ga_cv = trial.suggest_int("cv", 3, 5)
-    ga_max_features = trial.suggest_int("max_features", 5, 15)
+    ga_max_features = trial.suggest_int("max_features", 5, 20)
     ga_pop = trial.suggest_int("n_population", 120, 180)
-    ga_cross_prob = trial.suggest_float('cross_prob', 0.3, 0.7)
+    ga_cross_prob = trial.suggest_float('cross_prob', 0.2, 0.8)
     ga_muta_prob = trial.suggest_float('muta_prob', 0.15, 0.35)
     ga_n_gens = trial.suggest_categorical('n_gens', [40, 50, 60])
     ga_muta_ind_prob = trial.suggest_float('muta_ind_prob', 0.025, 0.1)
@@ -59,33 +65,48 @@ def objective_ga(trial, path, model, model_name):
     acc = clf_obj.score(X, y)
     return acc
 
-def run_optuna(path, num_trials=200):
+def run_optuna(path, num_trials=20):
     study = optuna.create_study(direction="maximize")
     study.optimize(lambda trial: objective(trial, path), n_trials=num_trials)
-    # optuna.visualization.matplotlib.plot_param_importances(study)
-    optuna.visualization.matplotlib.plot_contour(study, params=["classifier", "metric"])
+    optuna.visualization.matplotlib.plot_param_importances(study)
+    optuna.visualization.matplotlib.plot_contour(study, params=["max_features", "cross_prob"])
     import matplotlib.pyplot as plt
     plt.show()
     print(study.best_trial)
 
-def run_optuna_ga(path):
+def get_pairs(cols):
+    pairs = []
+    for i in range(len(cols)):
+        for j in range(len(cols) - i):
+            if j+i == i:
+                continue
+            pairs.append([cols[i], cols[j+i]])
+    return pairs
+
+def run_optuna_ga(paths):
     models = build_models()
     for model in models:
         study = optuna.create_study(direction="maximize")
-        study.optimize(lambda trial: objective_ga(trial, path, model=model['model'], model_name=model['name']), n_trials=20)
-        import os.path
-        save_to = os.path.join(model['name'], get_subdir(path))
-        create_study_sub_folder(save_to)
-        study.trials_dataframe().to_csv(os.path.join('studies', save_to, 'study.csv'))
+        study.optimize(lambda trial: objective_ga(trial, paths, model=model['model'], model_name=model['name']), n_trials=50*len(paths))
+        optuna.visualization.matplotlib.plot_param_importances(study)
+        plt.savefig(os.path.join('studies', model['name'], 'param_importances.png'))
+        for pair in get_pairs(["max_features", "cross_prob", "muta_prob", "cross_ind_prob", "muta_ind_prob"]):
+            plot_optuna_contour(pair, study, model["name"])
+        # create_study_sub_folder(save_to)
+        study.trials_dataframe().to_csv(os.path.join('studies', model['name'], 'study.csv'))
         print(study.best_trial)
-    
+
+def plot_optuna_contour(pair, study, model):
+    optuna.visualization.matplotlib.plot_contour(study, params=pair)
+    plt.savefig(os.path.join('studies', model, f'param_contour_{"_".join(pair)}.png'))
 
 if __name__ == "__main__":
     import sys
     print(sys.argv)
-    path = sys.argv[1]
+    from OurUtils import get_paths
+    paths = get_paths('paths/paths_linux.txt')
     try:
-        num_trials = sys.argv[2]
+        num_trials = sys.argv[1]
     except:
         num_trials = 200
-    run_optuna_ga(path)
+    run_optuna_ga(paths)

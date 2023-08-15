@@ -14,8 +14,6 @@ def build_models(our_features_indices=[], train_features_stats=[], test_features
     models = [
         {'name': 'LDA', 'model': LDA(), 'cv': True},
         # {'name': 'LDA STA', 'model': LDA(), 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
-        # {'name': 'QDA', 'model': QDA(), 'cv': True},
-        # {'name': 'QDA STA', 'model': QDA(), 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
         {'name': 'KNN-5', 'model': KNN(5), 'cv': False},
         # {'name': 'KNN-5 STA', 'model': KNN(5), 'cv': False, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
         {'name': 'KNN-7', 'model': KNN(7), 'cv': False},
@@ -27,10 +25,6 @@ def build_models(our_features_indices=[], train_features_stats=[], test_features
         # {'name': 'NB STA', 'model': NB(), 'cv': False, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
         # {'name': 'RF', 'model': RF(criterion='entropy', min_samples_split=3), 'cv': True},
         # {'name': 'RF STA', 'model': RF(criterion='entropy'), 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
-        # {'name': 'DT', 'model': DT(min_samples_split=3), 'cv': True},
-        # {'name': 'DT STA', 'model': DT(), 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
-        # {'name': 'GB', 'model': GB(min_samples_split=3), 'cv': True},
-        # {'name': 'AB', 'model': AB(base_estimator=RF(min_samples_split=3, criterion='entropy')), 'cv': True},
     ]
 
     return models
