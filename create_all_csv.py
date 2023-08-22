@@ -40,12 +40,13 @@ import os
 #         ascending = False
 #     os.system(f'python MI5_ModelTraining.py -pa paths\\paths_RL.txt -pr 4 -n TK_rec_pr4_{l.replace("_left", "")} -m {l},{r} -a {ascending}')
 
-# for i in range(20):
-#     os.system(f"python MI5_ModelTraining.py -pa paths/paths_linux.txt -ga True -n ga_blitz_{i}")
+# Run many GAs to get new data on fine tuned GAs.
+for i in range(70):
+    os.system(f"python MI5_ModelTraining.py -pa paths/paths_linux.txt -ga True -n ga_blitz_{i}")
 
-from OurUtils import get_paths
-paths = get_paths('paths/paths_linux.txt')
-for path in paths:
-    os.system(f'python OurOptuna.py {path}')
+# from OurUtils import get_paths
+# paths = get_paths('paths/paths_linux.txt')
+# for path in paths:
+#     os.system(f'python OurOptuna.py {path}')
 
 # #need to add option to unify all recordings then run on all of them with different priors

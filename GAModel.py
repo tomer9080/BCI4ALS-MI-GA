@@ -12,7 +12,8 @@ class GAModel:
         self.selector = GeneticSelectionCV(estimator, cv, scoring, max_features=max_features, n_population=n_population, crossover_proba=cross_prob, mutation_proba=muta_prob, n_generations=n_gens, caching=caching, mutation_independent_proba=muta_ind_prob, crossover_independent_proba=cross_ind_prob)
 
     def fit(self, X, y):
-        X_red, _ = self.reduce_ga_search_space(X, self.name)
+        X_red, mask = self.reduce_ga_search_space(X, self.name)
+        self.mask = mask
         self.selector.fit(X_red, y)
         self.support_ = self.selector.support_
         return self

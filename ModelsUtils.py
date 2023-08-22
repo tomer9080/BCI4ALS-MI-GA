@@ -106,8 +106,8 @@ def classify_results_ga(selection_params, features_train, label_train, features_
     selector = selector.fit(features_train, label_train)
     chosen_indices[selection_params["name"]] = np.array([i for i, res in enumerate(selector.support_) if res == True])
     
-    # Utils.create_sub_folder_for_ga_features(selection_params["name"], selection_params['index_max'])
-    # np.savetxt(os.path.join('ga_features', f'ga_run_{selection_params["index_max"]}', selection_params["name"], f'{folder_dict["name"]}_{folder_dict["date"]}_ {folder_dict["num"]}_ga_features.txt'), headers[mask][selector.support_], fmt='%s')
+    Utils.create_sub_folder_for_ga_features(selection_params["name"], selection_params['index_max'])
+    np.savetxt(os.path.join('ga_features', f'ga_run_{selection_params["index_max"]}', selection_params["name"], f'{folder_dict["name"]}_{folder_dict["date"]}_ {folder_dict["num"]}_ga_features.txt'), headers[selector.mask][selector.support_], fmt='%s')
     
     prediction = selector.predict(features_test)
     test_results = prediction - label_test
