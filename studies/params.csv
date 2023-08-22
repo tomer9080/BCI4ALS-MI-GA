@@ -1,0 +1,3 @@
+Model,max_features,cross_prob,muta_prob,cross_ind_prob,muta_ind_prob,
+KNN-5,<18,0.45-0.65,0.325-0.35;0.15-0.2,0.4-0.5,0.04-0.05;0.09-0.1
+KNN-7,-,0.65-0.8,0.15-0.3,0.35-0.7,0.03-0.07
