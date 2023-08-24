@@ -1,0 +1,2 @@
+E2_SPEC_EDGE
+E7_BP_8_10.5
