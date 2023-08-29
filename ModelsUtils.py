@@ -56,20 +56,28 @@ def cross_validation_on_model(model, k, features, labels, mv=False, nca_indicies
             score = accuracy_score(y_test, model.predict(X_test))
             all_scores.append(score)
             all_models.append(model)
-        else: # ensembles
+        else: # ensembles - let's return a 6 rows matrix
+            scores = {'MV CV': [], 'MV GA CV': [], 'MV ALL CV': [], 'OSTACKING CV': [], 'OSTACKING GA CV': [], 'OSTACKING ALL CV': []}
             taken_models = {}
             for key, classifier in model.items():
                 if 'GA' in key:
-                    classifier.fit(X_train, y_train) #Training the model
+                    classifier.fit(X_train, y_train)  # Training the model
                 else:
-                    classifier.fit(X_train[:,nca_indicies], y_train) #Training the model
+                    classifier.fit(X_train[:,nca_indicies], y_train)  # Training the model
                 taken_models[key] = classifier
-            if mv == 'ensemble':
-                score_list = classify_ensemble(f'MV {postfix} CV', taken_models, features, labels, test_index, nca_indicies)
-            elif mv == 'stacking':
-                score_list = our_classify_stacking(f'OSTACKING {postfix} CV', taken_models, features, labels, test_index, nca_indicies)   
-            all_scores.append(score_list[1])
-            all_models.append(taken_models)
+            
+            # Use trained models to evaluate
+            taken_models_reg = {key: val for key, val in taken_models.items() if 'GA' not in key}
+            taken_models_ga = {key: val for key, val in taken_models.items() if 'GA' in key}
+            scores['MV CV'].append(classify_ensemble(f'MV CV', taken_models_reg, features, labels, test_index, nca_indicies)[1])
+            scores['MV GA CV'].append(classify_ensemble(f'MV GA CV', taken_models_ga, features, labels, test_index, nca_indicies)[1])
+            scores['MV ALL CV'].append(classify_ensemble(f'MV ALL CV', taken_models, features, labels, test_index, nca_indicies)[1])
+            scores['OSTACKING CV'].append(our_classify_stacking(f'OSTACKING CV', taken_models_reg, features, labels, test_index, nca_indicies)[1])
+            scores['OSTACKING GA CV'].append(our_classify_stacking(f'OSTACKING GA CV', taken_models_ga, features, labels, test_index, nca_indicies)[1])
+            scores['OSTACKING ALL CV'].append(our_classify_stacking(f'OSTACKING ALL CV', taken_models, features, labels, test_index, nca_indicies)[1])
+            
+            scores = {key: np.mean(val) for key, val in scores.items()}
+            return scores
             
     avg_score = np.average(all_scores)
     print(f"All scores: {all_scores}")
@@ -99,7 +107,7 @@ def classify_results(model, model_name, features_train, label_train, features_te
         hit_rate = cv_predictor[0]
         table_cv_row = [f'{model_name} CV', hit_rate, [], label_test, []]        
 
-    return table_row, table_cv_row
+    return table_row[:2], table_cv_row[:2]
 
 
 def classify_results_ga(selection_params, features_train, label_train, features_test, label_test, recordingFolder, folder_dict, cv=False, Kfold=5, unify=False, chosen_indices={}, all_features=[], all_labels=[], mv_dict: dict={}):
@@ -130,7 +138,7 @@ def classify_results_ga(selection_params, features_train, label_train, features_
         hit_rate = cv_prediction[0]
         cv_row = [f'{selection_params["name"]} GA CV', hit_rate, [], label_test, []]
 
-    return row, cv_row
+    return row[:2], cv_row[:2]
 
 
 def classify_online_model(offline_model, model_name, features_indices, all_features, all_labels):
@@ -139,7 +147,7 @@ def classify_online_model(offline_model, model_name, features_indices, all_featu
     result = offline_prediction - all_labels
     hit_rate = sum(result == 0)/len(all_labels)
 
-    return [model_name, hit_rate, offline_prediction, all_labels, offline_prediction - all_labels]
+    return [model_name, hit_rate, offline_prediction, all_labels, offline_prediction - all_labels][:2]
 
 def get_train_indices(test_indices, labels):
     return [i for i in range(len(labels)) if i not in test_indices]
@@ -178,10 +186,7 @@ def classify_ensemble(key_name, models: dict, features, labels, test_indices, nc
         final_proba_matrix += (weights[key] * model.predict_proba(features_test))
     prediction = list(np.argmax(final_proba_matrix, axis=1) + 1)
     label_test = labels[test_indices]
-    hit_rate = sum(prediction - label_test == 0) / len(label_test)
-    row = [key_name, hit_rate, prediction, label_test, prediction - label_test]
-
-    return row
+    return row_to_print(prediction, label_test, key_name)
 
 def make_stacking_model(models: dict):
     level0 = list(models.items())
@@ -195,17 +200,17 @@ def classify_stacking(key_name, models: dict, features, labels, test_indices, nc
     stacking_model.fit(features[train_indices,:][:,nca_indices], labels[train_indices])
     prediction = stacking_model.predict((features[test_indices,:])[:,nca_indices])
     label_test = labels[test_indices]
-    hit_rate = sum(prediction - label_test == 0) / len(label_test)
-    row = [key_name, hit_rate, prediction, label_test, prediction - label_test]
-
-    return row
+    return row_to_print(prediction, label_test, key_name)
 
 def our_classify_stacking(key_name, models: dict, features, labels, test_indices, nca_indices):
     stacking_model = Stacking(models, test_indices, nca_indices, labels, features, LogisticRegression())
     stacking_model.fit()
     prediction = stacking_model.predict()
     label_test = labels[test_indices]
+    return row_to_print(prediction, label_test, key_name)
+
+def row_to_print(prediction, label_test, key_name):
     hit_rate = sum(prediction - label_test == 0) / len(label_test)
     row = [key_name, hit_rate, prediction, label_test, prediction - label_test]
 
-    return row
+    return row[:2]

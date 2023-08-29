@@ -41,12 +41,14 @@ import os
 #     os.system(f'python MI5_ModelTraining.py -pa paths\\paths_RL.txt -pr 4 -n TK_rec_pr4_{l.replace("_left", "")} -m {l},{r} -a {ascending}')
 
 # Run many GAs to get new data on fine tuned GAs.
-for i in range(35):
-    os.system(f"python MI5_ModelTraining.py -pa paths/paths_linux.txt -ga True -th 100 -n ga_blitz_thresh_100_{i}")
+for i in range(70):
+    os.system(f"python MI5_ModelTraining.py -pa paths/paths_linux.txt -ga True -n ga_blitz_thresh_0_{i}")
 
-for i in range(35):
-    os.system(f"python MI5_ModelTraining.py -pa paths/paths_linux.txt -ga True -th 50 -n ga_blitz_thresh_50_{i}")
+# for i in range(35):
+#     os.system(f"python MI5_ModelTraining.py -pa paths/paths_linux.txt -ga True -th 50 -n ga_blitz_thresh_50_{i}")
 
+# for i in range(35):
+#     os.system(f"python MI5_ModelTraining.py -pa paths/paths_linux.txt -ga True -th 100 -n ga_blitz_thresh_100_{i}")
 
 # from OurUtils import get_paths
 # paths = get_paths('paths/paths_linux.txt')

@@ -93,49 +93,40 @@ def classify(args_dict):
             all_rows.append(row)
             all_rows.append(cv_row)
 
-    ##### ============= RUN GS - ONLY UPON REQUEST FROM CMDL ============= #####
-    if args_dict['grid']:
-        gs_models = build_gs_models()
-        print('started GS models analysis\n')
-        for model in gs_models:
-            f_train = features_train if model.get('ftr') is None else model.get('ftr')
-            f_test = features_test if model.get('fte') is None else model.get('fte')
-            l_train = label_train if model.get('ltr') is None else model.get('ltr')
-            l_test = label_test if model.get('lte') is None else model.get('lte')
-            indices = nca_selected_idx if model.get('indices') is None else model.get('indices')
-            row = ModelsUtils.classify_results_gs(model['model'], model['name'], features_train=f_train, features_test=f_test, label_train=l_train, label_test=l_test, grid=model['grid'], unify=args_dict['unify'])
-            all_rows.append(row)
-
     ##### ============= RUN Majority Vote ============= #####
     major_dict['MV_ALL'] = {**major_dict['MV_GA'], **major_dict['MV']}
     for key in major_dict.keys():
         if len(major_dict[key].keys()) == 0:
             continue
-        # row = ModelsUtils.classify_majority(key, major_dict[key], all_features, all_labels, test_indices, nca_selected_idx)
-        row = ModelsUtils.classify_ensemble(key, major_dict[key], all_features, all_labels, test_indices, nca_selected_idx)
-        all_rows.append(row)
-        # mv_cv_prediction = ModelsUtils.cross_validation_on_model(major_dict[key], 5, all_features, all_labels, mv=True, nca_indicies=nca_selected_idx)
-        # mv_hit_rate = mv_cv_prediction[0]
-        # cv_row = [f'{key} CV', mv_hit_rate, [], label_test, []]
-        # all_rows.append(cv_row)
-
+        all_rows.append(ModelsUtils.classify_ensemble(key, major_dict[key], all_features, all_labels, test_indices, nca_selected_idx))
+    
     ##### ============= RUN Stacking ============= #####
     all_rows.append(ModelsUtils.classify_stacking(f'STACKING', major_dict['MV'], all_features, all_labels, test_indices, nca_selected_idx))
-    all_rows.append(ModelsUtils.our_classify_stacking(f'OSTACKING', major_dict['MV'], all_features, all_labels, test_indices, nca_selected_idx))
-    all_rows.append(ModelsUtils.our_classify_stacking(f'OSTACKING GA', major_dict['MV_GA'], all_features, all_labels, test_indices, nca_selected_idx))
-    all_rows.append(ModelsUtils.our_classify_stacking(f'OSTACKING ALL', major_dict['MV_ALL'], all_features, all_labels, test_indices, nca_selected_idx))
-    all_rows.append(['OSTACKING CV' ,ModelsUtils.cross_validation_on_model(major_dict['MV'], 4, all_features, all_labels, 'stacking', nca_selected_idx, 'ALL')[0]])
-    all_rows.append(['OSTACKING GA CV' ,ModelsUtils.cross_validation_on_model(major_dict['MV_GA'], 4, all_features, all_labels, 'stacking', nca_selected_idx, 'ALL')[0]])
-    all_rows.append(['OSTACKING ALL CV' ,ModelsUtils.cross_validation_on_model(major_dict['MV_ALL'], 4, all_features, all_labels, 'stacking', nca_selected_idx, 'ALL')[0]])
+    
+    for key in major_dict.keys():
+        if len(major_dict[key].keys()) == 0:
+            continue
+        all_rows.append(ModelsUtils.our_classify_stacking(f'OSTACKING {key.strip("MV_")}', major_dict[key], all_features, all_labels, test_indices, nca_selected_idx))
+    
+    
+    # all_rows.append(ModelsUtils.our_classify_stacking(f'OSTACKING GA', major_dict['MV_GA'], all_features, all_labels, test_indices, nca_selected_idx))
+    # all_rows.append(ModelsUtils.our_classify_stacking(f'OSTACKING ALL', major_dict['MV_ALL'], all_features, all_labels, test_indices, nca_selected_idx))
+    
+    
+    ##### ============= RUN CV MV & Stacking ============= #####
+    # results_mv_stacking_cv: dict = ModelsUtils.cross_validation_on_model(major_dict['MV_ALL'], 3, all_features, all_labels, True, nca_selected_idx, 'ALL')
+    # for key, val in results_mv_stacking_cv.items():
+    #     all_rows.append([key, val])
 
+        
     #### ---------- Priniting table ---------- ####
     print('')
     table_headers = ["Classifier", "Success Rate", "Classifier Prediction", "Test Labels", "Sub Labels"]
     print(tabulate(all_rows, headers=table_headers))
 
-    all_rows.insert(0, table_headers)
+    all_rows.insert(0, table_headers[:2])
     Utils.create_sub_folder(folder_name=args_dict['new_folder'])
-    np.savetxt(f'class_results/{args_dict["new_folder"]}/{folder_dict["name"]}_{folder_dict["date"]}_{folder_dict["num"]}.csv', np.array(all_rows, dtype=object)[:,:2], delimiter=',', fmt='%s')
+    np.savetxt(f'class_results/{args_dict["new_folder"]}/{folder_dict["name"]}_{folder_dict["date"]}_{folder_dict["num"]}.csv', np.array(all_rows, dtype=object), delimiter=',', fmt='%s')
     chosen_headers = list(chosen_indices.keys())
     chosen_vals = list(chosen_indices.values())
     chosen_table = np.array([chosen_headers, chosen_vals])
