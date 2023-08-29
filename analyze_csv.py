@@ -25,11 +25,13 @@ def analyze_csv(scores_path):
             for x, y, file in os.walk(subdir):
                 #load csv
                 file_str = file[0]
-                df = pd.read_csv(f'{subdir}\\{file_str}')
-                
+                df = pd.read_csv(os.path.join(subdir, file_str), header=0)
+                print(f'here {os.path.join(subdir, file_str)}')
+                print(df.head())
                 #extract headers
                 headers = list(df.columns.values)
-                headers.pop(0)
+                del headers[0]
+                print(headers)
 
                 #extract recordings
                 recordings = df['Recording']
@@ -41,20 +43,20 @@ def analyze_csv(scores_path):
                 for header in headers:
                     values_list = np.array(df[header])
                     mean_header = np.mean(values_list)
-                    plt.clf()
-                    fig = plt.figure(figsize=(6.4, 9.4))
-                    plt.plot(recordings, values_list)
-                    plt.title(f'{subdir_name} \n {header} classification \n mean value = {mean_header}')
-                    plt.xlabel('Recording ID')
-                    plt.ylabel('classification percentage')
-                    plt.xticks(fontsize=6, rotation=90)
+                    # plt.clf()
+                    # fig = plt.figure(figsize=(6.4, 9.4))
+                    # plt.plot(recordings, values_list)
+                    # plt.title(f'{subdir_name} \n {header} classification \n mean value = {mean_header}')
+                    # plt.xlabel('Recording ID')
+                    # plt.ylabel('classification percentage')
+                    # plt.xticks(fontsize=6, rotation=90)
 
-                    print(f'{header} mean = {mean_header}\n')
-                    means.append(mean_header)
+                    # print(f'{header} mean = {mean_header}\n')
+                    means.append(format(float(mean_header), '.2f'))
                     means_headers.append(header)
-                    plt.savefig(f'{subdir}\\{header}', dpi=600)
+                    # plt.savefig(f'{subdir}\\{header}', dpi=600)
                 means_table = [means_headers, means]
-                np.savetxt(f'{subdir}\\models_avg_scores.csv', np.array(means_table, dtype=object), delimiter=',', fmt='%s')
+                np.savetxt(os.path.join(subdir, 'models_avg_scores.csv'), np.array(means_table, dtype=object), delimiter=',', fmt='%s')
 
 
 
@@ -68,8 +70,9 @@ def csv_scores(rootdir, base_path):
                     print(f'{subdir}\\{file}')
                     if 'chosen' in file:
                         continue
-                    df = pd.read_csv(f'{subdir}\\{file}')
+                    df = pd.read_csv(os.path.join(subdir, file), usecols=[0, 1], header=0)
                     #get classifier stats
+                    df['Success Rate'] = df['Success Rate'].apply(lambda x: format(float(x), '.2f'))
                     success_rate = df['Success Rate'].tolist()
                     success_rate.insert(0, file)
                     all_rows.append(success_rate)
@@ -87,9 +90,9 @@ def csv_scores(rootdir, base_path):
                 
                 #create dirs and save scores csv
                 subdir_name = Path(subdir).parts
-                full_path = f'{base_path}\\class_scores\\{subdir_name[-1]}'
+                full_path = os.path.join(base_path, 'class_scores', subdir_name[-1])
                 os.makedirs(full_path, exist_ok=True)
-                np.savetxt(f'{full_path}\\classifiers_scores.csv', all_rows, delimiter=',', fmt='%s')
+                np.savetxt(os.path.join(full_path, 'classifiers_scores.csv'), all_rows, delimiter=',', fmt='%s')
 
 
 
@@ -103,5 +106,5 @@ if __name__ == '__main__':
 
     csv_scores(rootdir, base_path)
 
-    scores_path = f"{base_path}\\class_scores"
+    scores_path = "class_scores"
     analyze_csv(scores_path)
