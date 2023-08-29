@@ -1,5 +1,6 @@
 import numpy as np
 import ModelsUtils
+from sklearn.model_selection import KFold
 
 class Stacking:
 

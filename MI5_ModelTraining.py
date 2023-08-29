@@ -124,6 +124,9 @@ def classify(args_dict):
     all_rows.append(ModelsUtils.our_classify_stacking(f'OSTACKING', major_dict['MV'], all_features, all_labels, test_indices, nca_selected_idx))
     all_rows.append(ModelsUtils.our_classify_stacking(f'OSTACKING GA', major_dict['MV_GA'], all_features, all_labels, test_indices, nca_selected_idx))
     all_rows.append(ModelsUtils.our_classify_stacking(f'OSTACKING ALL', major_dict['MV_ALL'], all_features, all_labels, test_indices, nca_selected_idx))
+    all_rows.append(['OSTACKING CV' ,ModelsUtils.cross_validation_on_model(major_dict['MV'], 4, all_features, all_labels, 'stacking', nca_selected_idx, 'ALL')[0]])
+    all_rows.append(['OSTACKING GA CV' ,ModelsUtils.cross_validation_on_model(major_dict['MV_GA'], 4, all_features, all_labels, 'stacking', nca_selected_idx, 'ALL')[0]])
+    all_rows.append(['OSTACKING ALL CV' ,ModelsUtils.cross_validation_on_model(major_dict['MV_ALL'], 4, all_features, all_labels, 'stacking', nca_selected_idx, 'ALL')[0]])
 
     #### ---------- Priniting table ---------- ####
     print('')
@@ -132,7 +135,7 @@ def classify(args_dict):
 
     all_rows.insert(0, table_headers)
     Utils.create_sub_folder(folder_name=args_dict['new_folder'])
-    np.savetxt(f'class_results/{args_dict["new_folder"]}/{folder_dict["name"]}_{folder_dict["date"]}_{folder_dict["num"]}.csv', np.array(all_rows, dtype=object), delimiter=',', fmt='%s')
+    np.savetxt(f'class_results/{args_dict["new_folder"]}/{folder_dict["name"]}_{folder_dict["date"]}_{folder_dict["num"]}.csv', np.array(all_rows, dtype=object)[:,:2], delimiter=',', fmt='%s')
     chosen_headers = list(chosen_indices.keys())
     chosen_vals = list(chosen_indices.values())
     chosen_table = np.array([chosen_headers, chosen_vals])

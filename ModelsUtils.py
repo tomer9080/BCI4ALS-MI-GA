@@ -27,7 +27,7 @@ def reduce_ga_search_space(features: np.ndarray, model_name):
 
 
 # CROSS-VALIDATION
-def cross_validation_on_model(model, k, features, labels, mv=False, nca_indicies=None):
+def cross_validation_on_model(model, k, features, labels, mv=False, nca_indicies=None, postfix=''):
     """
     cross_validation_on_model - given a model, runs a k-fold CV on him, and return a 
     tuple (avg_score, all_scores, all_models)
@@ -51,12 +51,12 @@ def cross_validation_on_model(model, k, features, labels, mv=False, nca_indicies
         y_test = labels[test_index]
             
         #Train the model
-        if not mv:
+        if not mv: # single model
             model.fit(X_train, y_train) #Training the model
             score = accuracy_score(y_test, model.predict(X_test))
             all_scores.append(score)
             all_models.append(model)
-        else:
+        else: # ensembles
             taken_models = {}
             for key, classifier in model.items():
                 if 'GA' in key:
@@ -64,10 +64,13 @@ def cross_validation_on_model(model, k, features, labels, mv=False, nca_indicies
                 else:
                     classifier.fit(X_train[:,nca_indicies], y_train) #Training the model
                 taken_models[key] = classifier
-            score_list = classify_ensemble(None, taken_models, features, labels, test_index, nca_indicies)
+            if mv == 'ensemble':
+                score_list = classify_ensemble(f'MV {postfix} CV', taken_models, features, labels, test_index, nca_indicies)
+            elif mv == 'stacking':
+                score_list = our_classify_stacking(f'OSTACKING {postfix} CV', taken_models, features, labels, test_index, nca_indicies)   
             all_scores.append(score_list[1])
             all_models.append(taken_models)
-        
+            
     avg_score = np.average(all_scores)
     print(f"All scores: {all_scores}")
     return avg_score, all_scores, all_models
@@ -128,24 +131,6 @@ def classify_results_ga(selection_params, features_train, label_train, features_
         cv_row = [f'{selection_params["name"]} GA CV', hit_rate, [], label_test, []]
 
     return row, cv_row
-
-
-def classify_results_gs(model, model_name, features_train, label_train, features_test, label_test, grid, unify=False):
-    print(f"Running {model_name} analysis...")
-    grid_result = grid.fit(features_train, label_train)
-    best_model = grid.best_estimator_
-    Utils.save_best_model_stats(model_name, grid_result)
-
-    prediction = best_model.predict(features_test)
-    test_results = prediction - label_test
-    hit_rate = sum(test_results == 0)/len(label_test)
-
-    if unify:
-        table_row = [model_name, hit_rate, prediction, label_test]
-    else: 
-        table_row = [model_name, hit_rate, prediction, label_test, prediction - label_test] 
-
-    return table_row
 
 
 def classify_online_model(offline_model, model_name, features_indices, all_features, all_labels):

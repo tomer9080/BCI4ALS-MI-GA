@@ -65,4 +65,24 @@ def classify_majority(key_name, models: dict, features, labels, test_indices, nc
     row = [key_name, hit_rate, prediction, label_test, prediction - label_test]
     
     return row
+
+    
+
+def classify_results_gs(model, model_name, features_train, label_train, features_test, label_test, grid, unify=False):
+    print(f"Running {model_name} analysis...")
+    grid_result = grid.fit(features_train, label_train)
+    best_model = grid.best_estimator_
+    Utils.save_best_model_stats(model_name, grid_result)
+
+    prediction = best_model.predict(features_test)
+    test_results = prediction - label_test
+    hit_rate = sum(test_results == 0)/len(label_test)
+
+    if unify:
+        table_row = [model_name, hit_rate, prediction, label_test]
+    else: 
+        table_row = [model_name, hit_rate, prediction, label_test, prediction - label_test] 
+
+    return table_row
+
 """
