@@ -22,15 +22,51 @@ def plot_class_per_record_to_remove():
         'KNN7 GA CV': [],
         'SVC GA CV': [],
         'NB GA CV': [],
-        'LR GA CV': []
+        'LR GA CV': [],
+        'MV GA CV': [],
+        'OSTACKING GA CV': []
     }
+
     models_avg_per_blitz = {
+        'LDA CV': [],
+        'KNN-5 CV': [],
+        'KNN-7 CV': [],
+        'SVC CV': [],
+        'NB CV': [],
+        'LR CV': [],
         'LDA GA CV': [],
         'KNN5 GA CV': [],
         'KNN7 GA CV': [],
         'SVC GA CV': [],
         'NB GA CV': [],
-        'LR GA CV': []
+        'LR GA CV': [],
+        'MV GA CV': [],
+        'OSTACKING GA CV': [],
+        'MV CV': [],
+        'MV ALL CV': [],
+        'OSTACKING CV': [],
+        'OSTACKING ALL CV': []
+    }
+    
+    models_avg_per_blitz_non_cv = {
+        'LDA': [],
+        'KNN-5': [],
+        'KNN-7': [],
+        'SVC': [],
+        'NB': [],
+        'LR': [],
+        'LDA GA': [],
+        'KNN5 GA': [],
+        'KNN7 GA': [],
+        'SVC GA': [],
+        'NB GA': [],
+        'LR GA': [],
+        'MV_GA': [],
+        'OSTACKING GA': [],
+        'MV': [],
+        'MV_ALL': [],
+        'OSTACKING ': [],
+        'OSTACKING ALL': []
     }
     # Traverse through the directory tree
     for root, directories, files in os.walk(root_dir):
@@ -38,15 +74,21 @@ def plot_class_per_record_to_remove():
             # Check if the file is a CSV
             csv_path = os.path.join(root, file)
             if file.endswith(file_name_2):
-                                # Read the CSV file into a DataFrame
-                df_1 = pd.read_csv(csv_path)
+                # Read the CSV file into a DataFrame
+                df = pd.read_csv(csv_path)
 
                 # Filter columns containing 'GA CV' in column name
-                filtered_columns = [col for col in df_1.columns if 'GA CV' in col]
-                df_1 = df_1[filtered_columns]
+                filtered_columns = [col for col in df.columns if 'CV' in col]
+                filtered_columns_non_cv = [col for col in df.columns if 'CV' not in col]
+                df_1 = df[filtered_columns]
+                df_2 = df[filtered_columns_non_cv]
 
-                for key in models_scores_per_blitz.keys():
+                for key in models_avg_per_blitz.keys():
                     models_avg_per_blitz[key].append(df_1[key].to_list()[0])
+                
+                for key in models_avg_per_blitz_non_cv.keys():
+                    models_avg_per_blitz_non_cv[key].append(df_2[key].to_list()[0])
+
             if file.endswith(file_name_1):
 
                 # Read the CSV file into a DataFrame
@@ -61,18 +103,50 @@ def plot_class_per_record_to_remove():
 
 
     plot_error_bar_to_remove(models_scores_per_blitz, recordings)
-    plot_error_bar_per_model(models_avg_per_blitz)
+    plot_error_bar_per_model_cv(models_avg_per_blitz)
+    plot_error_bar_per_model_non_cv(models_avg_per_blitz_non_cv)
 
 
-def plot_error_bar_per_model(models_avg_per_blitz: dict):
-    x = models_avg_per_blitz.keys()
-    y = [np.mean(item) for item in models_avg_per_blitz.values()]
-    y_err = [np.std(item) for item in models_avg_per_blitz.values()]
+def plot_error_bar_per_model_cv(models_avg_per_blitz: dict):
+    x = ['LDA', 'KNN5', 'KNN7', 'SVC', 'NB', 'LR', 'MV', 'STACKING']
+    y_1 = [np.mean(item) for key, item in models_avg_per_blitz.items() if 'CV' in key and 'GA' not in key and 'ALL' not in key]
+    y_1_err = [np.std(item) for key, item in models_avg_per_blitz.items() if 'CV' in key and 'GA' not in key and 'ALL' not in key]
+    y_2 = [np.mean(item) for key, item in models_avg_per_blitz.items() if 'GA CV' in key]
+    y_2_err = [np.std(item) for key, item in models_avg_per_blitz.items() if 'GA CV' in key]
+    y_3 = [np.mean(item) for key, item in models_avg_per_blitz.items() if 'ALL CV' in key]
+    y_3_err = [np.std(item) for key, item in models_avg_per_blitz.items() if 'ALL CV' in key]
+
     plt.figure(figsize=(8, 6))
-    plt.errorbar(x, y, y_err, fmt='s', capsize=6)
+    plt.errorbar(x, y_1, y_1_err, fmt='s', capsize=6)
+    plt.errorbar(x, y_2, y_2_err, fmt='s', capsize=6)
+    plt.errorbar(x[-2:], y_3, y_3_err, fmt='s', capsize=6)
+    plt.legend(['Base', 'GA', 'Base + GA'])
     # Add labels and title
     plt.xlabel('Model')
-    plt.xticks(rotation=30)
+    plt.xticks(rotation=15)
+    plt.ylabel('Success Rate')
+    plt.title(f'CV Success Rate vs Model')
+
+    plt.grid(True)
+    plt.show()
+
+def plot_error_bar_per_model_non_cv(models_avg_per_blitz: dict):
+    x = ['LDA', 'KNN5', 'KNN7', 'SVC', 'NB', 'LR', 'MV', 'STACKING']
+    y_1 = [np.mean(item) for key, item in models_avg_per_blitz.items() if 'GA' not in key and 'ALL' not in key]
+    y_1_err = [np.var(item) for key, item in models_avg_per_blitz.items() if 'GA' not in key and 'ALL' not in key]
+    y_2 = [np.mean(item) for key, item in models_avg_per_blitz.items() if 'GA' in key]
+    y_2_err = [np.var(item) for key, item in models_avg_per_blitz.items() if 'GA' in key]
+    y_3 = [np.mean(item) for key, item in models_avg_per_blitz.items() if 'ALL' in key]
+    y_3_err = [np.var(item) for key, item in models_avg_per_blitz.items() if 'ALL' in key]
+
+    plt.figure(figsize=(8, 6))
+    plt.errorbar(x, y_1, y_1_err, fmt='s', capsize=6)
+    plt.errorbar(x, y_2, y_2_err, fmt='s', capsize=6)
+    plt.errorbar(x[-2:], y_3, y_3_err, fmt='s', capsize=6)
+    plt.legend(['Base', 'GA', 'Base + GA'])
+    # Add labels and title
+    plt.xlabel('Model')
+    plt.xticks(rotation=15)
     plt.ylabel('Success Rate')
     plt.title(f'Success Rate vs Model')
 
