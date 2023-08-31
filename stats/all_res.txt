@@ -1,4 +1,4 @@
-running now classify on path: Recordings\09-08-22\TK\Sub318324886001
+running now classify on path: Recordings/09-08-22/TK/Sub318324886001
 ['Recordings', '09-08-22', 'TK', 'Sub318324886001']
 
 started models analysis
@@ -21,40 +21,40 @@ Running LDA with GA features selection & analysis...
 Threshold is 0, model: LDA
 Threshold is 0, model: LDA
 Wallak threshold is 0
-All scores: [0.5833333333333334, 0.5, 0.6666666666666666, 0.75, 0.6666666666666666]
+All scores: [0.6666666666666666, 0.75, 0.6666666666666666, 0.6666666666666666, 0.8333333333333334]
 Running KNN5 with GA features selection & analysis...
 Threshold is 0, model: KNN5
 Threshold is 0, model: KNN5
 Wallak threshold is 0
-All scores: [0.75, 0.5, 0.5833333333333334, 0.6666666666666666, 0.5]
+All scores: [0.6666666666666666, 0.4166666666666667, 0.5, 0.6666666666666666, 0.6666666666666666]
 Running KNN7 with GA features selection & analysis...
 Threshold is 0, model: KNN7
 Threshold is 0, model: KNN7
 Wallak threshold is 0
-All scores: [0.5833333333333334, 0.5833333333333334, 0.4166666666666667, 0.6666666666666666, 0.6666666666666666]
+All scores: [0.75, 0.6666666666666666, 0.5833333333333334, 0.5, 0.75]
 Running SVC with GA features selection & analysis...
 Threshold is 0, model: SVC
 Threshold is 0, model: SVC
 Wallak threshold is 0
-All scores: [0.6666666666666666, 0.75, 0.75, 0.6666666666666666, 0.5833333333333334]
+All scores: [0.5833333333333334, 0.5833333333333334, 0.75, 0.5833333333333334, 0.5833333333333334]
 Running NB with GA features selection & analysis...
 Threshold is 0, model: NB
 Threshold is 0, model: NB
 Wallak threshold is 0
-All scores: [0.4166666666666667, 0.75, 0.5833333333333334, 0.5, 0.5]
+All scores: [0.5, 0.5833333333333334, 0.6666666666666666, 0.75, 0.5833333333333334]
 Running LR with GA features selection & analysis...
 Threshold is 0, model: LR
 Threshold is 0, model: LR
 Wallak threshold is 0
-All scores: [0.6666666666666666, 0.75, 0.8333333333333334, 0.6666666666666666, 0.75]
-{'LDA': 0.2621440000000001, 'KNN-5': 0.2097152000000001, 'KNN-7': 0.13421772800000006, 'SVC': 0.40960000000000013, 'NB': 0.043980465111040035, 'LR': 0.2621440000000001}
+All scores: [0.75, 0.8333333333333334, 0.5833333333333334, 0.6666666666666666, 0.6666666666666666]
+{'LDA': 0.2621440000000001, 'KNN-5': 0.2097152000000001, 'KNN-7': 0.13421772800000006, 'SVC': 0.5120000000000001, 'NB': 0.043980465111040035, 'LR': 0.2621440000000001}
 Threshold is 0, model: LDA
 Threshold is 0, model: KNN5
 Threshold is 0, model: KNN7
 Threshold is 0, model: SVC
 Threshold is 0, model: NB
 Threshold is 0, model: LR
-{'LDA GA': 0.2621440000000001, 'KNN5 GA': 0.2097152000000001, 'KNN7 GA': 0.06871947673600004, 'SVC GA': 0.5120000000000001, 'NB GA': 0.10737418240000006, 'LR GA': 0.2097152000000001}
+{'LDA GA': 0.32768000000000014, 'KNN5 GA': 0.10737418240000006, 'KNN7 GA': 0.10737418240000006, 'SVC GA': 0.5120000000000001, 'NB GA': 0.13421772800000006, 'LR GA': 0.2621440000000001}
 Threshold is 0, model: LDA
 Threshold is 0, model: KNN5
 Threshold is 0, model: KNN7
@@ -67,7 +67,7 @@ Threshold is 0, model: KNN7
 Threshold is 0, model: SVC
 Threshold is 0, model: NB
 Threshold is 0, model: LR
-{'LDA GA': 0.2621440000000001, 'KNN5 GA': 0.2097152000000001, 'KNN7 GA': 0.06871947673600004, 'SVC GA': 0.5120000000000001, 'NB GA': 0.10737418240000006, 'LR GA': 0.2097152000000001, 'LDA': 0.2621440000000001, 'KNN-5': 0.2097152000000001, 'KNN-7': 0.13421772800000006, 'SVC': 0.40960000000000013, 'NB': 0.043980465111040035, 'LR': 0.2621440000000001}
+{'LDA GA': 0.32768000000000014, 'KNN5 GA': 0.10737418240000006, 'KNN7 GA': 0.10737418240000006, 'SVC GA': 0.5120000000000001, 'NB GA': 0.13421772800000006, 'LR GA': 0.2621440000000001, 'LDA': 0.2621440000000001, 'KNN-5': 0.2097152000000001, 'KNN-7': 0.13421772800000006, 'SVC': 0.5120000000000001, 'NB': 0.043980465111040035, 'LR': 0.2621440000000001}
 Threshold is 0, model: LDA
 Threshold is 0, model: KNN5
 Threshold is 0, model: KNN7
@@ -117,26 +117,25 @@ NB CV                0.616667
 LR                   0.533333
 LR CV                0.666667
 LDA GA               0.533333
-LDA GA CV            0.633333
-KNN5 GA              0.466667
-KNN5 GA CV           0.6
-KNN7 GA              0.4
-KNN7 GA CV           0.583333
-SVC GA               0.466667
-SVC GA CV            0.683333
+LDA GA CV            0.716667
+KNN5 GA              0.4
+KNN5 GA CV           0.583333
+KNN7 GA              0.6
+KNN7 GA CV           0.65
+SVC GA               0.666667
+SVC GA CV            0.616667
 NB GA                0.533333
-NB GA CV             0.55
-LR GA                0.6
-LR GA CV             0.733333
+NB GA CV             0.616667
+LR GA                0.733333
+LR GA CV             0.7
 MV                   0.533333
-MV_GA                0.733333
+MV_GA                0.666667
 MV_ALL               0.6
 STACKING             0.6
 OSTACKING            0.4
-OSTACKING GA         0.6
-OSTACKING ALL        0.4
-ga_blitz_thresh_0 Already exists, moving on...
-running now classify on path: Recordings\09-08-22\TK\Sub318324886002
+OSTACKING GA         0.8
+OSTACKING ALL        0.533333
+running now classify on path: Recordings/09-08-22/TK/Sub318324886002
 ['Recordings', '09-08-22', 'TK', 'Sub318324886002']
 
 started models analysis
@@ -160,37 +159,37 @@ Threshold is 0, model: LDA
 LDA Already exists, moving on...
 Threshold is 0, model: LDA
 Wallak threshold is 0
-All scores: [0.75, 0.5833333333333334, 0.6666666666666666, 0.5833333333333334, 0.5]
+All scores: [0.5833333333333334, 0.6666666666666666, 0.8333333333333334, 0.5833333333333334, 0.5833333333333334]
 Running KNN5 with GA features selection & analysis...
 Threshold is 0, model: KNN5
 KNN5 Already exists, moving on...
 Threshold is 0, model: KNN5
 Wallak threshold is 0
-All scores: [0.6666666666666666, 0.75, 0.5833333333333334, 0.5833333333333334, 0.5]
+All scores: [0.6666666666666666, 0.6666666666666666, 0.5833333333333334, 0.75, 0.6666666666666666]
 Running KNN7 with GA features selection & analysis...
 Threshold is 0, model: KNN7
 KNN7 Already exists, moving on...
 Threshold is 0, model: KNN7
 Wallak threshold is 0
-All scores: [0.6666666666666666, 0.75, 0.5833333333333334, 0.6666666666666666, 0.5]
+All scores: [0.6666666666666666, 0.6666666666666666, 0.75, 0.5, 0.5833333333333334]
 Running SVC with GA features selection & analysis...
 Threshold is 0, model: SVC
 SVC Already exists, moving on...
 Threshold is 0, model: SVC
 Wallak threshold is 0
-All scores: [0.6666666666666666, 0.6666666666666666, 0.5, 0.6666666666666666, 0.5]
+All scores: [0.75, 0.75, 0.6666666666666666, 0.6666666666666666, 0.5833333333333334]
 Running NB with GA features selection & analysis...
 Threshold is 0, model: NB
 NB Already exists, moving on...
 Threshold is 0, model: NB
 Wallak threshold is 0
-All scores: [0.5833333333333334, 0.5833333333333334, 0.4166666666666667, 0.5833333333333334, 0.3333333333333333]
+All scores: [0.3333333333333333, 0.6666666666666666, 0.8333333333333334, 0.6666666666666666, 0.5833333333333334]
 Running LR with GA features selection & analysis...
 Threshold is 0, model: LR
 LR Already exists, moving on...
 Threshold is 0, model: LR
 Wallak threshold is 0
-All scores: [0.8333333333333334, 0.75, 0.75, 0.6666666666666666, 0.5833333333333334]
+All scores: [0.75, 0.6666666666666666, 0.8333333333333334, 0.6666666666666666, 0.6666666666666666]
 {'LDA': 0.1677721600000001, 'KNN-5': 0.2621440000000001, 'KNN-7': 0.1677721600000001, 'SVC': 0.6400000000000001, 'NB': 0.2097152000000001, 'LR': 0.2097152000000001}
 Threshold is 0, model: LDA
 Threshold is 0, model: KNN5
@@ -198,7 +197,7 @@ Threshold is 0, model: KNN7
 Threshold is 0, model: SVC
 Threshold is 0, model: NB
 Threshold is 0, model: LR
-{'LDA GA': 0.32768000000000014, 'KNN5 GA': 0.06871947673600004, 'KNN7 GA': 0.054975581388800036, 'SVC GA': 0.1677721600000001, 'NB GA': 0.054975581388800036, 'LR GA': 0.2621440000000001}
+{'LDA GA': 0.2621440000000001, 'KNN5 GA': 0.1677721600000001, 'KNN7 GA': 0.06871947673600004, 'SVC GA': 0.2621440000000001, 'NB GA': 0.1677721600000001, 'LR GA': 0.2621440000000001}
 Threshold is 0, model: LDA
 Threshold is 0, model: KNN5
 Threshold is 0, model: KNN7
@@ -211,7 +210,7 @@ Threshold is 0, model: KNN7
 Threshold is 0, model: SVC
 Threshold is 0, model: NB
 Threshold is 0, model: LR
-{'LDA GA': 0.32768000000000014, 'KNN5 GA': 0.06871947673600004, 'KNN7 GA': 0.054975581388800036, 'SVC GA': 0.1677721600000001, 'NB GA': 0.054975581388800036, 'LR GA': 0.2621440000000001, 'LDA': 0.1677721600000001, 'KNN-5': 0.2621440000000001, 'KNN-7': 0.1677721600000001, 'SVC': 0.6400000000000001, 'NB': 0.2097152000000001, 'LR': 0.2097152000000001}
+{'LDA GA': 0.2621440000000001, 'KNN5 GA': 0.1677721600000001, 'KNN7 GA': 0.06871947673600004, 'SVC GA': 0.2621440000000001, 'NB GA': 0.1677721600000001, 'LR GA': 0.2621440000000001, 'LDA': 0.1677721600000001, 'KNN-5': 0.2621440000000001, 'KNN-7': 0.1677721600000001, 'SVC': 0.6400000000000001, 'NB': 0.2097152000000001, 'LR': 0.2097152000000001}
 Threshold is 0, model: LDA
 Threshold is 0, model: KNN5
 Threshold is 0, model: KNN7
@@ -260,27 +259,27 @@ NB                   0.466667
 NB CV                0.666667
 LR                   0.733333
 LR CV                0.616667
-LDA GA               0.6
-LDA GA CV            0.616667
-KNN5 GA              0.466667
-KNN5 GA CV           0.616667
-KNN7 GA              0.733333
+LDA GA               0.533333
+LDA GA CV            0.65
+KNN5 GA              0.733333
+KNN5 GA CV           0.666667
+KNN7 GA              0.6
 KNN7 GA CV           0.633333
 SVC GA               0.733333
-SVC GA CV            0.6
-NB GA                0.466667
-NB GA CV             0.5
-LR GA                0.666667
+SVC GA CV            0.683333
+NB GA                0.4
+NB GA CV             0.616667
+LR GA                0.8
 LR GA CV             0.716667
 MV                   0.666667
-MV_GA                0.666667
+MV_GA                0.733333
 MV_ALL               0.733333
 STACKING             0.666667
 OSTACKING            0.666667
-OSTACKING GA         0.733333
-OSTACKING ALL        0.733333
+OSTACKING GA         0.6
+OSTACKING ALL        0.666667
 ga_blitz_thresh_0 Already exists, moving on...
-running now classify on path: Recordings\10-08-22\TK\Sub318324886001
+running now classify on path: Recordings/10-08-22/TK/Sub318324886001
 ['Recordings', '10-08-22', 'TK', 'Sub318324886001']
 
 started models analysis
@@ -304,45 +303,45 @@ Threshold is 0, model: LDA
 LDA Already exists, moving on...
 Threshold is 0, model: LDA
 Wallak threshold is 0
-All scores: [0.6666666666666666, 0.4166666666666667, 0.6666666666666666, 0.5, 0.5833333333333334]
+All scores: [0.6666666666666666, 0.16666666666666666, 0.4166666666666667, 0.5833333333333334, 0.5]
 Running KNN5 with GA features selection & analysis...
 Threshold is 0, model: KNN5
 KNN5 Already exists, moving on...
 Threshold is 0, model: KNN5
 Wallak threshold is 0
-All scores: [0.5, 0.25, 0.5833333333333334, 0.5, 0.25]
+All scores: [0.6666666666666666, 0.5833333333333334, 0.3333333333333333, 0.3333333333333333, 0.16666666666666666]
 Running KNN7 with GA features selection & analysis...
 Threshold is 0, model: KNN7
 KNN7 Already exists, moving on...
 Threshold is 0, model: KNN7
 Wallak threshold is 0
-All scores: [0.6666666666666666, 0.4166666666666667, 0.5, 0.5, 0.5833333333333334]
+All scores: [0.75, 0.25, 0.5, 0.4166666666666667, 0.8333333333333334]
 Running SVC with GA features selection & analysis...
 Threshold is 0, model: SVC
 SVC Already exists, moving on...
 Threshold is 0, model: SVC
 Wallak threshold is 0
-All scores: [0.5833333333333334, 0.5, 0.4166666666666667, 0.4166666666666667, 0.6666666666666666]
+All scores: [0.5833333333333334, 0.5833333333333334, 0.4166666666666667, 0.5, 0.75]
 Running NB with GA features selection & analysis...
 Threshold is 0, model: NB
 NB Already exists, moving on...
 Threshold is 0, model: NB
 Wallak threshold is 0
-All scores: [0.5833333333333334, 0.5833333333333334, 0.3333333333333333, 0.5833333333333334, 0.6666666666666666]
+All scores: [0.5833333333333334, 0.5833333333333334, 0.4166666666666667, 0.5833333333333334, 0.5833333333333334]
 Running LR with GA features selection & analysis...
 Threshold is 0, model: LR
 LR Already exists, moving on...
 Threshold is 0, model: LR
 Wallak threshold is 0
-All scores: [0.5833333333333334, 0.3333333333333333, 0.5, 0.8333333333333334, 0.5]
-{'LDA': 0.2097152000000001, 'KNN-5': 0.13421772800000006, 'KNN-7': 0.10737418240000006, 'SVC': 0.2097152000000001, 'NB': 0.043980465111040035, 'LR': 0.13421772800000006}
+All scores: [0.5833333333333334, 0.25, 0.5, 0.5833333333333334, 0.8333333333333334]
+{'LDA': 0.2097152000000001, 'KNN-5': 0.13421772800000006, 'KNN-7': 0.10737418240000006, 'SVC': 0.2621440000000001, 'NB': 0.043980465111040035, 'LR': 0.13421772800000006}
 Threshold is 0, model: LDA
 Threshold is 0, model: KNN5
 Threshold is 0, model: KNN7
 Threshold is 0, model: SVC
 Threshold is 0, model: NB
 Threshold is 0, model: LR
-{'LDA GA': 0.08589934592000005, 'KNN5 GA': 0.06871947673600004, 'KNN7 GA': 0.054975581388800036, 'SVC GA': 0.2621440000000001, 'NB GA': 0.1677721600000001, 'LR GA': 0.2621440000000001}
+{'LDA GA': 0.054975581388800036, 'KNN5 GA': 0.054975581388800036, 'KNN7 GA': 0.03518437208883203, 'SVC GA': 0.1677721600000001, 'NB GA': 0.13421772800000006, 'LR GA': 0.08589934592000005}
 Threshold is 0, model: LDA
 Threshold is 0, model: KNN5
 Threshold is 0, model: KNN7
@@ -355,7 +354,7 @@ Threshold is 0, model: KNN7
 Threshold is 0, model: SVC
 Threshold is 0, model: NB
 Threshold is 0, model: LR
-{'LDA GA': 0.08589934592000005, 'KNN5 GA': 0.06871947673600004, 'KNN7 GA': 0.054975581388800036, 'SVC GA': 0.2621440000000001, 'NB GA': 0.1677721600000001, 'LR GA': 0.2621440000000001, 'LDA': 0.2097152000000001, 'KNN-5': 0.13421772800000006, 'KNN-7': 0.10737418240000006, 'SVC': 0.2097152000000001, 'NB': 0.043980465111040035, 'LR': 0.13421772800000006}
+{'LDA GA': 0.054975581388800036, 'KNN5 GA': 0.054975581388800036, 'KNN7 GA': 0.03518437208883203, 'SVC GA': 0.1677721600000001, 'NB GA': 0.13421772800000006, 'LR GA': 0.08589934592000005, 'LDA': 0.2097152000000001, 'KNN-5': 0.13421772800000006, 'KNN-7': 0.10737418240000006, 'SVC': 0.2621440000000001, 'NB': 0.043980465111040035, 'LR': 0.13421772800000006}
 Threshold is 0, model: LDA
 Threshold is 0, model: KNN5
 Threshold is 0, model: KNN7
@@ -404,27 +403,27 @@ NB                   0.4
 NB CV                0.483333
 LR                   0.533333
 LR CV                0.583333
-LDA GA               0.6
-LDA GA CV            0.566667
-KNN5 GA              0.266667
+LDA GA               0.4
+LDA GA CV            0.466667
+KNN5 GA              0.4
 KNN5 GA CV           0.416667
 KNN7 GA              0.333333
-KNN7 GA CV           0.533333
-SVC GA               0.466667
-SVC GA CV            0.516667
-NB GA                0.266667
+KNN7 GA CV           0.55
+SVC GA               0.2
+SVC GA CV            0.566667
+NB GA                0.466667
 NB GA CV             0.55
-LR GA                0.466667
+LR GA                0.333333
 LR GA CV             0.55
 MV                   0.4
-MV_GA                0.466667
-MV_ALL               0.4
-STACKING             0.4
+MV_GA                0.333333
+MV_ALL               0.466667
+STACKING             0.466667
 OSTACKING            0.4
-OSTACKING GA         0.4
-OSTACKING ALL        0.533333
+OSTACKING GA         0.333333
+OSTACKING ALL        0.333333
 ga_blitz_thresh_0 Already exists, moving on...
-running now classify on path: Recordings\15-08-22\TK\Sub318324886001
+running now classify on path: Recordings/15-08-22/TK/Sub318324886001
 ['Recordings', '15-08-22', 'TK', 'Sub318324886001']
 
 started models analysis
@@ -448,37 +447,37 @@ Threshold is 0, model: LDA
 LDA Already exists, moving on...
 Threshold is 0, model: LDA
 Wallak threshold is 0
-All scores: [0.75, 0.5, 0.4166666666666667, 0.9166666666666666, 0.6666666666666666]
+All scores: [0.5833333333333334, 0.5833333333333334, 0.5833333333333334, 0.6666666666666666, 0.6666666666666666]
 Running KNN5 with GA features selection & analysis...
 Threshold is 0, model: KNN5
 KNN5 Already exists, moving on...
 Threshold is 0, model: KNN5
 Wallak threshold is 0
-All scores: [0.6666666666666666, 0.4166666666666667, 0.5833333333333334, 0.8333333333333334, 0.6666666666666666]
+All scores: [0.75, 0.75, 0.5833333333333334, 1.0, 0.75]
 Running KNN7 with GA features selection & analysis...
 Threshold is 0, model: KNN7
 KNN7 Already exists, moving on...
 Threshold is 0, model: KNN7
 Wallak threshold is 0
-All scores: [0.75, 0.9166666666666666, 0.4166666666666667, 0.6666666666666666, 0.6666666666666666]
+All scores: [0.5833333333333334, 0.6666666666666666, 0.5833333333333334, 0.9166666666666666, 0.6666666666666666]
 Running SVC with GA features selection & analysis...
 Threshold is 0, model: SVC
 SVC Already exists, moving on...
 Threshold is 0, model: SVC
 Wallak threshold is 0
-All scores: [0.5833333333333334, 0.5833333333333334, 0.75, 0.5833333333333334, 0.6666666666666666]
+All scores: [0.75, 0.5833333333333334, 0.5833333333333334, 0.8333333333333334, 0.75]
 Running NB with GA features selection & analysis...
 Threshold is 0, model: NB
 NB Already exists, moving on...
 Threshold is 0, model: NB
 Wallak threshold is 0
-All scores: [0.6666666666666666, 0.5833333333333334, 0.5, 0.75, 0.75]
+All scores: [0.75, 0.6666666666666666, 0.3333333333333333, 0.6666666666666666, 0.6666666666666666]
 Running LR with GA features selection & analysis...
 Threshold is 0, model: LR
 LR Already exists, moving on...
 Threshold is 0, model: LR
 Wallak threshold is 0
-All scores: [0.75, 0.8333333333333334, 0.5, 0.75, 0.75]
+All scores: [0.75, 0.6666666666666666, 0.5, 0.8333333333333334, 0.6666666666666666]
 {'LDA': 0.06871947673600004, 'KNN-5': 0.06871947673600004, 'KNN-7': 0.043980465111040035, 'SVC': 0.8, 'NB': 0.08589934592000005, 'LR': 0.2097152000000001}
 Threshold is 0, model: LDA
 Threshold is 0, model: KNN5
@@ -486,7 +485,7 @@ Threshold is 0, model: KNN7
 Threshold is 0, model: SVC
 Threshold is 0, model: NB
 Threshold is 0, model: LR
-{'LDA GA': 0.1677721600000001, 'KNN5 GA': 0.06871947673600004, 'KNN7 GA': 0.08589934592000005, 'SVC GA': 0.13421772800000006, 'NB GA': 0.054975581388800036, 'LR GA': 0.1677721600000001}
+{'LDA GA': 0.2621440000000001, 'KNN5 GA': 0.13421772800000006, 'KNN7 GA': 0.2097152000000001, 'SVC GA': 0.1677721600000001, 'NB GA': 0.08589934592000005, 'LR GA': 0.2621440000000001}
 Threshold is 0, model: LDA
 Threshold is 0, model: KNN5
 Threshold is 0, model: KNN7
@@ -499,7 +498,7 @@ Threshold is 0, model: KNN7
 Threshold is 0, model: SVC
 Threshold is 0, model: NB
 Threshold is 0, model: LR
-{'LDA GA': 0.1677721600000001, 'KNN5 GA': 0.06871947673600004, 'KNN7 GA': 0.08589934592000005, 'SVC GA': 0.13421772800000006, 'NB GA': 0.054975581388800036, 'LR GA': 0.1677721600000001, 'LDA': 0.06871947673600004, 'KNN-5': 0.06871947673600004, 'KNN-7': 0.043980465111040035, 'SVC': 0.8, 'NB': 0.08589934592000005, 'LR': 0.2097152000000001}
+{'LDA GA': 0.2621440000000001, 'KNN5 GA': 0.13421772800000006, 'KNN7 GA': 0.2097152000000001, 'SVC GA': 0.1677721600000001, 'NB GA': 0.08589934592000005, 'LR GA': 0.2621440000000001, 'LDA': 0.06871947673600004, 'KNN-5': 0.06871947673600004, 'KNN-7': 0.043980465111040035, 'SVC': 0.8, 'NB': 0.08589934592000005, 'LR': 0.2097152000000001}
 Threshold is 0, model: LDA
 Threshold is 0, model: KNN5
 Threshold is 0, model: KNN7
@@ -548,27 +547,27 @@ NB                   0.6
 NB CV                0.533333
 LR                   0.666667
 LR CV                0.666667
-LDA GA               0.533333
-LDA GA CV            0.65
-KNN5 GA              0.533333
-KNN5 GA CV           0.633333
-KNN7 GA              0.733333
+LDA GA               0.6
+LDA GA CV            0.616667
+KNN5 GA              0.733333
+KNN5 GA CV           0.766667
+KNN7 GA              0.533333
 KNN7 GA CV           0.683333
-SVC GA               0.466667
-SVC GA CV            0.633333
-NB GA                0.466667
-NB GA CV             0.65
-LR GA                0.733333
-LR GA CV             0.716667
+SVC GA               0.533333
+SVC GA CV            0.7
+NB GA                0.6
+NB GA CV             0.616667
+LR GA                0.8
+LR GA CV             0.683333
 MV                   0.666667
-MV_GA                0.6
-MV_ALL               0.666667
+MV_GA                0.733333
+MV_ALL               0.733333
 STACKING             0.666667
 OSTACKING            0.6
-OSTACKING GA         0.733333
-OSTACKING ALL        0.666667
+OSTACKING GA         0.8
+OSTACKING ALL        0.6
 ga_blitz_thresh_0 Already exists, moving on...
-running now classify on path: Recordings\15-08-22\TK\Sub318324886002
+running now classify on path: Recordings/15-08-22/TK/Sub318324886002
 ['Recordings', '15-08-22', 'TK', 'Sub318324886002']
 
 started models analysis
@@ -592,18 +591,306 @@ Threshold is 0, model: LDA
 LDA Already exists, moving on...
 Threshold is 0, model: LDA
 Wallak threshold is 0
-All scores: [0.4166666666666667, 0.6666666666666666, 0.9166666666666666, 0.5833333333333334, 0.6666666666666666]
+All scores: [0.6666666666666666, 0.75, 0.9166666666666666, 0.8333333333333334, 0.75]
 Running KNN5 with GA features selection & analysis...
 Threshold is 0, model: KNN5
 KNN5 Already exists, moving on...
 Threshold is 0, model: KNN5
 Wallak threshold is 0
-All scores: [0.4166666666666667, 0.6666666666666666, 0.9166666666666666, 0.6666666666666666, 0.5833333333333334]
+All scores: [0.3333333333333333, 0.4166666666666667, 0.8333333333333334, 0.5833333333333334, 0.5833333333333334]
 Running KNN7 with GA features selection & analysis...
 Threshold is 0, model: KNN7
 KNN7 Already exists, moving on...
 Threshold is 0, model: KNN7
 Wallak threshold is 0
-All scores: [0.6666666666666666, 0.5833333333333334, 0.75, 0.6666666666666666, 0.5]
+All scores: [0.5833333333333334, 0.5, 0.6666666666666666, 0.5833333333333334, 0.4166666666666667]
+Running SVC with GA features selection & analysis...
+Threshold is 0, model: SVC
+SVC Already exists, moving on...
+Threshold is 0, model: SVC
+Wallak threshold is 0
+All scores: [0.5833333333333334, 0.5, 0.8333333333333334, 0.6666666666666666, 0.5833333333333334]
+Running NB with GA features selection & analysis...
+Threshold is 0, model: NB
+NB Already exists, moving on...
+Threshold is 0, model: NB
+Wallak threshold is 0
+All scores: [0.6666666666666666, 0.5833333333333334, 0.75, 0.75, 0.6666666666666666]
+Running LR with GA features selection & analysis...
+Threshold is 0, model: LR
+LR Already exists, moving on...
+Threshold is 0, model: LR
+Wallak threshold is 0
+All scores: [0.5, 0.5833333333333334, 1.0, 0.75, 0.6666666666666666]
+{'LDA': 0.10737418240000006, 'KNN-5': 0.10737418240000006, 'KNN-7': 0.08589934592000005, 'SVC': 0.2621440000000001, 'NB': 0.043980465111040035, 'LR': 0.13421772800000006}
+Threshold is 0, model: LDA
+Threshold is 0, model: KNN5
+Threshold is 0, model: KNN7
+Threshold is 0, model: SVC
+Threshold is 0, model: NB
+Threshold is 0, model: LR
+{'LDA GA': 0.2097152000000001, 'KNN5 GA': 0.043980465111040035, 'KNN7 GA': 0.08589934592000005, 'SVC GA': 0.32768000000000014, 'NB GA': 0.2097152000000001, 'LR GA': 0.2097152000000001}
+Threshold is 0, model: LDA
+Threshold is 0, model: KNN5
+Threshold is 0, model: KNN7
+Threshold is 0, model: SVC
+Threshold is 0, model: NB
+Threshold is 0, model: LR
+Threshold is 0, model: LDA
+Threshold is 0, model: KNN5
+Threshold is 0, model: KNN7
+Threshold is 0, model: SVC
+Threshold is 0, model: NB
+Threshold is 0, model: LR
+{'LDA GA': 0.2097152000000001, 'KNN5 GA': 0.043980465111040035, 'KNN7 GA': 0.08589934592000005, 'SVC GA': 0.32768000000000014, 'NB GA': 0.2097152000000001, 'LR GA': 0.2097152000000001, 'LDA': 0.10737418240000006, 'KNN-5': 0.10737418240000006, 'KNN-7': 0.08589934592000005, 'SVC': 0.2621440000000001, 'NB': 0.043980465111040035, 'LR': 0.13421772800000006}
+Threshold is 0, model: LDA
+Threshold is 0, model: KNN5
+Threshold is 0, model: KNN7
+Threshold is 0, model: SVC
+Threshold is 0, model: NB
+Threshold is 0, model: LR
+(45, 6)
+Threshold is 0, model: LDA
+Threshold is 0, model: LDA
+Threshold is 0, model: KNN5
+Threshold is 0, model: KNN5
+Threshold is 0, model: KNN7
+Threshold is 0, model: KNN7
+Threshold is 0, model: SVC
+Threshold is 0, model: SVC
+Threshold is 0, model: NB
+Threshold is 0, model: NB
+Threshold is 0, model: LR
+Threshold is 0, model: LR
+(45, 6)
+Threshold is 0, model: LDA
+Threshold is 0, model: LDA
+Threshold is 0, model: KNN5
+Threshold is 0, model: KNN5
+Threshold is 0, model: KNN7
+Threshold is 0, model: KNN7
+Threshold is 0, model: SVC
+Threshold is 0, model: SVC
+Threshold is 0, model: NB
+Threshold is 0, model: NB
+Threshold is 0, model: LR
+Threshold is 0, model: LR
+(45, 12)
+
+Classifier       Success Rate
+-------------  --------------
+LDA                  0.466667
+LDA CV               0.633333
+KNN-5                0.533333
+KNN-5 CV             0.566667
+KNN-7                0.533333
+KNN-7 CV             0.616667
+SVC                  0.6
+SVC CV               0.633333
+NB                   0.666667
+NB CV                0.666667
+LR                   0.533333
+LR CV                0.65
+LDA GA               0.666667
+LDA GA CV            0.783333
+KNN5 GA              0.4
+KNN5 GA CV           0.55
+KNN7 GA              0.6
+KNN7 GA CV           0.55
+SVC GA               0.533333
+SVC GA CV            0.633333
+NB GA                0.733333
+NB GA CV             0.683333
+LR GA                0.533333
+LR GA CV             0.7
+MV                   0.533333
+MV_GA                0.733333
+MV_ALL               0.6
+STACKING             0.6
+OSTACKING            0.533333
+OSTACKING GA         0.666667
+OSTACKING ALL        0.666667
+ga_blitz_thresh_0 Already exists, moving on...
+running now classify on path: Recordings/16-08-22/TK/Sub318324886002
+['Recordings', '16-08-22', 'TK', 'Sub318324886002']
+
+started models analysis
+
+Running LDA analysis...
+All scores: [0.6666666666666666, 0.5833333333333334, 0.5, 0.5833333333333334, 0.3333333333333333]
+Running KNN-5 analysis...
+All scores: [0.6666666666666666, 0.5833333333333334, 0.5, 0.75, 0.4166666666666667]
+Running KNN-7 analysis...
+All scores: [0.5833333333333334, 0.5833333333333334, 0.5, 0.9166666666666666, 0.5833333333333334]
+Running SVC analysis...
+All scores: [0.5833333333333334, 0.5, 0.5, 0.8333333333333334, 0.3333333333333333]
+Running NB analysis...
+All scores: [0.5, 0.5, 0.3333333333333333, 0.75, 0.4166666666666667]
+Running LR analysis...
+All scores: [0.6666666666666666, 0.5833333333333334, 0.5, 0.5833333333333334, 0.4166666666666667]
+started GA models analysis
+
+Running LDA with GA features selection & analysis...
+Threshold is 0, model: LDA
+LDA Already exists, moving on...
+Threshold is 0, model: LDA
+Wallak threshold is 0
+All scores: [0.8333333333333334, 0.5833333333333334, 0.75, 0.5, 0.5833333333333334]
+Running KNN5 with GA features selection & analysis...
+Threshold is 0, model: KNN5
+KNN5 Already exists, moving on...
+Threshold is 0, model: KNN5
+Wallak threshold is 0
+All scores: [0.5, 0.5833333333333334, 0.5, 0.4166666666666667, 0.5833333333333334]
+Running KNN7 with GA features selection & analysis...
+Threshold is 0, model: KNN7
+KNN7 Already exists, moving on...
+Threshold is 0, model: KNN7
+Wallak threshold is 0
+All scores: [0.5, 0.75, 0.75, 0.5833333333333334, 0.5833333333333334]
+Running SVC with GA features selection & analysis...
+Threshold is 0, model: SVC
+SVC Already exists, moving on...
+Threshold is 0, model: SVC
+Wallak threshold is 0
+All scores: [0.75, 0.5833333333333334, 0.6666666666666666, 0.6666666666666666, 0.5833333333333334]
+Running NB with GA features selection & analysis...
+Threshold is 0, model: NB
+NB Already exists, moving on...
+Threshold is 0, model: NB
+Wallak threshold is 0
+All scores: [0.6666666666666666, 0.75, 0.6666666666666666, 0.6666666666666666, 0.5833333333333334]
+Running LR with GA features selection & analysis...
+Threshold is 0, model: LR
+LR Already exists, moving on...
+Threshold is 0, model: LR
+Wallak threshold is 0
+All scores: [0.5833333333333334, 0.5833333333333334, 0.5, 0.75, 0.6666666666666666]
+{'LDA': 0.13421772800000006, 'KNN-5': 0.13421772800000006, 'KNN-7': 0.1677721600000001, 'SVC': 0.8, 'NB': 0.054975581388800036, 'LR': 0.10737418240000006}
+Threshold is 0, model: LDA
+Threshold is 0, model: KNN5
+Threshold is 0, model: KNN7
+Threshold is 0, model: SVC
+Threshold is 0, model: NB
+Threshold is 0, model: LR
+{'LDA GA': 0.2621440000000001, 'KNN5 GA': 0.03518437208883203, 'KNN7 GA': 0.13421772800000006, 'SVC GA': 0.2097152000000001, 'NB GA': 0.10737418240000006, 'LR GA': 0.08589934592000005}
+Threshold is 0, model: LDA
+Threshold is 0, model: KNN5
+Threshold is 0, model: KNN7
+Threshold is 0, model: SVC
+Threshold is 0, model: NB
+Threshold is 0, model: LR
+Threshold is 0, model: LDA
+Threshold is 0, model: KNN5
+Threshold is 0, model: KNN7
+Threshold is 0, model: SVC
+Threshold is 0, model: NB
+Threshold is 0, model: LR
+{'LDA GA': 0.2621440000000001, 'KNN5 GA': 0.03518437208883203, 'KNN7 GA': 0.13421772800000006, 'SVC GA': 0.2097152000000001, 'NB GA': 0.10737418240000006, 'LR GA': 0.08589934592000005, 'LDA': 0.13421772800000006, 'KNN-5': 0.13421772800000006, 'KNN-7': 0.1677721600000001, 'SVC': 0.8, 'NB': 0.054975581388800036, 'LR': 0.10737418240000006}
+Threshold is 0, model: LDA
+Threshold is 0, model: KNN5
+Threshold is 0, model: KNN7
+Threshold is 0, model: SVC
+Threshold is 0, model: NB
+Threshold is 0, model: LR
+(45, 6)
+Threshold is 0, model: LDA
+Threshold is 0, model: LDA
+Threshold is 0, model: KNN5
+Threshold is 0, model: KNN5
+Threshold is 0, model: KNN7
+Threshold is 0, model: KNN7
+Threshold is 0, model: SVC
+Threshold is 0, model: SVC
+Threshold is 0, model: NB
+Threshold is 0, model: NB
+Threshold is 0, model: LR
+Threshold is 0, model: LR
+(45, 6)
+Threshold is 0, model: LDA
+Threshold is 0, model: LDA
+Threshold is 0, model: KNN5
+Threshold is 0, model: KNN5
+Threshold is 0, model: KNN7
+Threshold is 0, model: KNN7
+Threshold is 0, model: SVC
+Threshold is 0, model: SVC
+Threshold is 0, model: NB
+Threshold is 0, model: NB
+Threshold is 0, model: LR
+Threshold is 0, model: LR
+(45, 12)
+
+Classifier       Success Rate
+-------------  --------------
+LDA                  0.466667
+LDA CV               0.533333
+KNN-5                0.466667
+KNN-5 CV             0.583333
+KNN-7                0.533333
+KNN-7 CV             0.633333
+SVC                  0.666667
+SVC CV               0.55
+NB                   0.466667
+NB CV                0.5
+LR                   0.533333
+LR CV                0.55
+LDA GA               0.733333
+LDA GA CV            0.65
+KNN5 GA              0.266667
+KNN5 GA CV           0.516667
+KNN7 GA              0.6
+KNN7 GA CV           0.633333
+SVC GA               0.533333
+SVC GA CV            0.65
+NB GA                0.533333
+NB GA CV             0.666667
+LR GA                0.6
+LR GA CV             0.616667
+MV                   0.533333
+MV_GA                0.666667
+MV_ALL               0.6
+STACKING             0.6
+OSTACKING            0.6
+OSTACKING GA         0.6
+OSTACKING ALL        0.466667
+ga_blitz_thresh_0 Already exists, moving on...
+running now classify on path: Recordings/17-08-22/TK/Sub318324886001
+['Recordings', '17-08-22', 'TK', 'Sub318324886001']
+
+started models analysis
+
+Running LDA analysis...
+All scores: [0.4166666666666667, 0.6666666666666666, 0.3333333333333333, 0.5833333333333334, 0.9166666666666666]
+Running KNN-5 analysis...
+All scores: [0.5, 0.8333333333333334, 0.5833333333333334, 0.6666666666666666, 1.0]
+Running KNN-7 analysis...
+All scores: [0.5833333333333334, 0.6666666666666666, 0.5, 0.5833333333333334, 0.8333333333333334]
+Running SVC analysis...
+All scores: [0.5, 0.8333333333333334, 0.5833333333333334, 0.5833333333333334, 0.9166666666666666]
+Running NB analysis...
+All scores: [0.25, 0.6666666666666666, 0.5833333333333334, 0.75, 0.6666666666666666]
+Running LR analysis...
+All scores: [0.4166666666666667, 0.75, 0.5, 0.5, 0.8333333333333334]
+started GA models analysis
+
+Running LDA with GA features selection & analysis...
+Threshold is 0, model: LDA
+LDA Already exists, moving on...
+Threshold is 0, model: LDA
+Wallak threshold is 0
+All scores: [0.5833333333333334, 0.75, 0.5833333333333334, 0.75, 0.6666666666666666]
+Running KNN5 with GA features selection & analysis...
+Threshold is 0, model: KNN5
+KNN5 Already exists, moving on...
+Threshold is 0, model: KNN5
+Wallak threshold is 0
+All scores: [0.4166666666666667, 0.75, 0.5, 0.6666666666666666, 0.5833333333333334]
+Running KNN7 with GA features selection & analysis...
+Threshold is 0, model: KNN7
+KNN7 Already exists, moving on...
+Threshold is 0, model: KNN7
+Wallak threshold is 0
+All scores: [0.5, 0.6666666666666666, 0.5, 0.6666666666666666, 0.6666666666666666]
 Running SVC with GA features selection & analysis...
 Threshold is 0, model: SVC

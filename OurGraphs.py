@@ -98,7 +98,7 @@ def show_hist_ga():
     for model, hist in all_hist.items():
         fig = plt.figure()
         ax = fig.add_subplot(1,1,1)
-        filtered_hist = {key: item for key, item in hist.items() if item > 100}
+        filtered_hist = {key: item for key, item in hist.items() if item >= 75}
         sorted_filtered = {key: val for key, val in sorted(filtered_hist.items(), key=lambda ele: ele[1])}
         ax.bar(sorted_filtered.keys(), list(sorted_filtered.values()), color='b')
         print(f'{model}: {list(hist.values())}')
