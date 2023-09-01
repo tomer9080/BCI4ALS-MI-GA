@@ -44,7 +44,7 @@ def cross_validation_on_model(model, k, features, labels, mv=False, nca_indicies
 
     all_scores = []
     all_models = []
-    for train_index, test_index in kf.split(features):
+    for i, train_index, test_index in enumerate(kf.split(features)):
         X_train = features[train_index]
         X_test = features[test_index]
         y_train = labels[train_index]

@@ -1,6 +1,9 @@
 import numpy as np
 import ModelsUtils
+import ModelsParams
 from sklearn.model_selection import KFold
+from sklearn.metrics import accuracy_score
+
 
 class Stacking:
 
@@ -13,8 +16,10 @@ class Stacking:
         self.features = features
         self.test_labels = labels[test_indices]
         self.train_labels = labels[self.train_indices]
+        self.labels = labels
         self.nca_features_train = (features[self.train_indices,:])[:,nca_indices]
         self.nca_features_test = (features[test_indices,:])[:,nca_indices]
+        self.nca_indices = nca_indices
         self.meta_model = level1_model
     
     def get_ga_features(self, model, name: str, train=True):
@@ -32,7 +37,7 @@ class Stacking:
             new_dataset_train.append(model.predict(self.nca_features_train))
             new_dataset_test.append(model.predict(self.nca_features_test))
 
-        for key, model in self.ga_models.items():
+        for _, model in self.ga_models.items():
             new_dataset_train.append(model.predict(self.features[self.train_indices,:]))
             new_dataset_test.append(model.predict(self.features[self.test_indices,:]))
 
@@ -46,3 +51,48 @@ class Stacking:
 
     def predict(self):
         return self.meta_model.predict(self.new_dataset_test)
+    
+    def run_cv(self, folds):
+        kf = KFold(n_splits=folds, shuffle=False)
+
+        ga_features = {}
+
+        # build features dict from GA models
+        for key, model in self.ga_models.items():
+            ga_features[key.strip(' GA')] = model.support_
+
+        all_scores = []
+        for i, train_index, test_index in enumerate(kf.split(self.features)):
+            X_train = self.features[train_index]
+            X_test = self.features[test_index]
+            y_train = self.labels[train_index]
+            y_test = self.labels[test_index]
+
+            # Training the meta_model
+            new_dataset_train = []
+            new_dataset_test = []
+            
+            for _, model in self.reg_models.items():
+                new_dataset_train.append(model.predict(X_train[:, self.nca_indices]))
+                new_dataset_test.append(model.predict(X_test[:, self.nca_indices]))
+
+            # Training each Pseudo GA classifier
+            models = ModelsParams.build_models()
+            for model in models:
+                model['model'].fit(X_train[:, ga_features[model['name']]])  # fit GA pseudo model
+                new_dataset_train.append(model['model'].predict(X_train[:, ga_features[model['name']]]))
+                new_dataset_test.append(model['model'].predict(X_test[:, ga_features[model['name']]]))
+            
+            new_dataset = np.array(new_dataset_train, dtype=object)
+            
+            self.meta_model.fit(new_dataset.T, y_train)
+
+            new_dataset_test = np.array(new_dataset_test, dtype=object)
+
+            accuracy = accuracy_score(y_test, self.meta_model.predict(new_dataset_test.T))
+            all_scores.append(accuracy)
+
+        return np.mean(all_scores)
+
+
+

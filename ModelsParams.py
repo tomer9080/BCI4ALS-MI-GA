@@ -13,8 +13,8 @@ from sklearn.ensemble import AdaBoostClassifier as AB
 def build_models(our_features_indices=[], train_features_stats=[], test_features_stats=[], labels_train_stats=[], labels_test_stats=[]):
     models = [
         {'name': 'LDA', 'model': LDA(), 'cv': True},
-        {'name': 'KNN-5', 'model': KNN(5), 'cv': True},
-        {'name': 'KNN-7', 'model': KNN(7), 'cv': True},
+        {'name': 'KNN5', 'model': KNN(5), 'cv': True},
+        {'name': 'KNN7', 'model': KNN(7), 'cv': True},
         {'name': 'SVC', 'model': SVC(probability=True), 'cv': True},
         {'name': 'NB', 'model': NB(), 'cv': True},
         {'name': 'LR', 'model': LR(), 'cv': True}
