@@ -9,6 +9,7 @@ import copy
 import os
 from Stacking import Stacking
 from GAModel import GAModel
+from EA import EA
 from Parsers import get_args_dict
 
 features_names_list = Utils.features_names_list
@@ -44,7 +45,7 @@ def cross_validation_on_model(model, k, features, labels, mv=False, nca_indicies
 
     all_scores = []
     all_models = []
-    for i, train_index, test_index in enumerate(kf.split(features)):
+    for train_index, test_index in kf.split(features):
         X_train = features[train_index]
         X_test = features[test_index]
         y_train = labels[train_index]
@@ -117,8 +118,8 @@ def classify_results_ga(selection_params, features_train, label_train, features_
     selector = selector.fit(features_train, label_train)
     chosen_indices[selection_params["name"]] = np.array([i for i, res in enumerate(selector.support_) if res == True])
     
-    Utils.create_sub_folder_for_ga_features(selection_params["name"], selection_params['index_max'])
-    np.savetxt(os.path.join('ga_features', f'ga_run_{selection_params["index_max"]}', selection_params["name"], f'{folder_dict["name"]}_{folder_dict["date"]}_ {folder_dict["num"]}_ga_features.txt'), headers[selector.mask][selector.support_], fmt='%s')
+    # Utils.create_sub_folder_for_ga_features(selection_params["name"], selection_params['index_max'])
+    # np.savetxt(os.path.join('ga_features', f'ga_run_{selection_params["index_max"]}', selection_params["name"], f'{folder_dict["name"]}_{folder_dict["date"]}_ {folder_dict["num"]}_ga_features.txt'), headers[selector.mask][selector.support_], fmt='%s')
     
     prediction = selector.predict(features_test)
     test_results = prediction - label_test
@@ -188,6 +189,11 @@ def classify_ensemble(key_name, models: dict, features, labels, test_indices, nc
     label_test = labels[test_indices]
     return row_to_print(prediction, label_test, key_name)
 
+def mv_cv(key_name, models: dict, features, labels, test_indices, nca_indices, eta=0.2, folds=5):
+    ea_model = EA(models, test_indices, nca_indices, labels, features, eta)
+    cv_score = ea_model.run_cv(folds=folds)
+    return [key_name, cv_score]
+
 def make_stacking_model(models: dict):
     level0 = list(models.items())
     level1 = LogisticRegression()
@@ -208,6 +214,11 @@ def our_classify_stacking(key_name, models: dict, features, labels, test_indices
     prediction = stacking_model.predict()
     label_test = labels[test_indices]
     return row_to_print(prediction, label_test, key_name)
+
+def stacking_cv(key_name, models: dict, features, labels, test_indices, nca_indices, folds=5):
+    stacking_model = Stacking(models, test_indices, nca_indices, labels, features, LogisticRegression())
+    cv_score = stacking_model.run_cv(folds=folds)
+    return [key_name, cv_score]
 
 def row_to_print(prediction, label_test, key_name):
     hit_rate = sum(prediction - label_test == 0) / len(label_test)

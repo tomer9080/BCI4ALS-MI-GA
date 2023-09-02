@@ -59,10 +59,10 @@ class Stacking:
 
         # build features dict from GA models
         for key, model in self.ga_models.items():
-            ga_features[key.strip(' GA')] = model.support_
+            ga_features[key.replace(' GA', '')] = model.support_
 
         all_scores = []
-        for i, train_index, test_index in enumerate(kf.split(self.features)):
+        for train_index, test_index in kf.split(self.features):
             X_train = self.features[train_index]
             X_test = self.features[test_index]
             y_train = self.labels[train_index]
@@ -75,13 +75,16 @@ class Stacking:
             for _, model in self.reg_models.items():
                 new_dataset_train.append(model.predict(X_train[:, self.nca_indices]))
                 new_dataset_test.append(model.predict(X_test[:, self.nca_indices]))
+                # print('Stacking: In normal models')
 
             # Training each Pseudo GA classifier
-            models = ModelsParams.build_models()
-            for model in models:
-                model['model'].fit(X_train[:, ga_features[model['name']]], y_train)  # fit GA pseudo model
-                new_dataset_train.append(model['model'].predict(X_train[:, ga_features[model['name']]]))
-                new_dataset_test.append(model['model'].predict(X_test[:, ga_features[model['name']]]))
+            if len(self.ga_models) > 0:
+                models = ModelsParams.build_models()
+                for model in models:
+                    model['model'].fit(X_train[:, self.ga_models[model['name'] + ' GA'].mask][:, ga_features[model['name']]], y_train)  # fit GA pseudo model
+                    new_dataset_train.append(model['model'].predict(X_train[:, self.ga_models[model['name'] + ' GA'].mask][:, ga_features[model['name']]]))
+                    new_dataset_test.append(model['model'].predict(X_test[:, self.ga_models[model['name'] + ' GA'].mask][:, ga_features[model['name']]]))
+                    # print('Stacking: In GA Models')
             
             new_dataset = np.array(new_dataset_train, dtype=object)
             
@@ -92,6 +95,7 @@ class Stacking:
             accuracy = accuracy_score(y_test, self.meta_model.predict(new_dataset_test.T))
             all_scores.append(accuracy)
 
+        print(f'OSTACKING: {all_scores}')
         return np.mean(all_scores)
 
 

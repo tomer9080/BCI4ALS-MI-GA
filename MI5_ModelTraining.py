@@ -99,7 +99,7 @@ def classify(args_dict):
         if len(major_dict[key].keys()) == 0:
             continue
         all_rows.append(ModelsUtils.classify_ensemble(key, major_dict[key], all_features, all_labels, test_indices, nca_selected_idx))
-    
+
     ##### ============= RUN Stacking ============= #####
     all_rows.append(ModelsUtils.classify_stacking(f'STACKING', major_dict['MV'], all_features, all_labels, test_indices, nca_selected_idx))
     
@@ -114,11 +114,21 @@ def classify(args_dict):
     
     
     ##### ============= RUN CV MV & Stacking ============= #####
-    results_mv_stacking_cv: dict = ModelsUtils.cross_validation_on_model(major_dict['MV_ALL'], 4, all_features, all_labels, True, nca_selected_idx, 'ALL')
-    for key, val in results_mv_stacking_cv.items():
-        all_rows.append([key, val])
+    # results_mv_stacking_cv: dict = ModelsUtils.cross_validation_on_model(major_dict['MV_ALL'], 4, all_features, all_labels, True, nca_selected_idx, 'ALL')
+    # for key, val in results_mv_stacking_cv.items():
+    #     all_rows.append([key, val])
 
+    for key in major_dict.keys():
+        if len(major_dict[key].keys()) == 0:
+            continue
+        all_rows.append(ModelsUtils.mv_cv(key + ' CV', major_dict[key], all_features, all_labels, test_indices, nca_selected_idx))
+    
+    for key in major_dict.keys():
+        if len(major_dict[key].keys()) == 0:
+            continue
+        all_rows.append(ModelsUtils.stacking_cv(f'OSTACKING {key.strip("MV_")} CV', major_dict[key], all_features, all_labels, test_indices, nca_selected_idx))
         
+            
     #### ---------- Priniting table ---------- ####
     print('')
     table_headers = ["Classifier", "Success Rate", "Classifier Prediction", "Test Labels", "Sub Labels"]

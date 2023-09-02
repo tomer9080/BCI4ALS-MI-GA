@@ -11,7 +11,7 @@ import OurUtils as Utils
 from pathlib import Path
 from OurUtils import from_feature_name_to_index
 
-def plot_class_per_record_to_remove():
+def plot_class_per_record_to_remove(thresh="thresh_80"):
     file_name_1 = 'classifiers_scores.csv'
     file_name_2 = 'models_avg_scores.csv'
     root_dir = os.path.join('class_scores')
@@ -72,8 +72,9 @@ def plot_class_per_record_to_remove():
     for root, directories, files in os.walk(root_dir):
         for file in files:
             # Check if the file is a CSV
+            print(file, thresh, thresh in file)
             csv_path = os.path.join(root, file)
-            if file.endswith(file_name_2):
+            if file.endswith(file_name_2) and thresh in csv_path:
                 # Read the CSV file into a DataFrame
                 df = pd.read_csv(csv_path)
 
@@ -89,7 +90,7 @@ def plot_class_per_record_to_remove():
                 for key in models_avg_per_blitz_non_cv.keys():
                     models_avg_per_blitz_non_cv[key].append(df_2[key].to_list()[0])
 
-            if file.endswith(file_name_1):
+            if file.endswith(file_name_1) and thresh in csv_path:
 
                 # Read the CSV file into a DataFrame
                 df = pd.read_csv(csv_path)
@@ -173,7 +174,6 @@ def plot_error_bar_to_remove(models_scores_per_blitz: dict, recordings):
 
     plt.grid(True)
     plt.show()
-
 
 
 if __name__ == "__main__":

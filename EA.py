@@ -84,9 +84,10 @@ class EA:
         # build features dict from GA models
         for key, model in self.ga_models.items():
             ga_features[key] = model.support_
+            print(ga_features[key].shape)
 
         all_scores = []
-        for i, train_index, test_index in enumerate(kf.split(self.features)):
+        for train_index, test_index in kf.split(self.features):
 
             X_train = self.features[train_index]
             X_test = self.features[test_index]
@@ -94,16 +95,19 @@ class EA:
             y_test = self.labels[test_index]
 
             # Training each Pseudo GA classifier
-            ga_models = ModelsParams.build_models()
-            for model in ga_models:
-                model['model'].fit(X_train[:, ga_features[model['name']]], y_train)  # fit GA pseudo model
-            
-            self.ga_models = {f"{model['name']} GA": model['model'] for model in ga_models}
+            if len(self.ga_models) > 0:
+                ga_models = ModelsParams.build_models()
+                for model in ga_models:
+                    model['model'].fit(X_train[:, self.ga_models[model['name'] + ' GA'].mask][:, ga_features[model['name'] + ' GA']], y_train)  # fit GA pseudo model
+                
+                ga_models = {f"{model['name']} GA": model['model'] for model in ga_models}
+            else:
+                ga_models = {}
 
             # == Train ensemble == #
             self.init_weights()
             prob_matrices = {}
-            train_indices = self.train_indices
+            train_indices = train_index
             
             # Zip all matrices - work line by line to be each prediction.
             # This is "training" the model
@@ -111,10 +115,13 @@ class EA:
             for key, model in self.reg_models.items():
                 train_features = X_train[:, self.nca_indices]
                 prob_matrices[key] = model.predict_proba(train_features)
+                # print("In normal models")
 
-            for key, model in self.ga_models.items():
-                train_features = X_train[:, ga_features[key]]
+            for key, model in ga_models.items():
+                train_features = X_train[:, self.ga_models[key].mask][:, ga_features[key]]
                 prob_matrices[key] = model.predict_proba(train_features)
+                # print("In GA models")
+
 
             for j, i in enumerate(train_indices):
                 y_true = self.labels[i]
@@ -124,22 +131,22 @@ class EA:
                         self.weights[key] *= (1 - self.eta)
 
             # == Predict == #
-            final_proba_matrix = np.zeros((len(self.test_indices), 3))
+            final_proba_matrix = np.zeros((len(test_index), 3))
 
             for key, model in self.reg_models.items():
                 features_test = X_test[:,self.nca_indices]
                 final_proba_matrix += (self.weights[key] * model.predict_proba(features_test))
 
-            for key, model in self.ga_models.items():
-                features_test = X_test[:, ga_features[key]]
+            for key, model in ga_models.items():
+                features_test = X_test[:, self.ga_models[key].mask][:, ga_features[key]]
                 final_proba_matrix += (self.weights[key] * model.predict_proba(features_test))
 
             prediction = list(np.argmax(final_proba_matrix, axis=1) + 1)
-            label_test = self.test_labels
 
             # Save prediction
-            all_scores.append(accuracy_score(label_test, prediction))
+            all_scores.append(accuracy_score(y_test, prediction))
 
+        print(f'EA: {all_scores}')
         return np.mean(all_scores)
             
 

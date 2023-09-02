@@ -25,12 +25,12 @@ class GAModel:
 
     def reduce_ga_search_space(self, features, model_name):
         threshold = get_args_dict().get('threshold', 0) if self.threshold == 0 else self.threshold
-        print(f"Threshold is {threshold}, model: {model_name}")
         hists_ga: dict = Utils.load_from_pickle(os.path.join('stats', 'ga_models_features_hists'))
         hist: dict = hists_ga.get(model_name)
         if hist is None:
             return features, [True] * len(headers)
         mask = [(feature in hist.keys() and hist.get(feature, 0) >= threshold) for feature in headers]
+        # print(f"Threshold is {threshold}, model: {model_name}, features[:, mask] size: {(features[:,mask]).shape}")
         return features[:,mask], mask
 
     def predict_proba(self, X):
