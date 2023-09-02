@@ -79,7 +79,7 @@ class Stacking:
             # Training each Pseudo GA classifier
             models = ModelsParams.build_models()
             for model in models:
-                model['model'].fit(X_train[:, ga_features[model['name']]])  # fit GA pseudo model
+                model['model'].fit(X_train[:, ga_features[model['name']]], y_train)  # fit GA pseudo model
                 new_dataset_train.append(model['model'].predict(X_train[:, ga_features[model['name']]]))
                 new_dataset_test.append(model['model'].predict(X_test[:, ga_features[model['name']]]))
             
