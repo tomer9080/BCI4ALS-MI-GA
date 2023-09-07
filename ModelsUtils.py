@@ -118,8 +118,8 @@ def classify_results_ga(selection_params, features_train, label_train, features_
     selector = selector.fit(features_train, label_train)
     chosen_indices[selection_params["name"]] = np.array([i for i, res in enumerate(selector.support_) if res == True])
     
-    # Utils.create_sub_folder_for_ga_features(selection_params["name"], selection_params['index_max'])
-    # np.savetxt(os.path.join('ga_features', f'ga_run_{selection_params["index_max"]}', selection_params["name"], f'{folder_dict["name"]}_{folder_dict["date"]}_ {folder_dict["num"]}_ga_features.txt'), headers[selector.mask][selector.support_], fmt='%s')
+    Utils.create_sub_folder_for_ga_features(selection_params["name"], selection_params['index_max'])
+    np.savetxt(os.path.join('ga_features', f'ga_run_{selection_params["index_max"]}', selection_params["name"], f'{folder_dict["name"]}_{folder_dict["date"]}_ {folder_dict["num"]}_ga_features.txt'), headers[selector.mask][selector.support_], fmt='%s')
     
     prediction = selector.predict(features_test)
     test_results = prediction - label_test
@@ -154,40 +154,9 @@ def get_train_indices(test_indices, labels):
     return [i for i in range(len(labels)) if i not in test_indices]
 
 def classify_ensemble(key_name, models: dict, features, labels, test_indices, nca_indices, eta=0.2):
-    weights = {key: 1 for key in models.keys()} # initializing all weights to 1
-    prob_matrices = {}
-    train_indices = get_train_indices(test_indices, labels)
-    # Zip all matrices - work line by line to be each prediction.
-    # This is "training" the model
-    for key, model in models.items():
-        if 'GA' in key:
-            # train_features, _ = reduce_ga_search_space(features, key.replace(' GA', ''))
-            train_features = features[train_indices,:]
-        else:
-            train_features = features[:,nca_indices]
-            train_features = train_features[train_indices,:]
-        prob_matrices[key] = model.predict_proba(train_features)
-    for j, i in enumerate(train_indices):
-        y_true = labels[i]
-        for key, matrix in prob_matrices.items():
-            prediction = np.argmax(matrix[j,:]) + 1
-            if prediction != y_true:
-                weights[key] *= (1 - eta)
-    print(weights)
-
-    # return a prediction
-    final_proba_matrix = np.zeros((len(test_indices), 3))
-    for key, model in models.items():
-        if 'GA' in key:
-            # features_test, _ = reduce_ga_search_space(features, key.replace(' GA', ''))
-            features_test = features[test_indices,:]
-        else:
-            features_test = features[:,nca_indices]
-            features_test = features_test[test_indices,:]
-        final_proba_matrix += (weights[key] * model.predict_proba(features_test))
-    prediction = list(np.argmax(final_proba_matrix, axis=1) + 1)
-    label_test = labels[test_indices]
-    return row_to_print(prediction, label_test, key_name)
+    ea_model = EA(models, test_indices, nca_indices, labels, features, eta)
+    ea_model.fit()
+    return ea_model.predict(key_name)
 
 def mv_cv(key_name, models: dict, features, labels, test_indices, nca_indices, eta=0.2, folds=5):
     ea_model = EA(models, test_indices, nca_indices, labels, features, eta)
@@ -225,3 +194,39 @@ def row_to_print(prediction, label_test, key_name):
     row = [key_name, hit_rate, prediction, label_test, prediction - label_test]
 
     return row[:2]
+
+# def classify_ensemble(key_name, models: dict, features, labels, test_indices, nca_indices, eta=0.2):
+#     weights = {key: 1 for key in models.keys()} # initializing all weights to 1
+#     prob_matrices = {}
+#     train_indices = get_train_indices(test_indices, labels)
+#     # Zip all matrices - work line by line to be each prediction.
+#     # This is "training" the model
+#     for key, model in models.items():
+#         if 'GA' in key:
+#             # train_features, _ = reduce_ga_search_space(features, key.replace(' GA', ''))
+#             train_features = features[train_indices,:]
+#         else:
+#             train_features = features[:,nca_indices]
+#             train_features = train_features[train_indices,:]
+#         prob_matrices[key] = model.predict_proba(train_features)
+#     for j, i in enumerate(train_indices):
+#         y_true = labels[i]
+#         for key, matrix in prob_matrices.items():
+#             prediction = np.argmax(matrix[j,:]) + 1
+#             if prediction != y_true:
+#                 weights[key] *= (1 - eta)
+#     print(weights)
+
+#     # return a prediction
+#     final_proba_matrix = np.zeros((len(test_indices), 3))
+#     for key, model in models.items():
+#         if 'GA' in key:
+#             # features_test, _ = reduce_ga_search_space(features, key.replace(' GA', ''))
+#             features_test = features[test_indices,:]
+#         else:
+#             features_test = features[:,nca_indices]
+#             features_test = features_test[test_indices,:]
+#         final_proba_matrix += (weights[key] * model.predict_proba(features_test))
+#     prediction = list(np.argmax(final_proba_matrix, axis=1) + 1)
+#     label_test = labels[test_indices]
+#     return row_to_print(prediction, label_test, key_name)

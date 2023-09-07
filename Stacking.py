@@ -73,6 +73,7 @@ class Stacking:
             new_dataset_test = []
             
             for _, model in self.reg_models.items():
+                model.fit(X_train[:, self.nca_indices], y_train)
                 new_dataset_train.append(model.predict(X_train[:, self.nca_indices]))
                 new_dataset_test.append(model.predict(X_test[:, self.nca_indices]))
                 # print('Stacking: In normal models')

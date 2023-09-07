@@ -62,7 +62,7 @@ def get_models_scores():
 
 
 ### ============= GA FEATURES ============= ###
-def get_ga_features() -> dict():
+def get_ga_features(start=0) -> dict():
     all_hists = {}
     for subdir, _, _ in os.walk('ga_features'):
         print(subdir)

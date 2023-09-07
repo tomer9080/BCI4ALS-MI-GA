@@ -106,6 +106,7 @@ class EA:
 
             # == Train ensemble == #
             self.init_weights()
+            print(self.weights)
             prob_matrices = {}
             train_indices = train_index
             
@@ -114,6 +115,7 @@ class EA:
 
             for key, model in self.reg_models.items():
                 train_features = X_train[:, self.nca_indices]
+                model.fit(train_features, y_train)
                 prob_matrices[key] = model.predict_proba(train_features)
                 # print("In normal models")
 
@@ -129,6 +131,7 @@ class EA:
                     prediction = np.argmax(matrix[j,:]) + 1
                     if prediction != y_true:
                         self.weights[key] *= (1 - self.eta)
+            print(self.weights)
 
             # == Predict == #
             final_proba_matrix = np.zeros((len(test_index), 3))
