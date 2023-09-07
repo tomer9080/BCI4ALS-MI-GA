@@ -25,6 +25,8 @@ def analyze_csv(scores_path):
             for x, y, file in os.walk(subdir):
                 #load csv
                 file_str = file[0]
+                if 'models_avg' in file_str:
+                    continue
                 df = pd.read_csv(os.path.join(subdir, file_str), header=0)
                 print(f'here {os.path.join(subdir, file_str)}')
                 print(df.head())

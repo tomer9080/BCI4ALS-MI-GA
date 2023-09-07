@@ -11,7 +11,7 @@ import OurUtils as Utils
 from pathlib import Path
 from OurUtils import from_feature_name_to_index
 
-def plot_class_per_record_to_remove(thresh="thresh_0"):
+def plot_class_per_record_to_remove(thresh="thresh_80"):
     file_name_1 = 'classifiers_scores.csv'
     file_name_2 = 'models_avg_scores.csv'
     root_dir = os.path.join('class_scores')
@@ -104,7 +104,7 @@ def plot_class_per_record_to_remove(thresh="thresh_0"):
 
 
     plot_error_bar_to_remove(models_scores_per_blitz, recordings)
-    plot_error_bar_per_model_cv(models_avg_per_blitz)
+    plot_error_bar_per_model_cv(models_avg_per_blitz, thresh=int(thresh.strip('thresh_')))
     # plot_error_bar_per_model_non_cv(models_avg_per_blitz_non_cv)
 
 
