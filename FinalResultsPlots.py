@@ -10,16 +10,17 @@ import matplotlib.pyplot as plt
 import OurUtils as Utils
 from pathlib import Path
 from OurUtils import from_feature_name_to_index
+import sys
 
-def plot_class_per_record_to_remove(thresh="thresh_80"):
+def plot_class_per_record_to_remove(thresh=f"thresh_0", knn_exist=True):
     file_name_1 = 'classifiers_scores.csv'
     file_name_2 = 'models_avg_scores.csv'
-    root_dir = os.path.join('class_scores')
+    root_dir = os.path.join('class_scores') if knn_exist else os.path.join('class_scores_no_knn')
 
     models_scores_per_blitz = {
         'LDA GA CV': [],
-        # 'KNN5 GA CV': [],
-        # 'KNN7 GA CV': [],
+        'KNN5 GA CV': [],
+        'KNN7 GA CV': [],
         'SVC GA CV': [],
         'NB GA CV': [],
         'LR GA CV': [],
@@ -29,14 +30,14 @@ def plot_class_per_record_to_remove(thresh="thresh_80"):
 
     models_avg_per_blitz = {
         'LDA CV': [],
-        # 'KNN5 CV': [],
-        # 'KNN7 CV': [],
+        'KNN5 CV': [],
+        'KNN7 CV': [],
         'SVC CV': [],
         'NB CV': [],
         'LR CV': [],
         'LDA GA CV': [],
-        # 'KNN5 GA CV': [],
-        # 'KNN7 GA CV': [],
+        'KNN5 GA CV': [],
+        'KNN7 GA CV': [],
         'SVC GA CV': [],
         'NB GA CV': [],
         'LR GA CV': [],
@@ -48,31 +49,14 @@ def plot_class_per_record_to_remove(thresh="thresh_80"):
         'MV_ALL CV': [],
     }
     
-    models_avg_per_blitz_non_cv = {
-        'LDA': [],
-        # 'KNN5': [],
-        # 'KNN7': [],
-        'SVC': [],
-        'NB': [],
-        'LR': [],
-        'LDA GA': [],
-        # 'KNN5 GA': [],
-        # 'KNN7 GA': [],
-        'SVC GA': [],
-        'NB GA': [],
-        'LR GA': [],
-        'MV_GA': [],
-        'OSTACKING GA': [],
-        'MV': [],
-        'MV_ALL': [],
-        'OSTACKING ': [],
-        'OSTACKING ALL': []
-    }
+
+    models_scores_per_blitz = models_scores_per_blitz if knn_exist else {key: val for key, val in models_scores_per_blitz.items() if 'KNN' not in key}
+    models_avg_per_blitz = models_avg_per_blitz if knn_exist else {key: val for key, val in models_avg_per_blitz.items() if 'KNN' not in key}
+
     # Traverse through the directory tree
     for root, directories, files in os.walk(root_dir):
         for file in files:
             # Check if the file is a CSV
-            print(file, thresh, thresh in file)
             csv_path = os.path.join(root, file)
             if file.endswith(file_name_2) and thresh in csv_path:
                 # Read the CSV file into a DataFrame
@@ -87,9 +71,7 @@ def plot_class_per_record_to_remove(thresh="thresh_80"):
                 for key in models_avg_per_blitz.keys():
                     models_avg_per_blitz[key].append(df_1[key].to_list()[0])
                 
-                for key in models_avg_per_blitz_non_cv.keys():
-                    models_avg_per_blitz_non_cv[key].append(df_2[key].to_list()[0])
-
+                
             if file.endswith(file_name_1) and thresh in csv_path:
 
                 # Read the CSV file into a DataFrame
@@ -104,13 +86,12 @@ def plot_class_per_record_to_remove(thresh="thresh_80"):
 
 
     plot_error_bar_to_remove(models_scores_per_blitz, recordings)
-    plot_error_bar_per_model_cv(models_avg_per_blitz, thresh=int(thresh.strip('thresh_')))
+    return plot_error_bar_per_model_cv(models_avg_per_blitz, thresh=int(thresh.strip('thresh_')), knn_exist=knn_exist)
     # plot_error_bar_per_model_non_cv(models_avg_per_blitz_non_cv)
 
 
-def plot_error_bar_per_model_cv(models_avg_per_blitz: dict, thresh=0):
-    # x = ['LDA', 'KNN5', 'KNN7', 'SVC', 'NB', 'LR', 'STACKING', 'MV']
-    x = ['LDA', 'SVC', 'NB', 'LR', 'STACKING', 'MV']
+def plot_error_bar_per_model_cv(models_avg_per_blitz: dict, thresh=0, knn_exist=True):
+    x = ['LDA', 'KNN5', 'KNN7', 'SVC', 'NB', 'LR', 'STACKING', 'MV'] if knn_exist else ['LDA', 'SVC', 'NB', 'LR', 'STACKING', 'MV']
     num_blitz = len(models_avg_per_blitz['LDA CV'])
     y_1 = [np.mean(item) * 100 for key, item in models_avg_per_blitz.items() if 'CV' in key and 'GA' not in key and 'ALL' not in key]
     y_1_err = [np.std(item) * 100 for key, item in models_avg_per_blitz.items() if 'CV' in key and 'GA' not in key and 'ALL' not in key]
@@ -132,6 +113,7 @@ def plot_error_bar_per_model_cv(models_avg_per_blitz: dict, thresh=0):
 
     plt.grid(True)
     plt.show()
+    return [y_2[-1], y_2_err[-1]]
 
 def plot_error_bar_per_model_non_cv(models_avg_per_blitz: dict):
     x = ['LDA', 'KNN5', 'KNN7', 'SVC', 'NB', 'LR', 'MV', 'STACKING']
@@ -186,4 +168,25 @@ def plot_error_bar_to_remove(models_scores_per_blitz: dict, recordings):
 
 
 if __name__ == "__main__":
-    plot_class_per_record_to_remove()
+    mvga_x = ['MVGA, T=0', 'MVGA, T=50', 'MVGA, T=80', 'MVGA No KNN, T=0', 'MVGA No KNN, T=50', 'MVGA No KNN, T=80']
+    mvga_scores = []
+    mvga_scores.append(plot_class_per_record_to_remove('thresh_0'))
+    mvga_scores.append(plot_class_per_record_to_remove('thresh_50'))
+    mvga_scores.append(plot_class_per_record_to_remove('thresh_80'))
+    mvga_scores.append(plot_class_per_record_to_remove('thresh_0', knn_exist=False))
+    mvga_scores.append(plot_class_per_record_to_remove('thresh_50', knn_exist=False))
+    mvga_scores.append(plot_class_per_record_to_remove('thresh_80', knn_exist=False))
+    
+    mvga_scores = np.array(mvga_scores, dtype=float)
+
+    plt.figure(figsize=(8, 6))
+    plt.errorbar(mvga_x, mvga_scores[:, 0], mvga_scores[:, 1], fmt='s', capsize=6)
+    # Add labels and title
+    plt.xlabel('Model Configuration (T is for Threshold)')
+    plt.xticks(rotation=30)
+    plt.ylabel('Success Rate (%)')
+    plt.ylim((65, 72))
+    plt.title(f'CV Success Rate vs Model for each MVGA classifier configuration \n Threshold is on the number of times each feature was chosen in previous runs.')
+
+    plt.grid(True)
+    plt.show()

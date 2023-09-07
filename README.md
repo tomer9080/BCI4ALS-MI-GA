@@ -1,7 +1,11 @@
-# BCI4ALS-Motor Imagery repository
+# BCI4ALS-Motor Imagery Using Genetic Algorithm
+Hi everyone, this repository contains the code for BCI4ALS Moto imagery proejct.
 
-This repository contains the formal scaffolding code used in 2021-2022 BCI4ALS academic course.
-Currently we support the MATALB version, but intend to add Python support soon.
-For earlier versions, including the BCI4ALS code that works for the SSVEP paradigm, please check out the SSVEP repo here (https://github.com/harelasaf/BCI4ALS-SSVEP).
+This repo is using Genetic Algorithm (GA) to try and optimize the best features for the classifiers,
+in a goal to find the features that can produce better results for the long-term.
 
-For more information regarding the course, please check out: https://www.brainstormil.com/bci-4-als
+## MATLAB base code:
+The matlab base code in thie repo was taken from this repo: (https://github.com/harelasaf/BCI4ALS-MI).
+If you want to learn more about the course:  https://www.brainstormil.com/bci-4-als
+
+## 

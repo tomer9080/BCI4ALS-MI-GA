@@ -1,1 +1,0 @@
-SVC NCA best params: {'C': 0.1, 'gamma': 100, 'kernel': 'poly'}

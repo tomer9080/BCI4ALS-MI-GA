@@ -109,15 +109,7 @@ def classify(args_dict):
         all_rows.append(ModelsUtils.our_classify_stacking(f'OSTACKING {key.strip("MV_")}', major_dict[key], all_features, all_labels, test_indices, nca_selected_idx))
     
     
-    # all_rows.append(ModelsUtils.our_classify_stacking(f'OSTACKING GA', major_dict['MV_GA'], all_features, all_labels, test_indices, nca_selected_idx))
-    # all_rows.append(ModelsUtils.our_classify_stacking(f'OSTACKING ALL', major_dict['MV_ALL'], all_features, all_labels, test_indices, nca_selected_idx))
-    
-    
     ##### ============= RUN CV MV & Stacking ============= #####
-    # results_mv_stacking_cv: dict = ModelsUtils.cross_validation_on_model(major_dict['MV_ALL'], 4, all_features, all_labels, True, nca_selected_idx, 'ALL')
-    # for key, val in results_mv_stacking_cv.items():
-    #     all_rows.append([key, val])
-
     for key in major_dict.keys():
         if len(major_dict[key].keys()) == 0:
             continue
