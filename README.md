@@ -1,15 +1,15 @@
 # BCI4ALS-Motor Imagery Using Genetic Algorithm
-Hi everyone, this repository contains the code for BCI4ALS Motor imagery proejct.
+Hi everyone, this repository contains the code for BCI4ALS Motor imagery project.
 
 This repo is using Genetic Algorithm (GA) to try and optimize the best features for the classifiers,
 in a goal to find the features that can produce better results for the long-term.
 
  [BCI4ALS MI GA](#BCI4ALS-MI-GA)
   * [Previous Work](#Previous-Work)
-  * [Data Processing](#Data-Processing)
-  * [Feature Extraction](#Feature-Extraction)
+  * [Data Acquisition](#Data-Acquisition)
   * [Feature Selection](#Feature-Selection)
-  * [Classifier Selection](#Classifier-Selection)
+  * [Classifier Ensemble](#Classifier-Ensemble)
+  * [Optimization](#Optimization)
   * [Results](#Results)
   * [Usage](#Usage)
   * [Files in the Repository](#Files-in-the-Repository)
@@ -32,12 +32,18 @@ The acquired data was later Pre-processed and used to extract feature that would
 Further explanation about each stage in the figure can be seen in the project book.
 ### **add link to the book**
 ### **add picture of block scheme**
- 
+ <p align="center">
+  <img src="" />
+</p>
 
 ##  Feature Selection
 We used the Genetic Algorithm to see which features would yield the best predictions and kept histograms of the selected features.\
 After running the algorithm for a large number of times we could know which of the features popped up the most and reduce the feature space.
 ### **add histo pics**
+<p align="center">
+  <img src="https://github.com/tomer9080/BCI4ALS-MI-GA/blob/master/top_ten_features/NB_top_ten_features.png" />
+</p>
+
 
 ## Classifier Ensemble
 In order to get the best result we've tried to combine the different basic classifiers into a large meta-classifier in two different ways:
@@ -51,29 +57,46 @@ Further explanation about this methods can be found here:
 We've used 'Optuna' to tweak the Genetic Algorithm hyper-parameters in order to get the best prediciton rates.
 
 ### ** add optuna pics**
+<p align="center">
+  <img src="https://github.com/tomer9080/BCI4ALS-MI-GA/blob/master/figures/important%20params%20full.png" />
+</p>
+
+<p align="center">
+  <img src="https://github.com/tomer9080/BCI4ALS-MI-GA/blob/master/figures/param_contour_cross_ind_prob_muta_ind_prob.png" />
+</p>
+
 
 ## Result
 Comparing the different classifiers and Ensembles can be shown in the figure below:
 ### ** add figure of results no thresh**
-
+<p align="center">
+  <img src="https://github.com/tomer9080/BCI4ALS-MI-GA/blob/master/figures/Results_thresh_0(1).jpg" />
+</p>
 
 Once adding the threshold limitation on the features we get a slight increase in the results:
-### ** add figure of results thresh 50**
+
+<p align="center">
+  <img src="https://github.com/tomer9080/BCI4ALS-MI-GA/blob/master/figures/Results_thresh_50(1).jpeg" />
+</p>
 
 However, a threshold too high will show a start of a decline in the results:
-### ** add figure of results thresh 80**
 
+<p align="center">
+  <img src="https://github.com/tomer9080/BCI4ALS-MI-GA/blob/master/figures/Results_thresh_80(1).jpeg" />
+</p>
 
 It is noticeable that the KNN classifiers show poor results, and the ensembles results are not changed much if they are removed:
 
-### ** add figure of results thresh 50 no knn**
+<p align="center">
+  <img src="https://github.com/tomer9080/BCI4ALS-MI-GA/blob/master/figures/Results_thresh_50_no_knn(2).jpeg" />
+</p>
+
 
 The best classifiers over the different thresholds:
-### ** add figure of full comparison**
 
-
-
-
+<p align="center">
+  <img src="https://github.com/tomer9080/BCI4ALS-MI-GA/blob/master/figures/MVGA_results_on_all(1).jpeg" />
+</p>
 
 
 
