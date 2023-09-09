@@ -1,5 +1,5 @@
 # BCI4ALS-Motor Imagery Using Genetic Algorithm
-Hi everyone, this repository contains the code for BCI4ALS Moto imagery proejct.
+Hi everyone, this repository contains the code for BCI4ALS Motor imagery proejct.
 
 This repo is using Genetic Algorithm (GA) to try and optimize the best features for the classifiers,
 in a goal to find the features that can produce better results for the long-term.
@@ -23,69 +23,68 @@ If you want to learn more about the course:  https://www.brainstormil.com/bci-4-
 Another recommended python package (was not used in this project) is bci4als:
 https://pypi.org/project/bci4als/
 
+## Data Acquisition
+ The data used in this project was recorded on us over the span of 6 weeks, with 3 sessions each week. Each session is comprised of 60 trials in which the subject will be shown randomly one of
+3 option - right, left or idle.
+
 ## Data Processing
-* We’ve collected data by recording ourselves for a span of 6 weeks.
-* After preprocessing the data we extracted different features.
-* After analyzing the data we created a feature space of all the used features.
+The acquired data was later Pre-processed and used to extract feature that would help classify the results to get maximum prediction rates success, as shown in the figure below. The classifiers used at the beginning were basic classifiers such as LDA or SVM.\\
+Further explanation about each stage in the figure can be seen in the project book.
+### **add link to the book**
+### **add picture of block scheme**
+ 
 
-## Architecture
-We used PyTorch HuggingFace's RWKV model. The original model was compromised of embedding layer, which we decided to remove, 
-since we wanted the NN to handle numerical data. The RWKV model is implemented as in the pubilshed article: [RWKV](https://arxiv.org/pdf/2305.13048.pdf).
+##  Feature Selection
+We used the Genetic Algorithm to see which features would yield the best predictions and kept histograms of the selected features.\
+After running the algorithm for a large number of times we could know which of the features popped up the most and reduce the feature space.
+### **add histo pics**
 
+## Classifier Ensemble
+In order to get the best result we've tried to combine the different basic classifiers into a large meta-classifier in two different ways:
+* Expert Advice
+* Stacking
 
-The model structure, including our added layers:
-<p align="center">
-  <img src="https://github.com/tomer9080/Stock-Prediction-Using-RWKV/blob/main/images/rwkv_arch.png" width="450"/>
-</p>
+Further explanation about this methods can be found here:
+### **add link to refs**
 
+## Optimization
+We've used 'Optuna' to tweak the Genetic Algorithm hyper-parameters in order to get the best prediciton rates.
 
-## Hyperparameters
-* `batch_size` = int, size of batch
-* `epochs` = int, number of epochs to run the training
-* `window_size` = int, the length of the sequence
-* `hidden_states` = int, the number of hidden states in eahc RWKV block
-* `hidden_layers` = int, the number of RWKV blocks in the NN.
-* `dropout` = float, the dropout probability of the dropout layers in the model (0.0 - 1.0)
-* `lr` = float, starting learning rate 
-* `factor` = float, multiplicative factor of learning rate decay (0.0 - 1.0)
-* `patience` = int, how many epochs we'll wait before decaying lr after no improvement
-* `optimizer` = pytorch optimizer, In what method we'll try to optimize our criterion.
-* `scheduler` = pytorch scheduler, In what granularity/method we are reducing our lr.
-
+### ** add optuna pics**
 
 ## Result
+Comparing the different classifiers and Ensembles can be shown in the figure below:
+### ** add figure of results no thresh**
 
-We trained the model with the hyperparameters:
 
-|Param|Value|
-|-------|-------------|
-|`window_size` | 40 |
-|`hidden_layers`| 8 |
-|`hidden_states`| 32 |
-|`dropout`| 0.2 |
-|`epochs`| 30 |
-|`batch_size`| 128 |
-|`lr`| 0.01 |
-|`factor`| 0.6 |
-|`patience`| 1 |
-|`optimizer`| `RAdam` |
-|`scheduler`| `ReduceLROnPlateu`|
+Once adding the threshold limitation on the features we get a slight increase in the results:
+### ** add figure of results thresh 50**
 
-And we got the results:
+However, a threshold too high will show a start of a decline in the results:
+### ** add figure of results thresh 80**
+
+
+It is noticeable that the KNN classifiers show poor results, and the ensembles results are not changed much if they are removed:
+
+### ** add figure of results thresh 50 no knn**
+
+The best classifiers over the different thresholds:
+### ** add figure of full comparison**
+
+
+
+
+
+
 
 <p align="center">
   <img src="https://github.com/tomer9080/Stock-Prediction-Using-RWKV/blob/main/images/predictions_all.png" />
 </p>
 
-We can see that the trend if the predicted values, is similar to the original trend, and even that in the train and validation areas, we are giving pretty accurate prediciton.
-
-Let's have a zoom in to the test prediction:
-
 <p align="center">
   <img src="https://github.com/tomer9080/Stock-Prediction-Using-RWKV/blob/main/images/predictions_test.png" />
 </p>
 
-Here we can see that the predicted trend behaves well, but after sometime it seems that we are losing resolution and diverging from the real stock values, although we are having success identifying sharp movements. We can also see how the fact that we've used moving average has smoothened our prediction, and it easy to observe how less spiky it is.
 
 ## Usage
 
@@ -106,9 +105,10 @@ To retrain the model run [stock_prediction_using_rwkv.ipynb](https://github.com/
 ## Further Work
 
 The work we presented here achieved good results, but definitely there are aspects to improve and examine such as:
-- Try running the model on a different stock.
-- Examine adding Time2Vec embedding.
-- Try and train the model on multiple stocks, and predict on them.
+- Finding more helpful features
+- Building an ensemble classifier using more base classifiers and assembled by GA.
+- Build an online classifier using the GA selected features.
+
 
 Hope this was helpful and please let us know if you have any comments on this work:
 
