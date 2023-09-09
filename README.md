@@ -14,6 +14,7 @@ in a goal to find the features that can produce better results for the long-term
   * [Usage](#Usage)
   * [Files in the Repository](#Files-in-the-Repository)
   * [Further Work](#Further-Work)
+  * [Project Book](#Project-Book)
 
 
 ## Previous Work
@@ -28,18 +29,17 @@ https://pypi.org/project/bci4als/
 3 option - right, left or idle.
 
 ## Data Processing
-The acquired data was later Pre-processed and used to extract feature that would help classify the results to get maximum prediction rates success, as shown in the figure below. The classifiers used at the beginning were basic classifiers such as LDA or SVM.\\
-Further explanation about each stage in the figure can be seen in the project book.
-### **add link to the book**
-### **add picture of block scheme**
+The acquired data was later Pre-processed and used to extract feature that would help classify the results to get maximum prediction rates success, as shown in the figure below. The classifiers used at the beginning were basic classifiers such as LDA or SVM.\
+Further explanation about each stage in the figure can be seen in the project book, the link to it is a the end of this README file.
+
+
  <p align="center">
-  <img src="" />
+  <img src="https://github.com/tomer9080/BCI4ALS-MI-GA/blob/master/figures/Block_diagram.png" />
 </p>
 
 ##  Feature Selection
 We used the Genetic Algorithm to see which features would yield the best predictions and kept histograms of the selected features.\
 After running the algorithm for a large number of times we could know which of the features popped up the most and reduce the feature space.
-### **add histo pics**
 <p align="center">
   <img src="https://github.com/tomer9080/BCI4ALS-MI-GA/blob/master/top_ten_features/NB_top_ten_features.png" />
 </p>
@@ -51,12 +51,12 @@ In order to get the best result we've tried to combine the different basic class
 * Stacking
 
 Further explanation about this methods can be found here:
-### **add link to refs**
+- Expert Advice: https://theoryofcomputing.org/articles/v008a006/
+- Stacking: https://www.sciencedirect.com/science/article/abs/pii/S0893608005800231
 
 ## Optimization
 We've used 'Optuna' to tweak the Genetic Algorithm hyper-parameters in order to get the best prediciton rates.
 
-### ** add optuna pics**
 <p align="center">
   <img src="https://github.com/tomer9080/BCI4ALS-MI-GA/blob/master/figures/important%20params%20full.png" />
 </p>
@@ -68,7 +68,6 @@ We've used 'Optuna' to tweak the Genetic Algorithm hyper-parameters in order to 
 
 ## Result
 Comparing the different classifiers and Ensembles can be shown in the figure below:
-### ** add figure of results no thresh**
 <p align="center">
   <img src="https://github.com/tomer9080/BCI4ALS-MI-GA/blob/master/figures/Results_thresh_0(1).jpg" />
 </p>
@@ -100,15 +99,6 @@ The best classifiers over the different thresholds:
 
 
 
-<p align="center">
-  <img src="https://github.com/tomer9080/Stock-Prediction-Using-RWKV/blob/main/images/predictions_all.png" />
-</p>
-
-<p align="center">
-  <img src="https://github.com/tomer9080/Stock-Prediction-Using-RWKV/blob/main/images/predictions_test.png" />
-</p>
-
-
 ## Usage
 
 To retrain the model run [stock_prediction_using_rwkv.ipynb](https://github.com/tomer9080/Stock-Prediction-Using-RWKV/stock_prediction_using_rwkv.ipynb). You can choose different stock to predict on in the relvant cell by just riplacing the ticker, and deciding on how much days you want to train (notice that different stocks has different number of data points). after you chose your hyperparameters, run all of the notebook and wait untill it's done.
@@ -132,6 +122,11 @@ The work we presented here achieved good results, but definitely there are aspec
 - Building an ensemble classifier using more base classifiers and assembled by GA.
 - Build an online classifier using the GA selected features.
 
+
+
+# Project Book
+All of our work can be found in detail in the Project Book.
+### **add link to the book**
 
 Hope this was helpful and please let us know if you have any comments on this work:
 
