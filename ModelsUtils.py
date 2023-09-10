@@ -16,8 +16,8 @@ features_names_list = Utils.features_names_list
 headers = Utils.headers
 from_name_to_index = Utils.from_feature_name_to_index
 
-def reduce_ga_search_space(features: np.ndarray, model_name):
-    threshold = get_args_dict().get('threshold', 0)
+def reduce_ga_search_space(features: np.ndarray, model_name, thresh=None):
+    threshold = thresh if thresh else get_args_dict().get('threshold', 0)
     print("Wallak threshold is {}".format(threshold))
     hists_ga: dict = Utils.load_from_pickle(os.path.join('stats', 'ga_models_features_hists'))
     hist: dict = hists_ga.get(model_name)

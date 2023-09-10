@@ -12,12 +12,12 @@ from sklearn.ensemble import AdaBoostClassifier as AB
 
 def build_models(our_features_indices=[], train_features_stats=[], test_features_stats=[], labels_train_stats=[], labels_test_stats=[]):
     models = [
-        {'name': 'LDA', 'model': LDA(), 'cv': True},
-        {'name': 'SVC', 'model': SVC(probability=True), 'cv': True},
-        {'name': 'NB', 'model': NB(), 'cv': True},
-        {'name': 'LR', 'model': LR(), 'cv': True}
-        # {'name': 'KNN5', 'model': KNN(5), 'cv': True},
-        # {'name': 'KNN7', 'model': KNN(7), 'cv': True},
+        {'name': 'LDA', 'model': LDA(), 'cv': True, 'thresh': 70},
+        {'name': 'SVC', 'model': SVC(probability=True), 'cv': True, 'thresh': 80},
+        {'name': 'NB', 'model': NB(), 'cv': True, 'thresh': 110},
+        {'name': 'LR', 'model': LR(), 'cv': True, 'thresh': 110},
+        {'name': 'KNN5', 'model': KNN(5), 'cv': True, 'thresh': 40},
+        {'name': 'KNN7', 'model': KNN(7), 'cv': True, 'thresh': 40},
         # {'name': 'SVC STA', 'model': SVC(probability=True), 'cv': True, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
         # {'name': 'KNN-5 STA', 'model': KNN(5), 'cv': False, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},
         # {'name': 'KNN-7 STA', 'model': KNN(7), 'cv': False, 'indices': our_features_indices, 'ftr': train_features_stats, 'fte': test_features_stats, 'ltr': labels_train_stats, 'lte': labels_test_stats},

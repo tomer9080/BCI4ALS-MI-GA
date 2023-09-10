@@ -15,7 +15,7 @@ import sys
 def plot_class_per_record_to_remove(thresh=f"thresh_0", knn_exist=True):
     file_name_1 = 'classifiers_scores.csv'
     file_name_2 = 'models_avg_scores.csv'
-    root_dir = os.path.join('class_scores') if knn_exist else os.path.join('class_scores_no_knn')
+    root_dir = os.path.join('class_scores_knn') if knn_exist else os.path.join('class_scores_no_knn')
 
     models_scores_per_blitz = {
         'LDA GA CV': [],
@@ -109,6 +109,7 @@ def plot_error_bar_per_model_cv(models_avg_per_blitz: dict, thresh=0, knn_exist=
     # Add labels and title
     plt.xlabel('Model')
     plt.ylabel('Success Rate (%)')
+    plt.ylim((56,70))
     plt.title(f'CV Success Rate vs Model for each feature selection method \n Averaged on {num_blitz} runs, GA threshold {thresh}')
 
     plt.grid(True)
