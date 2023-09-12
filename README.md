@@ -12,7 +12,6 @@ in a goal to find the features that can produce better results for the long-term
   * [Optimization](#Optimization)
   * [Results](#Results)
   * [Usage](#Usage)
-  * [Files in the Repository](#Files-in-the-Repository)
   * [Further Work](#Further-Work)
   * [Project Book](#Project-Book)
 
@@ -100,33 +99,47 @@ The best classifiers over the different thresholds:
 
 
 ## Usage
+Before running, we recommend to use the file `projenv.yml` in the repo, to setup a sutiable conda enviornment.
+After activating the enviornment you can run the below examples. 
 
-To retrain the model run [stock_prediction_using_rwkv.ipynb](https://github.com/tomer9080/Stock-Prediction-Using-RWKV/stock_prediction_using_rwkv.ipynb). You can choose different stock to predict on in the relvant cell by just riplacing the ticker, and deciding on how much days you want to train (notice that different stocks has different number of data points). after you chose your hyperparameters, run all of the notebook and wait untill it's done.
+To see the full functionality of our script you can use:
+```bash
+python MI5_ModelTraining.py -h 
+```
 
+### Classification Usage Examples:
+To run classification on a specific recording, run the command:
+```bash
+python MI5_ModelTraining.py -f \<recording_path\> -ga \<True/False\> -th \<Threshold on features - must come with ga True\>
+```
 
-## Files in the repository
+To run classification on the whole recordings:
+```bash
+python MI5_ModelTraining.py -pa paths/paths_linux.txt -ga \<True/False\> -th \<Threshold on features - must come with ga True\> -n \<dir_name will be saved in class_results\>
+```
 
-| Folder |File name         | Purpose |
-|------|----------------------|------|
-|code|`stock_prediction_using_rwkv.ipynb`| Notebook which includes all data processing, training, and inference |
-|images|`rwkv_arch.png`| Image that shows our arch including the RWKV model |
-| |`data_set_split.png`| Image that shows our data split |
-| |`predictions_all.png`| Image that shows the predictions obtained on all sets |
-| |`predictions_test.png`| Image that shows our result on the test set |
+And many more options are available.
+The above were mainly used by us.
 
+To run the matlab code, and to record data, you can read the documentation inside the matlab code in the Matlab sub-directory.
 
+### Histograms
+To get histograms, run:
+```bash
+python OurGraphs.py
+```
+The graphs will be saved in the ga_hists directory.
+
+Please feel free to contact us if you've encountered any issues.
 ## Further Work
 
 The work we presented here achieved good results, but definitely there are aspects to improve and examine such as:
 - Finding more helpful features
 - Building an ensemble classifier using more base classifiers and assembled by GA.
 - Build an online classifier using the GA selected features.
-
-
-
 ## Project Book
-All of our work can be found in detail in the Project Book.
-### **add link to the book**
+All of our work can be found in detail in the Project Book. <a href="https://github.com/tomer9080/BCI4ALS-MI-GA/blob/master/EEG_BCI4ALS___Project_Summary.pdf">
+
 
 Hope this was helpful and please let us know if you have any comments on this work:
 
