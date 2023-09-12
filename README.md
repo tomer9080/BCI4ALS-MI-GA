@@ -138,7 +138,7 @@ The work we presented here achieved good results, but definitely there are aspec
 - Building an ensemble classifier using more base classifiers and assembled by GA.
 - Build an online classifier using the GA selected features.
 ## Project Book
-All of our work can be found in detail in the Project Book. <a href="https://github.com/tomer9080/BCI4ALS-MI-GA/blob/master/EEG_BCI4ALS___Project_Summary.pdf">
+All of our work can be found in detail in the Project Book: https://github.com/tomer9080/BCI4ALS-MI-GA/blob/master/EEG_BCI4ALS___Project_Summary.pdf
 
 
 Hope this was helpful and please let us know if you have any comments on this work:
