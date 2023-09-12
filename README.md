@@ -110,12 +110,12 @@ python MI5_ModelTraining.py -h
 ### Classification Usage Examples:
 To run classification on a specific recording, run the command:
 ```bash
-python MI5_ModelTraining.py -f \<recording_path\> -ga \<True/False\> -th \<Threshold on features - must come with ga True\>
+python MI5_ModelTraining.py -f <recording_path> -ga <True/False> -th <Threshold on features - must come with ga True>
 ```
 
 To run classification on the whole recordings:
 ```bash
-python MI5_ModelTraining.py -pa paths/paths_linux.txt -ga \<True/False\> -th \<Threshold on features - must come with ga True\> -n \<dir_name will be saved in class_results\>
+python MI5_ModelTraining.py -pa paths/paths_linux.txt -ga <True/False> -th <Threshold on features - must come with ga True> -n <dir_name will be saved in class_results>
 ```
 
 And many more options are available.
